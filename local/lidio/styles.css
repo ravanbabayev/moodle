@@ -1,0 +1,169 @@
+/* Merchant Application Styles */
+.local-lidio-merchant-application {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.merchant-application-description {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.merchant-application-form {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* KYC Verification Styles */
+.local-lidio-kyc-verification {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.kyc-description {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.kyc-form {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Merchant Dashboard Styles */
+.local-lidio-merchant-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.local-lidio-merchant-dashboard .card {
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.local-lidio-merchant-dashboard .card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.merchant-info {
+    padding: 10px 0;
+}
+
+.merchant-info .row {
+    margin-bottom: 15px;
+}
+
+/* Status indicator */
+.merchant-status {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.status-indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.status-indicator.status-pending {
+    background-color: #ffc107;
+}
+
+.status-indicator.status-approved {
+    background-color: #28a745;
+}
+
+.status-indicator.status-rejected {
+    background-color: #dc3545;
+}
+
+.status-text {
+    font-weight: bold;
+}
+
+/* Transaction history table */
+.local-lidio-merchant-dashboard .table {
+    font-size: 0.9rem;
+}
+
+.local-lidio-merchant-dashboard .table th {
+    background-color: #f8f9fa;
+}
+
+.local-lidio-merchant-dashboard .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Dashboard menu */
+.merchant-menu .list-group-item {
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+}
+
+.merchant-menu .list-group-item:first-child {
+    border-top: 0;
+}
+
+.merchant-menu .list-group-item.active {
+    background-color: #0f6cbf;
+    border-color: #0f6cbf;
+}
+
+/* Dashboard stat cards */
+.dashboard-stat-card {
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.dashboard-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #0f6cbf;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Form styling enhancements */
+.local-lidio-merchant-application .fitem,
+.local-lidio-kyc-verification .fitem {
+    margin-bottom: 15px;
+}
+
+.local-lidio-merchant-application .form-control,
+.local-lidio-kyc-verification .form-control {
+    border-radius: 4px;
+}
+
+.local-lidio-merchant-application .btn-primary,
+.local-lidio-kyc-verification .btn-primary {
+    background-color: #0f6cbf;
+    border-color: #0f6cbf;
+}
+
+.local-lidio-merchant-application .btn-primary:hover,
+.local-lidio-kyc-verification .btn-primary:hover {
+    background-color: #0d5ca8;
+    border-color: #0d5ca8;
+} 

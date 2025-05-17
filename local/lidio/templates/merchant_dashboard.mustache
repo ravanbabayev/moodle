@@ -1,0 +1,198 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/merchant_dashboard
+
+    Merchant dashboard template.
+
+    Context variables required for this template:
+    * status - Merchant status (pending, approved, rejected)
+    * status_message - Localized status message
+    * merchant - Merchant object with details
+
+    Example context (json):
+    {
+        "status": "approved",
+        "status_message": "Your merchant account is approved",
+        "status_is_pending": false,
+        "status_is_approved": true,
+        "status_is_rejected": false,
+        "merchant": {
+            "id": 1,
+            "fullname": "John Doe",
+            "address": "123 Main St",
+            "phone": "123-456-7890",
+            "idnumber": "ID12345",
+            "timecreated": 1621234567,
+            "timecreated_formatted": "10 May 2021"
+        }
+    }
+}}
+
+<div class="local-lidio-merchant-dashboard">
+    {{#status_message}}
+    <div class="alert alert-{{#status_is_pending}}warning{{/status_is_pending}}{{#status_is_approved}}success{{/status_is_approved}}{{#status_is_rejected}}danger{{/status_is_rejected}}">
+        {{{status_message}}}
+    </div>
+    {{/status_message}}
+
+    <div class="row">
+        <!-- Left sidebar with navigation -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    {{#str}}navigation{{/str}}
+                </div>
+                <div class="card-body p-0">
+                    <div class="merchant-menu">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action active">
+                                {{#str}}dashboard{{/str}}
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                {{#str}}transactions, local_lidio{{/str}}
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                {{#str}}settings{{/str}}
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                {{#str}}help{{/str}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    {{#str}}merchantaccountstatus, local_lidio{{/str}}
+                </div>
+                <div class="card-body">
+                    <div class="merchant-status">
+                        <div class="status-indicator status-{{status}}"></div>
+                        <div class="status-text">
+                            {{#status_is_pending}}
+                                {{#str}}pending, local_lidio{{/str}}
+                            {{/status_is_pending}}
+                            {{#status_is_approved}}
+                                {{#str}}approved, local_lidio{{/str}}
+                            {{/status_is_approved}}
+                            {{#status_is_rejected}}
+                                {{#str}}rejected, local_lidio{{/str}}
+                            {{/status_is_rejected}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="col-md-9">
+            <div class="row">
+                <!-- Top stats cards -->
+                <div class="col-md-4 mb-4">
+                    <div class="card dashboard-stat-card">
+                        <div class="card-body text-center">
+                            <h3 class="stat-value">0</h3>
+                            <div class="stat-label">{{#str}}totaltransactions, local_lidio{{/str}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card dashboard-stat-card">
+                        <div class="card-body text-center">
+                            <h3 class="stat-value">$0.00</h3>
+                            <div class="stat-label">{{#str}}totalearnings, local_lidio{{/str}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card dashboard-stat-card">
+                        <div class="card-body text-center">
+                            <h3 class="stat-value">0</h3>
+                            <div class="stat-label">{{#str}}pendingpayments, local_lidio{{/str}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    {{#str}}personalinformation, local_lidio{{/str}}
+                </div>
+                <div class="card-body">
+                    <div class="merchant-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>{{#str}}fullname, local_lidio{{/str}}:</strong> {{merchant.fullname}}</p>
+                                <p><strong>{{#str}}phone, local_lidio{{/str}}:</strong> {{merchant.phone}}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>{{#str}}idnumber, local_lidio{{/str}}:</strong> {{merchant.idnumber}}</p>
+                                <p><strong>{{#str}}applicationdate, local_lidio{{/str}}:</strong> {{merchant.timecreated_formatted}}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>{{#str}}address, local_lidio{{/str}}:</strong> {{merchant.address}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    {{#str}}transactionhistory, local_lidio{{/str}}
+                </div>
+                <div class="card-body">
+                    {{#has_transactions}}
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{{#str}}id{{/str}}</th>
+                                    <th>{{#str}}date{{/str}}</th>
+                                    <th>{{#str}}amount{{/str}}</th>
+                                    <th>{{#str}}status{{/str}}</th>
+                                    <th>{{#str}}actions{{/str}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#transactions}}
+                                <tr>
+                                    <td>{{id}}</td>
+                                    <td>{{date}}</td>
+                                    <td>{{amount}}</td>
+                                    <td>{{status}}</td>
+                                    <td>
+                                        <a href="#" class="btn btn-sm btn-primary">{{#str}}viewdetails, local_lidio{{/str}}</a>
+                                    </td>
+                                </tr>
+                                {{/transactions}}
+                            </tbody>
+                        </table>
+                    {{/has_transactions}}
+                    {{^has_transactions}}
+                        <div class="alert alert-info">
+                            {{#str}}norecords, local_lidio{{/str}}
+                        </div>
+                    {{/has_transactions}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

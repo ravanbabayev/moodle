@@ -1,0 +1,147 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Language strings for the Lidio payment system plugin.
+ *
+ * @package    local_lidio
+ * @copyright  2023 Your Name <your.email@example.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+$string['pluginname'] = 'Lidio Payment System';
+$string['plugindisabled'] = 'The Lidio payment system plugin is currently disabled.';
+
+// Capabilities
+$string['lidio:manageplugin'] = 'Manage Lidio plugin settings';
+$string['lidio:bemerchant'] = 'Apply to be a Lidio merchant';
+$string['lidio:managemerchants'] = 'Manage Lidio merchants';
+$string['lidio:viewmerchants'] = 'View Lidio merchants';
+
+// Settings
+$string['settings'] = 'Lidio settings';
+$string['enabled'] = 'Enable Lidio';
+$string['enabled_desc'] = 'Enable the Lidio payment system';
+
+// Merchant application
+$string['merchantapplication'] = 'Merchant Application';
+$string['merchantapplication_desc'] = 'Apply to become a Lidio merchant';
+$string['merchantapplicationdescription'] = 'Complete the form below to apply as a Lidio merchant. Once approved, you can start accepting payments through the Lidio payment system.';
+$string['merchantstatus'] = 'Merchant Status';
+$string['merchantstatus_pending'] = 'Your merchant application is pending review.';
+$string['merchantstatus_approved'] = 'Your merchant application has been approved.';
+$string['merchantstatus_rejected'] = 'Your merchant application has been rejected.';
+$string['applyasmerchant'] = 'Apply as Merchant';
+$string['notamerchant'] = 'You are not registered as a merchant. Please apply first.';
+
+// KYC Verification
+$string['kycverification'] = 'KYC Verification';
+$string['kycverification_desc'] = 'Complete KYC verification to become a merchant';
+$string['kycstatus'] = 'KYC Status';
+$string['kycstatus_pending'] = 'Your KYC verification is pending review.';
+$string['kycstatus_approved'] = 'Your KYC verification has been approved.';
+$string['kycstatus_rejected'] = 'Your KYC verification has been rejected.';
+$string['completekycverification'] = 'Complete KYC Verification';
+$string['kycwarning'] = 'Please ensure all uploaded documents are clear and legible. Blurry or incomplete documents will be rejected. Documents must be less than 5MB in size.';
+
+// Form fields
+$string['fullname'] = 'Full Name';
+$string['fullname_help'] = 'Enter your full legal name';
+$string['address'] = 'Address';
+$string['address_help'] = 'Enter your full address';
+$string['phone'] = 'Phone Number';
+$string['phone_help'] = 'Enter your contact phone number';
+$string['idnumber'] = 'ID Number';
+$string['idnumber_help'] = 'Enter your ID/Passport number';
+$string['uploadid'] = 'Upload ID Document';
+$string['uploadid_help'] = 'Upload a scan or photo of your ID/Passport';
+$string['uploadaddressproof'] = 'Upload Address Proof';
+$string['uploadaddressproof_help'] = 'Upload a scan or photo of a document showing your address';
+$string['submitmerchantrequirement'] = 'Submit for Verification';
+$string['invalidphone'] = 'Invalid phone number format. Please enter a valid phone number.';
+$string['termsandconditions'] = 'I agree to the terms and conditions of the Lidio payment system';
+
+// Admin interface
+$string['merchantmanagement'] = 'Merchant Management';
+$string['merchantdetails'] = 'Merchant Details';
+$string['nomerchants'] = 'No merchants found.';
+$string['pending'] = 'Pending';
+$string['approved'] = 'Approved';
+$string['rejected'] = 'Rejected';
+$string['approve'] = 'Approve';
+$string['reject'] = 'Reject';
+$string['kycapprove'] = 'Approve KYC';
+$string['kycreject'] = 'Reject KYC';
+$string['view'] = 'View';
+$string['back'] = 'Back';
+$string['actions'] = 'Actions';
+$string['confirmapprovemerchant'] = 'Are you sure you want to approve the merchant application for {$a}?';
+$string['confirmrejectmerchant'] = 'Are you sure you want to reject the merchant application for {$a}?';
+$string['confirmkycapprove'] = 'Are you sure you want to approve the KYC verification for {$a}?';
+$string['confirmkycreject'] = 'Are you sure you want to reject the KYC verification for {$a}?';
+
+// Document management
+$string['documents'] = 'Documents';
+$string['documenttype'] = 'Document Type';
+$string['id_document'] = 'ID Document';
+$string['address_document'] = 'Address Proof';
+$string['filename'] = 'Filename';
+$string['status'] = 'Status';
+$string['download'] = 'Download';
+$string['field'] = 'Field';
+$string['value'] = 'Value';
+$string['userprofile'] = 'User Profile';
+$string['registrationdate'] = 'Registration Date';
+$string['applicationdate'] = 'Application Date';
+$string['email'] = 'Email';
+
+// Messages
+$string['applicationsubmitted'] = 'Your merchant application has been submitted successfully.';
+$string['kycsubmitted'] = 'Your KYC verification documents have been submitted successfully.';
+$string['requiredfield'] = 'This field is required.';
+$string['fileuploaderror'] = 'Error uploading file.';
+$string['errorprocessingform'] = 'There was an error processing your form submission. Please try again.';
+$string['notauthorized'] = 'You are not authorized to perform this action.';
+
+// Navigation
+$string['merchantdashboard'] = 'Merchant Dashboard';
+$string['merchantsettings'] = 'Merchant Settings';
+$string['navigation'] = 'Navigation';
+$string['dashboard'] = 'Dashboard';
+$string['transactions'] = 'Transactions';
+$string['help'] = 'Help';
+
+// Dashboard
+$string['transactionhistory'] = 'Transaction History';
+$string['norecords'] = 'No records found.';
+$string['viewdetails'] = 'View Details';
+$string['merchantaccountstatus'] = 'Account Status';
+$string['personalinformation'] = 'Personal Information';
+$string['accountinformation'] = 'Account Information';
+$string['lastlogin'] = 'Last Login';
+$string['totaltransactions'] = 'Total Transactions';
+$string['totalearnings'] = 'Total Earnings';
+$string['pendingpayments'] = 'Pending Payments';
+$string['amount'] = 'Amount';
+$string['date'] = 'Date';
+$string['id'] = 'ID';
+$string['welcome'] = 'Welcome';
+$string['overview'] = 'Overview';
+$string['statistics'] = 'Statistics';
+$string['activity'] = 'Recent Activity';
+$string['balance'] = 'Balance';
+$string['withdraw'] = 'Withdraw';
+$string['viewall'] = 'View All'; 

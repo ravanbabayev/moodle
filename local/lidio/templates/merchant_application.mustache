@@ -1,0 +1,141 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/merchant_application
+
+    Merchant application template with HTML form.
+
+    Example context (json):
+    {
+        "error_message": "There was a problem with your application.",
+        "sesskey": "abc123"
+    }
+}}
+
+<div class="local-lidio-merchant-application">
+    {{#error_message}}
+    <div class="alert alert-danger">
+        {{{error_message}}}
+    </div>
+    {{/error_message}}
+
+    <div class="merchant-application-description">
+        <p>{{#str}}merchantapplicationdescription, local_lidio{{/str}}</p>
+    </div>
+    
+    <div class="merchant-application-form">
+        <form action="{{config.wwwroot}}/local/lidio/handlers/merchant_handler.php" method="post" class="mform">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="returnurl" value="{{returnurl}}">
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label for="fullname" class="col-form-label d-inline">
+                        {{#str}}fullname, local_lidio{{/str}}
+                        <span class="text-danger">*</span>
+                    </label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" 
+                           class="form-control" 
+                           name="fullname" 
+                           id="fullname" 
+                           value="" 
+                           required
+                           maxlength="255">
+                    <small class="form-text text-muted">{{#str}}fullname_help, local_lidio{{/str}}</small>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label for="address" class="col-form-label d-inline">
+                        {{#str}}address, local_lidio{{/str}}
+                        <span class="text-danger">*</span>
+                    </label>
+                </div>
+                <div class="col-md-9">
+                    <textarea class="form-control" 
+                              name="address" 
+                              id="address" 
+                              rows="4" 
+                              required>
+                    </textarea>
+                    <small class="form-text text-muted">{{#str}}address_help, local_lidio{{/str}}</small>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label for="phone" class="col-form-label d-inline">
+                        {{#str}}phone, local_lidio{{/str}}
+                        <span class="text-danger">*</span>
+                    </label>
+                </div>
+                <div class="col-md-9">
+                    <input type="tel" 
+                           class="form-control" 
+                           name="phone" 
+                           id="phone" 
+                           value="" 
+                           required
+                           pattern="[0-9+\-\s()]{6,20}">
+                    <small class="form-text text-muted">{{#str}}phone_help, local_lidio{{/str}}</small>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label for="idnumber" class="col-form-label d-inline">
+                        {{#str}}idnumber, local_lidio{{/str}}
+                        <span class="text-danger">*</span>
+                    </label>
+                </div>
+                <div class="col-md-9">
+                    <input type="text" 
+                           class="form-control" 
+                           name="idnumber" 
+                           id="idnumber" 
+                           value="" 
+                           required
+                           maxlength="255">
+                    <small class="form-text text-muted">{{#str}}idnumber_help, local_lidio{{/str}}</small>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-9">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="terms" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            {{#str}}termsandconditions, local_lidio{{/str}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-md-9 offset-md-3">
+                    <button type="submit" class="btn btn-primary">{{#str}}applyasmerchant, local_lidio{{/str}}</button>
+                    <a href="{{config.wwwroot}}" class="btn btn-secondary">{{#str}}cancel{{/str}}</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> 
