@@ -51,7 +51,7 @@ $string['notamerchant'] = 'You are not registered as a merchant. Please apply fi
 $string['kycverification'] = 'KYC Verification';
 $string['kycverification_desc'] = 'Complete KYC verification to become a merchant';
 $string['kycstatus'] = 'KYC Status';
-$string['kycstatus_pending'] = 'Your KYC verification is pending review.';
+$string['kycstatus_pending'] = 'Your KYC verification is pending.';
 $string['kycstatus_approved'] = 'Your KYC verification has been approved.';
 $string['kycstatus_rejected'] = 'Your KYC verification has been rejected.';
 $string['completekycverification'] = 'Complete KYC Verification';
@@ -144,4 +144,56 @@ $string['statistics'] = 'Statistics';
 $string['activity'] = 'Recent Activity';
 $string['balance'] = 'Balance';
 $string['withdraw'] = 'Withdraw';
-$string['viewall'] = 'View All'; 
+$string['viewall'] = 'View All';
+
+// Merchant application form
+$string['merchantapplicationpending'] = 'Your Merchant Application is Pending';
+$string['merchantapplicationpendingmessage'] = 'Your merchant application is currently under review. We will notify you once it is approved.';
+$string['updateapplication'] = 'Update Application';
+$string['generalinformation'] = 'General Information';
+$string['companytype'] = 'Company Type';
+$string['individual'] = 'Individual';
+$string['company'] = 'Company';
+$string['companyname'] = 'Company/Store Name';
+$string['phonenumber'] = 'Phone Number';
+$string['businessinformation'] = 'Business Information';
+$string['website'] = 'Website (optional)';
+$string['socialmedialinks'] = 'Social Media Links (optional)';
+$string['businessarea'] = 'Business Area / Products';
+$string['monthlysalesvolume'] = 'Monthly Sales Volume';
+$string['paymentmethods'] = 'Preferred Payment Methods';
+$string['creditcard'] = 'Credit Card';
+$string['banktransfer'] = 'Bank Transfer';
+$string['paymentlink'] = 'Payment Link';
+$string['mobilepayment'] = 'Mobile Payment';
+$string['otherpayment'] = 'Other';
+$string['bankinformation'] = 'Bank Information';
+$string['iban'] = 'IBAN';
+$string['accountholder'] = 'Account Holder Name';
+$string['bankname'] = 'Bank Name';
+$string['agreements'] = 'Agreements';
+$string['kvkkapproval'] = 'KVKK Approval';
+$string['kvkkapprovaltext'] = 'I consent to the processing of my personal data in accordance with KVKK.';
+$string['termsapproval'] = 'Terms and Conditions';
+$string['termsapprovaltext'] = 'I agree to the terms and conditions of the Lidio merchant service.';
+$string['merchantcreated'] = 'Merchant application has been submitted successfully!';
+$string['merchantupdated'] = 'Merchant application has been updated successfully!';
+$string['becomemerchantintro'] = 'Thank you for your interest in becoming a merchant! Please fill in the form below.';
+
+// Validation errors
+$string['invalidiban'] = 'Invalid IBAN format.';
+$string['kvkkapprovalrequired'] = 'You must agree to the KVKK terms.';
+$string['termsapprovalrequired'] = 'You must agree to the terms and conditions.';
+
+// Merchant dashboard
+$string['merchantinfo'] = 'Merchant Information';
+$string['dashboardstats'] = 'Dashboard Statistics';
+$string['nodatayet'] = 'No data available yet.';
+
+// KYC
+$string['completekycverification'] = 'Please complete your KYC verification';
+$string['kycstatus_pending'] = 'Your KYC verification is pending.';
+$string['invalidphone'] = 'Invalid phone number format.';
+
+// Merchant status
+$string['notamerchant'] = 'You are not registered as a merchant.'; 

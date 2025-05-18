@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# merchant/application adresini yönlendir
+RewriteRule ^merchant/application$ /local/lidio/merchant.php [L]

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Utility functions for the Lidio payment system plugin.
+ * Utility class for Lidio payment system.
  *
  * @package    local_lidio
  * @copyright  2023 Your Name <your.email@example.com>
@@ -27,72 +27,119 @@ namespace local_lidio;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Utility functions for the Lidio payment system.
+ * Class util
+ *
+ * This class provides utility methods for the Lidio payment system.
  */
 class util {
+    
     /**
-     * Check if a merchant exists and if their KYC is approved.
+     * Format a currency amount
      *
-     * @param int $userid The user ID to check
-     * @return array Array with 'is_merchant' and 'kyc_approved' keys
+     * @param float $amount Amount to format
+     * @param string $currency Currency code (default: TRY)
+     * @return string Formatted amount
      */
-    public static function check_merchant_status($userid) {
-        global $DB;
-        
-        $result = [
-            'is_merchant' => false,
-            'kyc_approved' => false
-        ];
-        
-        // Check if the user is a merchant
-        $merchant = $DB->get_record('local_lidio_merchants', ['userid' => $userid]);
-        if ($merchant) {
-            $result['is_merchant'] = true;
-            if ($merchant->kyc_status === 'approved' && $merchant->status === 'approved') {
-                $result['kyc_approved'] = true;
-            }
+    public static function format_amount($amount, $currency = 'TRY') {
+        if ($currency === 'TRY') {
+            return number_format($amount, 2, ',', '.') . ' ₺';
+        } else {
+            return number_format($amount, 2) . ' ' . $currency;
         }
-        
-        return $result;
     }
     
     /**
-     * Process a file upload for KYC verification documents.
+     * Format a date for display
      *
-     * @param int $merchantid The merchant ID
-     * @param string $filecontent The file content
-     * @param string $filename The original filename
-     * @param string $documenttype The type of document
-     * @return int The document ID if successful
+     * @param int $timestamp Unix timestamp
+     * @param string $format Date format (default: 'd.m.Y H:i')
+     * @return string Formatted date
      */
-    public static function save_document($merchantid, $filecontent, $filename, $documenttype) {
-        global $DB, $CFG;
-        
-        // Create storage directory if it doesn't exist
-        $storage_dir = $CFG->dataroot . '/lidio/documents/' . $merchantid;
-        if (!file_exists($storage_dir)) {
-            mkdir($storage_dir, 0755, true);
+    public static function format_date($timestamp, $format = 'd.m.Y H:i') {
+        if (!$timestamp) {
+            return '-';
         }
         
-        // Generate unique filename
-        $filepath = $storage_dir . '/' . $documenttype . '_' . time() . '_' . $filename;
+        return date($format, $timestamp);
+    }
+    
+    /**
+     * Get status badge HTML
+     *
+     * @param string $status Status (pending, approved, rejected)
+     * @return string HTML for badge
+     */
+    public static function get_status_badge($status) {
+        global $OUTPUT;
+        $class = '';
         
-        // Save file
-        file_put_contents($filepath, $filecontent);
+        switch ($status) {
+            case 'pending':
+                $class = 'warning';
+                $text = get_string('pending', 'local_lidio');
+                break;
+            case 'approved':
+                $class = 'success';
+                $text = get_string('approved', 'local_lidio');
+                break;
+            case 'rejected':
+                $class = 'danger';
+                $text = get_string('rejected', 'local_lidio');
+                break;
+            default:
+                $class = 'info';
+                $text = $status;
+        }
         
-        // Create document record
-        $doc_record = new \stdClass();
-        $doc_record->merchantid = $merchantid;
-        $doc_record->type = $documenttype;
-        $doc_record->filepath = $filepath;
-        $doc_record->filename = $filename;
-        $doc_record->status = 'pending';
-        $doc_record->timecreated = time();
-        $doc_record->timemodified = time();
+        return '<span class="badge badge-' . $class . '">' . $text . '</span>';
+    }
+    
+    /**
+     * Validate an IBAN
+     *
+     * @param string $iban IBAN to validate
+     * @return bool Is valid
+     */
+    public static function validate_iban($iban) {
+        // Remove spaces and convert to uppercase
+        $iban = strtoupper(str_replace(' ', '', $iban));
         
-        // Save to database
-        $documentid = $DB->insert_record('local_lidio_documents', $doc_record);
+        // Basic format check
+        if (!preg_match('/^[A-Z0-9]+$/', $iban)) {
+            return false;
+        }
         
-        return $documentid;
+        // Length check (simple check for now, can be expanded to country-specific rules)
+        if (strlen($iban) < 15 || strlen($iban) > 34) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Validate a phone number
+     *
+     * @param string $phone Phone number to validate
+     * @return bool Is valid
+     */
+    public static function validate_phone($phone) {
+        // Allow digits, +, -, spaces, and parentheses
+        // Should be at least 6 digits
+        return preg_match('/^[0-9+\-\s()]{6,20}$/', $phone);
+    }
+    
+    /**
+     * Generate a unique reference ID
+     *
+     * @param string $prefix Prefix for the reference (default: LID)
+     * @return string Unique reference ID
+     */
+    public static function generate_reference($prefix = 'LID') {
+        // Generate a reference ID in format: LID-YYYYMMDD-XXXXX
+        $date = date('Ymd');
+        $random = substr(md5(uniqid(mt_rand(), true)), 0, 5);
+        
+        return $prefix . '-' . $date . '-' . strtoupper($random);
     }
 } 

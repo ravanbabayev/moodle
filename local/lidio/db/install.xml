@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/lidio/db" VERSION="20231109" COMMENT="XMLDB file for Moodle local/lidio plugin"
+<XMLDB PATH="local/lidio/db" VERSION="20231201" COMMENT="XMLDB file for Moodle local/lidio plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_lidio_merchants" COMMENT="Stores merchant information">
+    <TABLE NAME="local_lidio_merchants" COMMENT="Stores merchant data for the Lidio system">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key references user.id"/>
-        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Merchant account status (pending, approved, rejected)"/>
-        <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Full name of the merchant"/>
-        <FIELD NAME="address" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Address of the merchant"/>
-        <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Phone number of the merchant"/>
-        <FIELD NAME="idnumber" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="ID/Passport number of the merchant"/>
-        <FIELD NAME="kyc_status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="KYC status (pending, approved, rejected)"/>
-        <FIELD NAME="kyc_details" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Additional KYC information"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID"/>
+        <FIELD NAME="company_type" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Individual or company"/>
+        <FIELD NAME="company_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Name of company or store"/>
+        <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Contact email"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Contact phone number"/>
+        <FIELD NAME="website" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Website URL if exists"/>
+        <FIELD NAME="social_media" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Social media links"/>
+        <FIELD NAME="business_area" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Business area or products sold"/>
+        <FIELD NAME="monthly_volume" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Expected monthly sales volume"/>
+        <FIELD NAME="payment_methods" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Preferred payment methods"/>
+        <FIELD NAME="iban" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="IBAN for payments"/>
+        <FIELD NAME="account_holder" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Bank account holder name"/>
+        <FIELD NAME="bank_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Bank name"/>
+        <FIELD NAME="kvkk_approval" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="KVKK approval checkbox"/>
+        <FIELD NAME="terms_approval" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Terms approval checkbox"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Merchant status (pending, approved, rejected)"/>
+        <FIELD NAME="kyc_status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="KYC verification status"/>
+        <FIELD NAME="admin_notes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Admin notes about this merchant"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time the merchant was created"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Time the merchant was last modified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userid-status" UNIQUE="false" FIELDS="userid, status"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="kyc_status" UNIQUE="false" FIELDS="kyc_status"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="local_lidio_documents" COMMENT="Stores merchant KYC documents">

@@ -1,113 +1,270 @@
-<div class="local-lidio-merchant-application">
-    {{#error_message}}
-    <div class="alert alert-danger">
-        {{{error_message}}}
-    </div>
-    {{/error_message}}
+{{!
+    This file is part of Moodle - http://moodle.org/
 
-    <div class="merchant-application-description">
-        <p>{{#str}}merchantapplicationdescription, local_lidio{{/str}}</p>
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/merchant_application
+
+    Merchant application form template.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * sesskey - The session key
+    * actionurl - Form action URL
+    * company_type_options - Array of options for company type
+    * monthly_volume_options - Array of options for monthly volume
+    * payment_methods_options - Array of options for payment methods
+    * form_data - Form data if editing
+    * errors - Array of validation errors
+    * has_errors - Boolean indicating if there are validation errors
+    * strings - Array of language strings
+}}
+
+{{#ismerchant}}
+<div class="alert alert-info">{{strings.becomemerchantintro}}</div>
+{{/ismerchant}}
+
+<h2>{{strings.merchantapplication}}</h2>
+
+<form id="merchant-application-form" method="post" action="{{actionurl}}" class="mform">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+    <!-- General Information -->
+    <div class="form-section mb-4">
+        <h3 class="section-title">{{strings.generalinformation}}</h3>
+        
+        <div class="form-group row">
+            <label for="company_type" class="col-sm-3 col-form-label">{{strings.companytype}} *</label>
+            <div class="col-sm-9">
+                <select id="company_type" name="company_type" class="form-control {{#errors.company_type}}is-invalid{{/errors.company_type}}">
+                    {{#company_type_options}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                    {{/company_type_options}}
+                </select>
+                {{#errors.company_type}}
+                <div class="invalid-feedback">{{errors.company_type}}</div>
+                {{/errors.company_type}}
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="company_name" class="col-sm-3 col-form-label">{{strings.companyname}} *</label>
+            <div class="col-sm-9">
+                <input type="text" id="company_name" name="company_name" class="form-control {{#errors.company_name}}is-invalid{{/errors.company_name}}" 
+                    value="{{form_data.company_name}}" maxlength="255">
+                {{#errors.company_name}}
+                <div class="invalid-feedback">{{errors.company_name}}</div>
+                {{/errors.company_name}}
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="email" class="col-sm-3 col-form-label">{{strings.email}} *</label>
+            <div class="col-sm-9">
+                <input type="email" id="email" name="email" class="form-control {{#errors.email}}is-invalid{{/errors.email}}" 
+                    value="{{form_data.email}}" maxlength="255">
+                {{#errors.email}}
+                <div class="invalid-feedback">{{errors.email}}</div>
+                {{/errors.email}}
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="phone" class="col-sm-3 col-form-label">{{strings.phonenumber}} *</label>
+            <div class="col-sm-9">
+                <input type="text" id="phone" name="phone" class="form-control {{#errors.phone}}is-invalid{{/errors.phone}}" 
+                    value="{{form_data.phone}}" maxlength="20">
+                {{#errors.phone}}
+                <div class="invalid-feedback">{{errors.phone}}</div>
+                {{/errors.phone}}
+            </div>
+        </div>
     </div>
     
-    <div class="merchant-application-form">
-        <form action="{{config.wwwroot}}/local/lidio/handlers/merchant_handler.php" method="post" class="mform">
-            <input type="hidden" name="sesskey" value="{{sesskey}}">
-            <input type="hidden" name="returnurl" value="{{returnurl}}">
-            
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <label for="fullname" class="col-form-label d-inline">
-                        {{#str}}fullname, local_lidio{{/str}}
-                        <span class="text-danger">*</span>
-                    </label>
-                </div>
-                <div class="col-md-9">
-                    <input type="text" 
-                           class="form-control" 
-                           name="fullname" 
-                           id="fullname" 
-                           value="" 
-                           required
-                           maxlength="255">
-                    <small class="form-text text-muted">{{#str}}fullname_help, local_lidio{{/str}}</small>
-                </div>
+    <!-- Business Information -->
+    <div class="form-section mb-4">
+        <h3 class="section-title">{{strings.businessinformation}}</h3>
+        
+        <div class="form-group row">
+            <label for="website" class="col-sm-3 col-form-label">{{strings.website}}</label>
+            <div class="col-sm-9">
+                <input type="url" id="website" name="website" class="form-control {{#errors.website}}is-invalid{{/errors.website}}" 
+                    value="{{form_data.website}}" maxlength="255">
+                {{#errors.website}}
+                <div class="invalid-feedback">{{errors.website}}</div>
+                {{/errors.website}}
             </div>
-            
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <label for="address" class="col-form-label d-inline">
-                        {{#str}}address, local_lidio{{/str}}
-                        <span class="text-danger">*</span>
-                    </label>
-                </div>
-                <div class="col-md-9">
-                    <textarea class="form-control" 
-                              name="address" 
-                              id="address" 
-                              rows="4" 
-                              required>
-                    </textarea>
-                    <small class="form-text text-muted">{{#str}}address_help, local_lidio{{/str}}</small>
-                </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="social_media" class="col-sm-3 col-form-label">{{strings.socialmedialinks}}</label>
+            <div class="col-sm-9">
+                <textarea id="social_media" name="social_media" class="form-control {{#errors.social_media}}is-invalid{{/errors.social_media}}" 
+                    rows="3">{{form_data.social_media}}</textarea>
+                {{#errors.social_media}}
+                <div class="invalid-feedback">{{errors.social_media}}</div>
+                {{/errors.social_media}}
             </div>
-            
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <label for="phone" class="col-form-label d-inline">
-                        {{#str}}phone, local_lidio{{/str}}
-                        <span class="text-danger">*</span>
-                    </label>
-                </div>
-                <div class="col-md-9">
-                    <input type="tel" 
-                           class="form-control" 
-                           name="phone" 
-                           id="phone" 
-                           value="" 
-                           required
-                           pattern="[0-9+\-\s()]{6,20}">
-                    <small class="form-text text-muted">{{#str}}phone_help, local_lidio{{/str}}</small>
-                </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="business_area" class="col-sm-3 col-form-label">{{strings.businessarea}} *</label>
+            <div class="col-sm-9">
+                <textarea id="business_area" name="business_area" class="form-control {{#errors.business_area}}is-invalid{{/errors.business_area}}" 
+                    rows="3">{{form_data.business_area}}</textarea>
+                {{#errors.business_area}}
+                <div class="invalid-feedback">{{errors.business_area}}</div>
+                {{/errors.business_area}}
             </div>
-            
-            <div class="form-group row">
-                <div class="col-md-3">
-                    <label for="idnumber" class="col-form-label d-inline">
-                        {{#str}}idnumber, local_lidio{{/str}}
-                        <span class="text-danger">*</span>
-                    </label>
-                </div>
-                <div class="col-md-9">
-                    <input type="text" 
-                           class="form-control" 
-                           name="idnumber" 
-                           id="idnumber" 
-                           value="" 
-                           required
-                           maxlength="255">
-                    <small class="form-text text-muted">{{#str}}idnumber_help, local_lidio{{/str}}</small>
-                </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="monthly_volume" class="col-sm-3 col-form-label">{{strings.monthlysalesvolume}} *</label>
+            <div class="col-sm-9">
+                <select id="monthly_volume" name="monthly_volume" class="form-control {{#errors.monthly_volume}}is-invalid{{/errors.monthly_volume}}">
+                    {{#monthly_volume_options}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                    {{/monthly_volume_options}}
+                </select>
+                {{#errors.monthly_volume}}
+                <div class="invalid-feedback">{{errors.monthly_volume}}</div>
+                {{/errors.monthly_volume}}
             </div>
-            
-            <div class="form-group row">
-                <div class="col-md-3">
-                </div>
-                <div class="col-md-9">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" name="terms" id="terms" required>
-                        <label class="form-check-label" for="terms">
-                            {{#str}}termsandconditions, local_lidio{{/str}}
-                        </label>
+        </div>
+        
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">{{strings.paymentmethods}} *</label>
+            <div class="col-sm-9">
+                <div class="payment-methods {{#errors.payment_methods}}is-invalid{{/errors.payment_methods}}">
+                    {{#payment_methods_options}}
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" id="payment_methods_{{value}}" name="payment_methods[]" value="{{value}}" 
+                            class="custom-control-input" {{#checked}}checked{{/checked}}>
+                        <label class="custom-control-label" for="payment_methods_{{value}}">{{text}}</label>
                     </div>
+                    {{/payment_methods_options}}
                 </div>
+                {{#errors.payment_methods}}
+                <div class="invalid-feedback d-block">{{errors.payment_methods}}</div>
+                {{/errors.payment_methods}}
             </div>
-            
-            <div class="form-group row">
-                <div class="col-md-9 offset-md-3">
-                    <button type="submit" class="btn btn-primary">{{#str}}applyasmerchant, local_lidio{{/str}}</button>
-                    <a href="{{config.wwwroot}}" class="btn btn-secondary">{{#str}}cancel{{/str}}</a>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
-</div> 
+    
+    <!-- Bank Information -->
+    <div class="form-section mb-4">
+        <h3 class="section-title">{{strings.bankinformation}}</h3>
+        
+        <div class="form-group row">
+            <label for="iban" class="col-sm-3 col-form-label">{{strings.iban}} *</label>
+            <div class="col-sm-9">
+                <input type="text" id="iban" name="iban" class="form-control {{#errors.iban}}is-invalid{{/errors.iban}}" 
+                    value="{{form_data.iban}}" maxlength="50">
+                {{#errors.iban}}
+                <div class="invalid-feedback">{{errors.iban}}</div>
+                {{/errors.iban}}
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="account_holder" class="col-sm-3 col-form-label">{{strings.accountholder}} *</label>
+            <div class="col-sm-9">
+                <input type="text" id="account_holder" name="account_holder" class="form-control {{#errors.account_holder}}is-invalid{{/errors.account_holder}}" 
+                    value="{{form_data.account_holder}}" maxlength="255">
+                {{#errors.account_holder}}
+                <div class="invalid-feedback">{{errors.account_holder}}</div>
+                {{/errors.account_holder}}
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <label for="bank_name" class="col-sm-3 col-form-label">{{strings.bankname}} *</label>
+            <div class="col-sm-9">
+                <input type="text" id="bank_name" name="bank_name" class="form-control {{#errors.bank_name}}is-invalid{{/errors.bank_name}}" 
+                    value="{{form_data.bank_name}}" maxlength="255">
+                {{#errors.bank_name}}
+                <div class="invalid-feedback">{{errors.bank_name}}</div>
+                {{/errors.bank_name}}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Agreements -->
+    <div class="form-section mb-4">
+        <h3 class="section-title">{{strings.agreements}}</h3>
+        
+        <div class="form-group row">
+            <div class="col-sm-9 offset-sm-3">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="kvkk_approval" name="kvkk_approval" value="1" 
+                        class="custom-control-input {{#errors.kvkk_approval}}is-invalid{{/errors.kvkk_approval}}" 
+                        {{#form_data.kvkk_approval}}checked{{/form_data.kvkk_approval}}>
+                    <label class="custom-control-label" for="kvkk_approval">{{strings.kvkkapprovaltext}}</label>
+                    {{#errors.kvkk_approval}}
+                    <div class="invalid-feedback">{{errors.kvkk_approval}}</div>
+                    {{/errors.kvkk_approval}}
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group row">
+            <div class="col-sm-9 offset-sm-3">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="terms_approval" name="terms_approval" value="1" 
+                        class="custom-control-input {{#errors.terms_approval}}is-invalid{{/errors.terms_approval}}" 
+                        {{#form_data.terms_approval}}checked{{/form_data.terms_approval}}>
+                    <label class="custom-control-label" for="terms_approval">{{strings.termsapprovaltext}}</label>
+                    {{#errors.terms_approval}}
+                    <div class="invalid-feedback">{{errors.terms_approval}}</div>
+                    {{/errors.terms_approval}}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Buttons -->
+    <div class="form-buttons row">
+        <div class="col-sm-9 offset-sm-3">
+            <button type="submit" name="submitbutton" class="btn btn-primary">{{strings.submit}}</button>
+            <a href="{{actionurl}}" class="btn btn-secondary ml-2">{{strings.cancel}}</a>
+        </div>
+    </div>
+</form>
+
+<style>
+.form-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.section-title {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+.payment-methods {
+    display: flex;
+    flex-wrap: wrap;
+}
+.payment-methods .custom-control {
+    margin-right: 15px;
+    margin-bottom: 10px;
+    min-width: 140px;
+}
+</style> 

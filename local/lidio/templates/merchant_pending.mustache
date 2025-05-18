@@ -1,0 +1,99 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/merchant_pending
+
+    Merchant pending approval template.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * merchant - Merchant data object
+    * strings - Array of language strings
+}}
+
+<div class="merchant-pending-container">
+    <div class="alert alert-info">
+        <h4 class="alert-heading">{{strings.merchantapplicationpending}}</h4>
+        <p>{{strings.merchantapplicationpendingmessage}}</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">{{strings.merchantinfo}}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.companyname}}:</strong>
+                            <span>{{merchant.company_name}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.email}}:</strong>
+                            <span>{{merchant.email}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.phonenumber}}:</strong>
+                            <span>{{merchant.phone}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.status}}:</strong>
+                            <span class="badge badge-warning">{{merchant.status}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.businessarea}}:</strong>
+                            <span>{{merchant.business_area}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.monthlysalesvolume}}:</strong>
+                            <span>
+                                {{#monthly_volume_options}}
+                                    {{#selected}}{{text}}{{/selected}}
+                                {{/monthly_volume_options}}
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>{{strings.kycstatus}}:</strong>
+                            <span class="badge badge-warning">{{merchant.kyc_status}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <a href="{{actionurl}}?edit=1" class="btn btn-primary">{{strings.updateapplication}}</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.merchant-pending-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.badge-warning {
+    color: #212529;
+    background-color: #ffc107;
+}
+</style> 

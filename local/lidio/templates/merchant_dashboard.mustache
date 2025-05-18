@@ -20,57 +20,55 @@
     Merchant dashboard template.
 
     Context variables required for this template:
-    * status - Merchant status (pending, approved, rejected)
-    * status_message - Localized status message
     * merchant - Merchant object with details
+    * strings - Array of translated strings
 
     Example context (json):
     {
-        "status": "approved",
-        "status_message": "Your merchant account is approved",
-        "status_is_pending": false,
-        "status_is_approved": true,
-        "status_is_rejected": false,
         "merchant": {
             "id": 1,
-            "fullname": "John Doe",
-            "address": "123 Main St",
+            "company_name": "My Shop",
+            "email": "merchant@example.com",
             "phone": "123-456-7890",
-            "idnumber": "ID12345",
-            "timecreated": 1621234567,
-            "timecreated_formatted": "10 May 2021"
+            "status": "approved",
+            "kyc_status": "approved"
+        },
+        "strings": {
+            "merchantdashboard": "Merchant Dashboard",
+            "transactions": "Transactions",
+            "settings": "Settings",
+            "help": "Help"
         }
     }
 }}
 
 <div class="local-lidio-merchant-dashboard">
-    {{#status_message}}
-    <div class="alert alert-{{#status_is_pending}}warning{{/status_is_pending}}{{#status_is_approved}}success{{/status_is_approved}}{{#status_is_rejected}}danger{{/status_is_rejected}}">
-        {{{status_message}}}
+    <div class="alert alert-success">
+        <h4 class="alert-heading">{{strings.welcome}}, {{merchant.company_name}}!</h4>
+        <p>{{strings.merchantstatus_approved}}</p>
     </div>
-    {{/status_message}}
 
     <div class="row">
         <!-- Left sidebar with navigation -->
         <div class="col-md-3">
             <div class="card mb-4">
                 <div class="card-header">
-                    {{#str}}navigation{{/str}}
+                    {{strings.navigation}}
                 </div>
                 <div class="card-body p-0">
                     <div class="merchant-menu">
                         <div class="list-group list-group-flush">
                             <a href="#" class="list-group-item list-group-item-action active">
-                                {{#str}}dashboard{{/str}}
+                                {{strings.dashboard}}
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                {{#str}}transactions, local_lidio{{/str}}
+                                {{strings.transactions}}
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                {{#str}}settings{{/str}}
+                                {{strings.settings}}
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                {{#str}}help{{/str}}
+                                {{strings.help}}
                             </a>
                         </div>
                     </div>
@@ -79,21 +77,14 @@
             
             <div class="card">
                 <div class="card-header">
-                    {{#str}}merchantaccountstatus, local_lidio{{/str}}
+                    {{strings.merchantaccountstatus}}
                 </div>
                 <div class="card-body">
                     <div class="merchant-status">
-                        <div class="status-indicator status-{{status}}"></div>
+                        <div class="status-indicator status-{{merchant.status}}"></div>
                         <div class="status-text">
-                            {{#status_is_pending}}
-                                {{#str}}pending, local_lidio{{/str}}
-                            {{/status_is_pending}}
-                            {{#status_is_approved}}
-                                {{#str}}approved, local_lidio{{/str}}
-                            {{/status_is_approved}}
-                            {{#status_is_rejected}}
-                                {{#str}}rejected, local_lidio{{/str}}
-                            {{/status_is_rejected}}
+                            <p><strong>{{strings.status}}:</strong> <span class="badge badge-success">{{merchant.status}}</span></p>
+                            <p><strong>{{strings.kycstatus}}:</strong> <span class="badge badge-success">{{merchant.kyc_status}}</span></p>
                         </div>
                     </div>
                 </div>
@@ -108,15 +99,15 @@
                     <div class="card dashboard-stat-card">
                         <div class="card-body text-center">
                             <h3 class="stat-value">0</h3>
-                            <div class="stat-label">{{#str}}totaltransactions, local_lidio{{/str}}</div>
+                            <div class="stat-label">{{strings.totaltransactions}}</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card dashboard-stat-card">
                         <div class="card-body text-center">
-                            <h3 class="stat-value">$0.00</h3>
-                            <div class="stat-label">{{#str}}totalearnings, local_lidio{{/str}}</div>
+                            <h3 class="stat-value">₺0.00</h3>
+                            <div class="stat-label">{{strings.totalearnings}}</div>
                         </div>
                     </div>
                 </div>
@@ -124,7 +115,7 @@
                     <div class="card dashboard-stat-card">
                         <div class="card-body text-center">
                             <h3 class="stat-value">0</h3>
-                            <div class="stat-label">{{#str}}pendingpayments, local_lidio{{/str}}</div>
+                            <div class="stat-label">{{strings.pendingpayments}}</div>
                         </div>
                     </div>
                 </div>
@@ -132,23 +123,36 @@
             
             <div class="card mb-4">
                 <div class="card-header">
-                    {{#str}}personalinformation, local_lidio{{/str}}
+                    {{strings.merchantinfo}}
                 </div>
                 <div class="card-body">
                     <div class="merchant-info">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>{{#str}}fullname, local_lidio{{/str}}:</strong> {{merchant.fullname}}</p>
-                                <p><strong>{{#str}}phone, local_lidio{{/str}}:</strong> {{merchant.phone}}</p>
+                                <p><strong>{{strings.companyname}}:</strong> {{merchant.company_name}}</p>
+                                <p><strong>{{strings.email}}:</strong> {{merchant.email}}</p>
+                                <p><strong>{{strings.phonenumber}}:</strong> {{merchant.phone}}</p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>{{#str}}idnumber, local_lidio{{/str}}:</strong> {{merchant.idnumber}}</p>
-                                <p><strong>{{#str}}applicationdate, local_lidio{{/str}}:</strong> {{merchant.timecreated_formatted}}</p>
+                                <p><strong>{{strings.businessarea}}:</strong> {{merchant.business_area}}</p>
+                                <p><strong>{{strings.monthlysalesvolume}}:</strong> 
+                                    {{#monthly_volume_options}}
+                                        {{#selected}}{{text}}{{/selected}}
+                                    {{/monthly_volume_options}}
+                                </p>
+                                <p><strong>{{strings.website}}:</strong> 
+                                    {{#merchant.website}}
+                                        <a href="{{merchant.website}}" target="_blank">{{merchant.website}}</a>
+                                    {{/merchant.website}}
+                                    {{^merchant.website}}
+                                        {{strings.nodatayet}}
+                                    {{/merchant.website}}
+                                </p>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row mt-3">
                             <div class="col-12">
-                                <p><strong>{{#str}}address, local_lidio{{/str}}:</strong> {{merchant.address}}</p>
+                                <a href="{{actionurl}}?edit=1" class="btn btn-outline-primary">{{strings.updateapplication}}</a>
                             </div>
                         </div>
                     </div>
@@ -157,42 +161,59 @@
             
             <div class="card">
                 <div class="card-header">
-                    {{#str}}transactionhistory, local_lidio{{/str}}
+                    {{strings.transactionhistory}}
                 </div>
                 <div class="card-body">
-                    {{#has_transactions}}
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>{{#str}}id{{/str}}</th>
-                                    <th>{{#str}}date{{/str}}</th>
-                                    <th>{{#str}}amount{{/str}}</th>
-                                    <th>{{#str}}status{{/str}}</th>
-                                    <th>{{#str}}actions{{/str}}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{#transactions}}
-                                <tr>
-                                    <td>{{id}}</td>
-                                    <td>{{date}}</td>
-                                    <td>{{amount}}</td>
-                                    <td>{{status}}</td>
-                                    <td>
-                                        <a href="#" class="btn btn-sm btn-primary">{{#str}}viewdetails, local_lidio{{/str}}</a>
-                                    </td>
-                                </tr>
-                                {{/transactions}}
-                            </tbody>
-                        </table>
-                    {{/has_transactions}}
-                    {{^has_transactions}}
-                        <div class="alert alert-info">
-                            {{#str}}norecords, local_lidio{{/str}}
-                        </div>
-                    {{/has_transactions}}
+                    <div class="alert alert-info">
+                        {{strings.norecords}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<style>
+.local-lidio-merchant-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.status-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+.status-pending {
+    background-color: #ffc107;
+}
+.status-approved {
+    background-color: #28a745;
+}
+.status-rejected {
+    background-color: #dc3545;
+}
+.dashboard-stat-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.dashboard-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #007bff;
+}
+.stat-label {
+    color: #6c757d;
+    font-size: 1em;
+}
+.badge-success {
+    background-color: #28a745;
+}
+</style> 
