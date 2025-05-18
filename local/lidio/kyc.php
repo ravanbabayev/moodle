@@ -47,6 +47,9 @@ $PAGE->set_pagelayout('standard');
 // Add CSS
 $PAGE->requires->css('/local/lidio/styles.css');
 
+// Add JavaScript
+$PAGE->requires->js('/local/lidio/scripts.js');
+
 // Check if user is a merchant
 $merchant = local_lidio_is_merchant();
 if (!$merchant) {

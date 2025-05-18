@@ -34,237 +34,227 @@
     * strings - Array of language strings
 }}
 
-{{#ismerchant}}
-<div class="alert alert-info">{{strings.becomemerchantintro}}</div>
-{{/ismerchant}}
-
-<h2>{{strings.merchantapplication}}</h2>
-
-<form id="merchant-application-form" method="post" action="{{actionurl}}" class="mform">
-    <input type="hidden" name="sesskey" value="{{sesskey}}">
-
-    <!-- General Information -->
-    <div class="form-section mb-4">
-        <h3 class="section-title">{{strings.generalinformation}}</h3>
-        
-        <div class="form-group row">
-            <label for="company_type" class="col-sm-3 col-form-label">{{strings.companytype}} *</label>
-            <div class="col-sm-9">
-                <select id="company_type" name="company_type" class="form-control {{#errors.company_type}}is-invalid{{/errors.company_type}}">
-                    {{#company_type_options}}
-                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
-                    {{/company_type_options}}
-                </select>
-                {{#errors.company_type}}
-                <div class="invalid-feedback">{{errors.company_type}}</div>
-                {{/errors.company_type}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="company_name" class="col-sm-3 col-form-label">{{strings.companyname}} *</label>
-            <div class="col-sm-9">
-                <input type="text" id="company_name" name="company_name" class="form-control {{#errors.company_name}}is-invalid{{/errors.company_name}}" 
-                    value="{{form_data.company_name}}" maxlength="255">
-                {{#errors.company_name}}
-                <div class="invalid-feedback">{{errors.company_name}}</div>
-                {{/errors.company_name}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="email" class="col-sm-3 col-form-label">{{strings.email}} *</label>
-            <div class="col-sm-9">
-                <input type="email" id="email" name="email" class="form-control {{#errors.email}}is-invalid{{/errors.email}}" 
-                    value="{{form_data.email}}" maxlength="255">
-                {{#errors.email}}
-                <div class="invalid-feedback">{{errors.email}}</div>
-                {{/errors.email}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="phone" class="col-sm-3 col-form-label">{{strings.phonenumber}} *</label>
-            <div class="col-sm-9">
-                <input type="text" id="phone" name="phone" class="form-control {{#errors.phone}}is-invalid{{/errors.phone}}" 
-                    value="{{form_data.phone}}" maxlength="20">
-                {{#errors.phone}}
-                <div class="invalid-feedback">{{errors.phone}}</div>
-                {{/errors.phone}}
-            </div>
-        </div>
+<div class="max-w-4xl mx-auto">
+    {{#ismerchant}}
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-lg">
+        <p class="text-blue-700">{{strings.becomemerchantintro}}</p>
     </div>
-    
-    <!-- Business Information -->
-    <div class="form-section mb-4">
-        <h3 class="section-title">{{strings.businessinformation}}</h3>
-        
-        <div class="form-group row">
-            <label for="website" class="col-sm-3 col-form-label">{{strings.website}}</label>
-            <div class="col-sm-9">
-                <input type="url" id="website" name="website" class="form-control {{#errors.website}}is-invalid{{/errors.website}}" 
-                    value="{{form_data.website}}" maxlength="255">
-                {{#errors.website}}
-                <div class="invalid-feedback">{{errors.website}}</div>
-                {{/errors.website}}
+    {{/ismerchant}}
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">{{strings.merchantapplication}}</h2>
+
+    <form id="merchant-application-form" method="post" action="{{actionurl}}" class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+        <!-- General Information -->
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">{{strings.generalinformation}}</h3>
+            
+            <div class="space-y-5">
+                <div class="flex flex-col">
+                    <label for="company_type" class="text-sm font-medium text-gray-700 mb-2">{{strings.companytype}} *</label>
+                    <select id="company_type" name="company_type" 
+                        class="px-4 py-3 border {{#errors.company_type}}border-red-500{{/errors.company_type}} {{^errors.company_type}}border-gray-300{{/errors.company_type}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                        {{#company_type_options}}
+                        <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                        {{/company_type_options}}
+                    </select>
+                    {{#errors.company_type}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.company_type}}</p>
+                    {{/errors.company_type}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="company_name" class="text-sm font-medium text-gray-700 mb-2">{{strings.companyname}} *</label>
+                    <input type="text" id="company_name" name="company_name" 
+                        class="px-4 py-3 border {{#errors.company_name}}border-red-500{{/errors.company_name}} {{^errors.company_name}}border-gray-300{{/errors.company_name}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.company_name}}" maxlength="255"
+                        placeholder="Enter company name">
+                    {{#errors.company_name}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.company_name}}</p>
+                    {{/errors.company_name}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="email" class="text-sm font-medium text-gray-700 mb-2">{{strings.email}} *</label>
+                    <input type="email" id="email" name="email" 
+                        class="px-4 py-3 border {{#errors.email}}border-red-500{{/errors.email}} {{^errors.email}}border-gray-300{{/errors.email}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.email}}" maxlength="255"
+                        placeholder="email@example.com">
+                    {{#errors.email}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.email}}</p>
+                    {{/errors.email}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="phone" class="text-sm font-medium text-gray-700 mb-2">{{strings.phonenumber}} *</label>
+                    <input type="text" id="phone" name="phone" 
+                        class="px-4 py-3 border {{#errors.phone}}border-red-500{{/errors.phone}} {{^errors.phone}}border-gray-300{{/errors.phone}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.phone}}" maxlength="20"
+                        placeholder="+90 (555) 123 4567">
+                    {{#errors.phone}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.phone}}</p>
+                    {{/errors.phone}}
+                </div>
             </div>
         </div>
         
-        <div class="form-group row">
-            <label for="social_media" class="col-sm-3 col-form-label">{{strings.socialmedialinks}}</label>
-            <div class="col-sm-9">
-                <textarea id="social_media" name="social_media" class="form-control {{#errors.social_media}}is-invalid{{/errors.social_media}}" 
-                    rows="3">{{form_data.social_media}}</textarea>
-                {{#errors.social_media}}
-                <div class="invalid-feedback">{{errors.social_media}}</div>
-                {{/errors.social_media}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="business_area" class="col-sm-3 col-form-label">{{strings.businessarea}} *</label>
-            <div class="col-sm-9">
-                <textarea id="business_area" name="business_area" class="form-control {{#errors.business_area}}is-invalid{{/errors.business_area}}" 
-                    rows="3">{{form_data.business_area}}</textarea>
-                {{#errors.business_area}}
-                <div class="invalid-feedback">{{errors.business_area}}</div>
-                {{/errors.business_area}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="monthly_volume" class="col-sm-3 col-form-label">{{strings.monthlysalesvolume}} *</label>
-            <div class="col-sm-9">
-                <select id="monthly_volume" name="monthly_volume" class="form-control {{#errors.monthly_volume}}is-invalid{{/errors.monthly_volume}}">
-                    {{#monthly_volume_options}}
-                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
-                    {{/monthly_volume_options}}
-                </select>
-                {{#errors.monthly_volume}}
-                <div class="invalid-feedback">{{errors.monthly_volume}}</div>
-                {{/errors.monthly_volume}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label">{{strings.paymentmethods}} *</label>
-            <div class="col-sm-9">
-                <div class="payment-methods {{#errors.payment_methods}}is-invalid{{/errors.payment_methods}}">
-                    {{#payment_methods_options}}
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="payment_methods_{{value}}" name="payment_methods[]" value="{{value}}" 
-                            class="custom-control-input" {{#checked}}checked{{/checked}}>
-                        <label class="custom-control-label" for="payment_methods_{{value}}">{{text}}</label>
+        <!-- Business Information -->
+        <div class="p-6 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">{{strings.businessinformation}}</h3>
+            
+            <div class="space-y-5">
+                <div class="flex flex-col">
+                    <label for="website" class="text-sm font-medium text-gray-700 mb-2">{{strings.website}}</label>
+                    <input type="url" id="website" name="website" 
+                        class="px-4 py-3 border {{#errors.website}}border-red-500{{/errors.website}} {{^errors.website}}border-gray-300{{/errors.website}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.website}}" maxlength="255"
+                        placeholder="https://www.example.com">
+                    {{#errors.website}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.website}}</p>
+                    {{/errors.website}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="social_media" class="text-sm font-medium text-gray-700 mb-2">{{strings.socialmedialinks}}</label>
+                    <textarea id="social_media" name="social_media" 
+                        class="px-4 py-3 border {{#errors.social_media}}border-red-500{{/errors.social_media}} {{^errors.social_media}}border-gray-300{{/errors.social_media}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        rows="3" placeholder="Instagram: @example, Twitter: @example">{{form_data.social_media}}</textarea>
+                    {{#errors.social_media}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.social_media}}</p>
+                    {{/errors.social_media}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="business_area" class="text-sm font-medium text-gray-700 mb-2">{{strings.businessarea}} *</label>
+                    <textarea id="business_area" name="business_area" 
+                        class="px-4 py-3 border {{#errors.business_area}}border-red-500{{/errors.business_area}} {{^errors.business_area}}border-gray-300{{/errors.business_area}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        rows="3" placeholder="Describe your business area">{{form_data.business_area}}</textarea>
+                    {{#errors.business_area}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.business_area}}</p>
+                    {{/errors.business_area}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="monthly_volume" class="text-sm font-medium text-gray-700 mb-2">{{strings.monthlysalesvolume}} *</label>
+                    <select id="monthly_volume" name="monthly_volume" 
+                        class="px-4 py-3 border {{#errors.monthly_volume}}border-red-500{{/errors.monthly_volume}} {{^errors.monthly_volume}}border-gray-300{{/errors.monthly_volume}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                        {{#monthly_volume_options}}
+                        <option value="{{value}}" {{#selected}}selected{{/selected}}>{{text}}</option>
+                        {{/monthly_volume_options}}
+                    </select>
+                    {{#errors.monthly_volume}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.monthly_volume}}</p>
+                    {{/errors.monthly_volume}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label class="text-sm font-medium text-gray-700 mb-2">{{strings.paymentmethods}} *</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 {{#errors.payment_methods}}border-red-500{{/errors.payment_methods}}">
+                        {{#payment_methods_options}}
+                        <div class="flex items-center p-3 border border-gray-200 rounded-lg">
+                            <input type="checkbox" id="payment_methods_{{value}}" name="payment_methods[]" value="{{value}}" 
+                                class="h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" {{#checked}}checked{{/checked}}>
+                            <label for="payment_methods_{{value}}" class="ml-3 block text-sm text-gray-700">{{text}}</label>
+                        </div>
+                        {{/payment_methods_options}}
                     </div>
-                    {{/payment_methods_options}}
-                </div>
-                {{#errors.payment_methods}}
-                <div class="invalid-feedback d-block">{{errors.payment_methods}}</div>
-                {{/errors.payment_methods}}
-            </div>
-        </div>
-    </div>
-    
-    <!-- Bank Information -->
-    <div class="form-section mb-4">
-        <h3 class="section-title">{{strings.bankinformation}}</h3>
-        
-        <div class="form-group row">
-            <label for="iban" class="col-sm-3 col-form-label">{{strings.iban}} *</label>
-            <div class="col-sm-9">
-                <input type="text" id="iban" name="iban" class="form-control {{#errors.iban}}is-invalid{{/errors.iban}}" 
-                    value="{{form_data.iban}}" maxlength="50">
-                {{#errors.iban}}
-                <div class="invalid-feedback">{{errors.iban}}</div>
-                {{/errors.iban}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="account_holder" class="col-sm-3 col-form-label">{{strings.accountholder}} *</label>
-            <div class="col-sm-9">
-                <input type="text" id="account_holder" name="account_holder" class="form-control {{#errors.account_holder}}is-invalid{{/errors.account_holder}}" 
-                    value="{{form_data.account_holder}}" maxlength="255">
-                {{#errors.account_holder}}
-                <div class="invalid-feedback">{{errors.account_holder}}</div>
-                {{/errors.account_holder}}
-            </div>
-        </div>
-        
-        <div class="form-group row">
-            <label for="bank_name" class="col-sm-3 col-form-label">{{strings.bankname}} *</label>
-            <div class="col-sm-9">
-                <input type="text" id="bank_name" name="bank_name" class="form-control {{#errors.bank_name}}is-invalid{{/errors.bank_name}}" 
-                    value="{{form_data.bank_name}}" maxlength="255">
-                {{#errors.bank_name}}
-                <div class="invalid-feedback">{{errors.bank_name}}</div>
-                {{/errors.bank_name}}
-            </div>
-        </div>
-    </div>
-    
-    <!-- Agreements -->
-    <div class="form-section mb-4">
-        <h3 class="section-title">{{strings.agreements}}</h3>
-        
-        <div class="form-group row">
-            <div class="col-sm-9 offset-sm-3">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="kvkk_approval" name="kvkk_approval" value="1" 
-                        class="custom-control-input {{#errors.kvkk_approval}}is-invalid{{/errors.kvkk_approval}}" 
-                        {{#form_data.kvkk_approval}}checked{{/form_data.kvkk_approval}}>
-                    <label class="custom-control-label" for="kvkk_approval">{{strings.kvkkapprovaltext}}</label>
-                    {{#errors.kvkk_approval}}
-                    <div class="invalid-feedback">{{errors.kvkk_approval}}</div>
-                    {{/errors.kvkk_approval}}
+                    {{#errors.payment_methods}}
+                    <p class="mt-2 text-sm text-red-600">{{errors.payment_methods}}</p>
+                    {{/errors.payment_methods}}
                 </div>
             </div>
         </div>
         
-        <div class="form-group row">
-            <div class="col-sm-9 offset-sm-3">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="terms_approval" name="terms_approval" value="1" 
-                        class="custom-control-input {{#errors.terms_approval}}is-invalid{{/errors.terms_approval}}" 
-                        {{#form_data.terms_approval}}checked{{/form_data.terms_approval}}>
-                    <label class="custom-control-label" for="terms_approval">{{strings.termsapprovaltext}}</label>
-                    {{#errors.terms_approval}}
-                    <div class="invalid-feedback">{{errors.terms_approval}}</div>
-                    {{/errors.terms_approval}}
+        <!-- Bank Information -->
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">{{strings.bankinformation}}</h3>
+            
+            <div class="space-y-5">
+                <div class="flex flex-col">
+                    <label for="iban" class="text-sm font-medium text-gray-700 mb-2">{{strings.iban}} *</label>
+                    <input type="text" id="iban" name="iban" 
+                        class="px-4 py-3 border {{#errors.iban}}border-red-500{{/errors.iban}} {{^errors.iban}}border-gray-300{{/errors.iban}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.iban}}" maxlength="50"
+                        placeholder="TR12 3456 7890 1234 5678 9012 34">
+                    {{#errors.iban}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.iban}}</p>
+                    {{/errors.iban}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="account_holder" class="text-sm font-medium text-gray-700 mb-2">{{strings.accountholder}} *</label>
+                    <input type="text" id="account_holder" name="account_holder" 
+                        class="px-4 py-3 border {{#errors.account_holder}}border-red-500{{/errors.account_holder}} {{^errors.account_holder}}border-gray-300{{/errors.account_holder}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.account_holder}}" maxlength="255"
+                        placeholder="Account holder name">
+                    {{#errors.account_holder}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.account_holder}}</p>
+                    {{/errors.account_holder}}
+                </div>
+                
+                <div class="flex flex-col">
+                    <label for="bank_name" class="text-sm font-medium text-gray-700 mb-2">{{strings.bankname}} *</label>
+                    <input type="text" id="bank_name" name="bank_name" 
+                        class="px-4 py-3 border {{#errors.bank_name}}border-red-500{{/errors.bank_name}} {{^errors.bank_name}}border-gray-300{{/errors.bank_name}} rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white" 
+                        value="{{form_data.bank_name}}" maxlength="255"
+                        placeholder="Bank name">
+                    {{#errors.bank_name}}
+                    <p class="mt-1 text-sm text-red-600">{{errors.bank_name}}</p>
+                    {{/errors.bank_name}}
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Buttons -->
-    <div class="form-buttons row">
-        <div class="col-sm-9 offset-sm-3">
-            <button type="submit" name="submitbutton" class="btn btn-primary">{{strings.submit}}</button>
-            <a href="{{actionurl}}" class="btn btn-secondary ml-2">{{strings.cancel}}</a>
+        
+        <!-- Agreements -->
+        <div class="p-6 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">{{strings.agreements}}</h3>
+            
+            <div class="space-y-5">
+                <div class="flex flex-col">
+                    <div class="flex items-start p-4 border border-gray-200 rounded-lg bg-white">
+                        <div class="flex items-center h-5 mt-1">
+                            <input type="checkbox" id="kvkk_approval" name="kvkk_approval" value="1" 
+                                class="h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 {{#errors.kvkk_approval}}border-red-500{{/errors.kvkk_approval}}" 
+                                {{#form_data.kvkk_approval}}checked{{/form_data.kvkk_approval}}>
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="kvkk_approval" class="font-medium text-gray-700">{{strings.kvkkapprovaltext}}</label>
+                            {{#errors.kvkk_approval}}
+                            <p class="text-red-600 mt-1">{{errors.kvkk_approval}}</p>
+                            {{/errors.kvkk_approval}}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col">
+                    <div class="flex items-start p-4 border border-gray-200 rounded-lg bg-white">
+                        <div class="flex items-center h-5 mt-1">
+                            <input type="checkbox" id="terms_approval" name="terms_approval" value="1" 
+                                class="h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500 {{#errors.terms_approval}}border-red-500{{/errors.terms_approval}}" 
+                                {{#form_data.terms_approval}}checked{{/form_data.terms_approval}}>
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="terms_approval" class="font-medium text-gray-700">{{strings.termsapprovaltext}}</label>
+                            {{#errors.terms_approval}}
+                            <p class="text-red-600 mt-1">{{errors.terms_approval}}</p>
+                            {{/errors.terms_approval}}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</form>
-
-<style>
-.form-section {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
-.section-title {
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-}
-.payment-methods {
-    display: flex;
-    flex-wrap: wrap;
-}
-.payment-methods .custom-control {
-    margin-right: 15px;
-    margin-bottom: 10px;
-    min-width: 140px;
-}
-</style> 
+        
+        <!-- Buttons -->
+        <div class="p-6 bg-gray-100">
+            <div class="flex justify-end space-x-3">
+                <a href="{{actionurl}}" class="px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    {{strings.cancel}}
+                </a>
+                <button type="submit" name="submitbutton" class="px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    {{strings.submit}}
+                </button>
+            </div>
+        </div>
+    </form>
+</div> 

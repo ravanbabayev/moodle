@@ -196,4 +196,29 @@ $string['kycstatus_pending'] = 'Your KYC verification is pending.';
 $string['invalidphone'] = 'Invalid phone number format.';
 
 // Merchant status
-$string['notamerchant'] = 'You are not registered as a merchant.'; 
+$string['notamerchant'] = 'You are not registered as a merchant.';
+
+// Transaction page strings
+$string['transactionsintro'] = 'View and manage all your payment transactions.';
+$string['filtertransactions'] = 'Filter Transactions';
+$string['transactionid'] = 'Transaction ID';
+$string['paymentmethod'] = 'Payment Method';
+$string['completed'] = 'Completed';
+$string['failed'] = 'Failed';
+$string['refunded'] = 'Refunded';
+$string['details'] = 'Details';
+$string['refund'] = 'Refund';
+$string['notransactions'] = 'No transactions found';
+$string['notransactionsdesc'] = 'You don\'t have any transactions yet. They will appear here once you start receiving payments.';
+$string['refresh'] = 'Refresh';
+$string['datefrom'] = 'Date From';
+$string['dateto'] = 'Date To';
+$string['allstatuses'] = 'All Statuses';
+$string['filter'] = 'Filter';
+$string['showing'] = 'Showing';
+$string['to'] = 'to';
+$string['of'] = 'of';
+$string['results'] = 'results';
+$string['previous'] = 'Previous';
+$string['next'] = 'Next';
+$string['merchantnotapproved'] = 'Your merchant account is not yet approved.'; 

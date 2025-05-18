@@ -24,6 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use core\output\notification;
+
+// Import required classes to fix linter errors
+require_once($CFG->libdir . '/accesslib.php');
+require_once($CFG->libdir . '/weblib.php');
+use context_system;
+use moodle_url;
+
 /**
  * Extend navigation to add Lidio links to the user menu.
  *

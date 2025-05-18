@@ -27,62 +27,71 @@
     * strings - Array of language strings
 }}
 
-<div class="merchant-pending-container">
-    <div class="alert alert-info">
-        <h4 class="alert-heading">{{strings.merchantapplicationpending}}</h4>
-        <p>{{strings.merchantapplicationpendingmessage}}</p>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-5 mb-6 rounded-lg shadow-sm">
+        <h4 class="text-xl font-semibold text-blue-800 mb-2">{{strings.merchantapplicationpending}}</h4>
+        <p class="text-blue-700">{{strings.merchantapplicationpendingmessage}}</p>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3 class="card-title">{{strings.merchantinfo}}</h3>
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">{{strings.merchantinfo}}</h3>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.companyname}}:</strong>
-                            <span>{{merchant.company_name}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.email}}:</strong>
-                            <span>{{merchant.email}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.phonenumber}}:</strong>
-                            <span>{{merchant.phone}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.status}}:</strong>
-                            <span class="badge badge-warning">{{merchant.status}}</span>
-                        </li>
-                    </ul>
+        <div class="px-6 py-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="flex flex-col">
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.companyname}}:</span>
+                            <span class="text-gray-900">{{merchant.company_name}}</span>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.email}}:</span>
+                            <span class="text-gray-900">{{merchant.email}}</span>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.phonenumber}}:</span>
+                            <span class="text-gray-900">{{merchant.phone}}</span>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.status}}:</span>
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                                {{merchant.status}}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.businessarea}}:</strong>
-                            <span>{{merchant.business_area}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.monthlysalesvolume}}:</strong>
-                            <span>
+                <div class="space-y-4">
+                    <div class="flex flex-col">
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.businessarea}}:</span>
+                            <span class="text-gray-900">{{merchant.business_area}}</span>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.monthlysalesvolume}}:</span>
+                            <span class="text-gray-900">
                                 {{#monthly_volume_options}}
                                     {{#selected}}{{text}}{{/selected}}
                                 {{/monthly_volume_options}}
                             </span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <strong>{{strings.kycstatus}}:</strong>
-                            <span class="badge badge-warning">{{merchant.kyc_status}}</span>
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-600">{{strings.kycstatus}}:</span>
+                            <span class="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
+                                {{merchant.kyc_status}}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-footer text-muted">
-            <a href="{{actionurl}}?edit=1" class="btn btn-primary">{{strings.updateapplication}}</a>
+        <div class="px-6 py-5 bg-gray-50 border-t border-gray-200">
+            <a href="{{actionurl}}?edit=1" class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                </svg>
+                {{strings.updateapplication}}
+            </a>
         </div>
     </div>
 </div>

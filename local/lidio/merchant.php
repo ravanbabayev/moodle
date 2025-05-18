@@ -50,6 +50,9 @@ $PAGE->set_pagelayout('standard');
 // Add CSS
 $PAGE->requires->css('/local/lidio/styles.css');
 
+// Add JavaScript
+$PAGE->requires->js('/local/lidio/scripts.js');
+
 // Get the ismerchant parameter if available
 $ismerchant = optional_param('ismerchant', null, PARAM_BOOL);
 $edit = optional_param('edit', false, PARAM_BOOL);
@@ -191,6 +194,8 @@ $templatecontext = [
     'merchant' => $merchant,
     'ismerchant' => isset($ismerchant) ? $ismerchant : null,
     'edit' => $edit,
+    'dashboard_url' => $CFG->wwwroot . '/local/lidio/merchant.php?ismerchant=1',
+    'transactions_url' => $CFG->wwwroot . '/local/lidio/transactions.php',
     'strings' => [
         // Application form strings
         'generalinformation' => get_string('generalinformation', 'local_lidio'),
