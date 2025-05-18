@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * @param global_navigation $navigation The navigation object
  */
 function local_lidio_extend_navigation(global_navigation $navigation) {
-    global $USER, $CFG, $DB;
+    global $USER, $CFG, $DB, $PAGE;
 
     // Only proceed if the plugin is enabled
     if (empty(get_config('local_lidio', 'enabled'))) {
@@ -39,6 +39,7 @@ function local_lidio_extend_navigation(global_navigation $navigation) {
 
     if (isloggedin() && !isguestuser()) {
         // Check if the current user has merchant capability
+        require_once($CFG->libdir.'/accesslib.php');
         $systemcontext = context_system::instance();
         if (has_capability('local/lidio:bemerchant', $systemcontext)) {
             // Check if user is already a merchant
@@ -96,6 +97,40 @@ function local_lidio_before_standard_html_head() {
     }
     
     return '';
+}
+
+/**
+ * User login event handler
+ * 
+ * @param \core\event\user_loggedin $event
+ * @return bool
+ */
+function local_lidio_user_loggedin(\core\event\user_loggedin $event) {
+    global $USER, $DB, $CFG, $SESSION;
+    
+    // Kullanıcı giriş yaptıktan sonra yapılacak kontroller
+    if (empty(get_config('local_lidio', 'enabled'))) {
+        return true;
+    }
+    
+    // Örnek olarak, kullanıcının rol veya grubunu kontrol edip
+    // belirli bir sayfaya yönlendirme yapabilirsiniz
+    $userId = $event->objectid;
+    
+    // Merchant olup olmadığını kontrol et
+    $isMerchant = $DB->record_exists('local_lidio_merchants', ['userid' => $userId]);
+    
+    if ($isMerchant) {
+        // Eğer merchant ise, merchant dashboard'a yönlendir
+        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant.php?ismerchant=true';
+    } else {
+        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant.php?ismerchant=false';
+        // Belirli şartlara göre diğer yönlendirmeler
+        // Örnek: Önceki sayfaya dön veya anasayfaya git
+        // $SESSION->lidio_redirect_after_login = $CFG->wwwroot;
+    }
+    
+    return true;
 }
 
 /**
@@ -166,4 +201,20 @@ function local_lidio_require_kyc($merchant) {
     }
     
     return true;
-} 
+}
+
+/*
+function local_lidio_extend_navigation(global_navigation $navigation) {
+    global $USER;
+
+    $main_node = $navigation->add(
+        get_string('merchantdashboard', 'local_lidio'),
+        new moodle_url('/local/lidio/merchant.php'),
+        navigation_node::TYPE_SETTING,
+        null,
+        'merchantdashboard'
+    );
+    $main_node->nodetype = 1;
+    $main_node->collapse = false;
+    $main_node->foreceopen = true;
+}*/

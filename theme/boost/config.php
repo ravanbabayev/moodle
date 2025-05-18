@@ -185,6 +185,7 @@ $THEME->addblockposition = BLOCK_ADDBLOCK_POSITION_FLATNAV;
 $THEME->iconsystem = \core\output\icon_system::FONTAWESOME;
 $THEME->haseditswitch = true;
 $THEME->usescourseindex = true;
+$THEME->removedprimarynavitems = ['courses'];
 // By default, all boost theme do not need their titles displayed.
 $THEME->activityheaderconfig = [
     'notitle' => true

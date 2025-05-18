@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event listeners for the Lidio payment system plugin.
+ * Event observers for the Lidio plugin.
  *
  * @package    local_lidio
  * @copyright  2023 Your Name <your.email@example.com>
@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 $observers = [
     [
         'eventname' => '\core\event\user_loggedin',
-        'callback' => '\local_lidio\event_observers::user_loggedin',
-    ],
+        'callback' => 'local_lidio_user_loggedin',
+        'includefile' => '/local/lidio/lib.php',
+        'internal' => false,
+        'priority' => 200
+    ]
 ]; 
