@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025052003;       // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2025052007;       // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112800;       // Requires this Moodle version (4.1).
 $plugin->component = 'local_lidio';    // Full name of the plugin.
 $plugin->maturity  = MATURITY_ALPHA;   // Maturity level.
-$plugin->release   = '0.2.0';          // Human-readable version name.
+$plugin->release   = '0.2.1';          // Human-readable version name.
 
 // Add callback for page header to inject the redirect script
 $plugin->callbacks = [

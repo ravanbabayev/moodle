@@ -107,6 +107,7 @@ $string['termsandconditions'] = 'I agree to the terms and conditions of the Lidi
 // Admin interface
 $string['merchantmanagement'] = 'Merchant Management';
 $string['merchantdetails'] = 'Merchant Details';
+$string['merchantedit'] = 'Edit Merchant';
 $string['nomerchants'] = 'No merchants found.';
 $string['pending'] = 'Pending';
 $string['approved'] = 'Approved';
@@ -286,7 +287,7 @@ $string['nomerchantsdesc'] = 'No merchant applications have been submitted yet.'
 $string['merchantdetailsdesc'] = 'View detailed information about this merchant';
 $string['individual'] = 'Individual';
 $string['company'] = 'Company';
-
+$string['view_kyc'] = 'View KYC';
 // KYC Document management
 $string['kyc_documents'] = 'KYC Documents';
 $string['merchant_kyc'] = 'Merchant KYC Documents';
@@ -299,3 +300,49 @@ $string['preview'] = 'Preview';
 $string['no_documents'] = 'No documents uploaded.';
 $string['processing'] = 'Processing...';
 $string['documents_under_review'] = 'Your documents are under review. We will notify you once they are verified.';
+
+// New strings for merchant management
+$string['id'] = 'ID';
+$string['actions'] = 'Actions';
+$string['edit'] = 'Edit';
+$string['companydetails'] = 'Company Details';
+$string['statussettings'] = 'Status Settings';
+$string['financialsettings'] = 'Financial Settings';
+$string['adminnotes'] = 'Admin Notes';
+$string['commissionrate'] = 'Commission Rate';
+$string['commissionrate_help'] = 'The percentage commission charged on each transaction. Must be between 0 and 100.';
+$string['commissionrateerror'] = 'Commission rate must be between 0 and 100.';
+$string['settlementperiod'] = 'Settlement Period';
+$string['settlementperiod_help'] = 'The number of days after which the funds will be settled to the merchant.';
+$string['settlementperioderror'] = 'Settlement period must be greater than 0.';
+$string['days'] = 'days';
+$string['merchantupdated'] = 'Merchant details updated successfully.';
+
+// Payment links
+$string['paymentlinks'] = 'Payment Links';
+$string['createpaymentlink'] = 'Create Payment Link';
+$string['paymentlinktitle'] = 'Payment Link Title';
+$string['paymentlinkdescription'] = 'Description (optional)';
+$string['paymentamount'] = 'Amount';
+$string['currency'] = 'Currency';
+$string['expirydate'] = 'Expiry Date (optional)';
+$string['maxuses'] = 'Maximum Uses (optional)';
+$string['successurl'] = 'Success URL (optional)';
+$string['cancelurl'] = 'Cancel URL (optional)';
+$string['createlink'] = 'Create Link';
+$string['paymentlinkcreated'] = 'Payment link created successfully.';
+$string['copypaymentlink'] = 'Copy Payment Link';
+$string['linkcode'] = 'Link Code';
+$string['active'] = 'Active';
+$string['inactive'] = 'Inactive';
+$string['expired'] = 'Expired';
+$string['currentuses'] = 'Current Uses';
+$string['nopaymentlinks'] = 'No payment links found';
+$string['paymentlinkdetails'] = 'Payment Link Details';
+$string['deactivate'] = 'Deactivate';
+$string['activate'] = 'Activate';
+$string['linkstatus'] = 'Status';
+$string['paymentlinkupdated'] = 'Payment link updated successfully.';
+$string['deletepaymentlink'] = 'Delete Payment Link';
+$string['confirmdeletepaymentlink'] = 'Are you sure you want to delete this payment link?';
+$string['paymentlinkdeleted'] = 'Payment link deleted successfully.';

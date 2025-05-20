@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Import necessary classes
+use moodle_url;
+
 if ($hassiteconfig) {
     // Create the settings page
     $settings = new admin_settingpage('local_lidio', get_string('settings', 'local_lidio'));
@@ -38,8 +41,7 @@ if ($hassiteconfig) {
         get_string('enabled_desc', 'local_lidio'), 1));
     
     // Add link to manage merchants
-    $url = $CFG->wwwroot . '/local/lidio/admin/merchants.php';
     $ADMIN->add('localplugins', new admin_externalpage('local_lidio_merchants',
         get_string('merchantmanagement', 'local_lidio'),
-        $url));
+        new moodle_url('/local/lidio/admin/merchants.php')));
 } 

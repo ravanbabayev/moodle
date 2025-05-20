@@ -126,5 +126,25 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025052004, 'local', 'lidio');
     }
 
+    if ($oldversion < 2025052006) {
+        // Add commission_rate and settlement_period fields to merchants table.
+        $table = new xmldb_table('local_lidio_merchants');
+        
+        // Commission rate field (default 3.99%)
+        $field = new xmldb_field('commission_rate', XMLDB_TYPE_NUMBER, '5, 2', null, XMLDB_NOTNULL, null, 3.99, 'username');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Settlement period field (default 7 days)
+        $field = new xmldb_field('settlement_period', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 7, 'commission_rate');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025052006, 'local', 'lidio');
+    }
+
     return true;
 } 

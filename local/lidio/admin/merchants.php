@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/weblib.php');
 
 // Import necessary classes
 use moodle_url;
+use core\notification;
 
 // Check access
 admin_externalpage_setup('local_lidio_merchants');
@@ -52,8 +53,8 @@ if ($action && $mid) {
             
             // Send notification to the user
             $message = get_string('merchantstatus_approved', 'local_lidio');
-            $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_SUCCESS);
-            redirect($CFG->wwwroot . '/local/lidio/admin/merchants.php', $message);
+            notification::success($message);
+            redirect(new moodle_url('/local/lidio/admin/merchants.php'), $message);
         } else {
             // Display confirmation page
             echo $OUTPUT->header();
@@ -81,8 +82,8 @@ if ($action && $mid) {
             
             // Send notification to the user
             $message = get_string('merchantstatus_rejected', 'local_lidio');
-            $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_ERROR);
-            redirect($CFG->wwwroot . '/local/lidio/admin/merchants.php', $message);
+            notification::error($message);
+            redirect(new moodle_url('/local/lidio/admin/merchants.php'), $message);
         } else {
             // Display confirmation page
             echo $OUTPUT->header();
@@ -113,8 +114,8 @@ if ($action && $mid) {
             
             // Send notification to the user
             $message = get_string('kycstatus_approved', 'local_lidio');
-            $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_SUCCESS);
-            redirect($CFG->wwwroot . '/local/lidio/admin/merchants.php', $message);
+            notification::success($message);
+            redirect(new moodle_url('/local/lidio/admin/merchants.php'), $message);
         } else {
             // Display confirmation page
             echo $OUTPUT->header();
@@ -145,8 +146,8 @@ if ($action && $mid) {
             
             // Send notification to the user
             $message = get_string('kycstatus_rejected', 'local_lidio');
-            $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_ERROR);
-            redirect($CFG->wwwroot . '/local/lidio/admin/merchants.php', $message);
+            notification::error($message);
+            redirect(new moodle_url('/local/lidio/admin/merchants.php'), $message);
         } else {
             // Display confirmation page
             echo $OUTPUT->header();
@@ -214,6 +215,10 @@ if (!empty($merchants)) {
             'kyc_status_approved' => ($merchant->kyc_status === 'approved'),
             'kyc_status_rejected' => ($merchant->kyc_status === 'rejected'),
             
+            // Financial information
+            'commission_rate' => isset($merchant->commission_rate) ? $merchant->commission_rate . '%' : '3.99%',
+            'settlement_period' => isset($merchant->settlement_period) ? $merchant->settlement_period . ' ' . get_string('days', 'local_lidio') : '7 ' . get_string('days', 'local_lidio'),
+            
             // Action URLs
             'show_approve' => ($merchant->status === 'pending'),
             'show_kyc_approve' => ($merchant->kyc_status === 'pending'),
@@ -222,7 +227,8 @@ if (!empty($merchants)) {
             'kyc_approve_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_approve', 'id' => $merchant->id]),
             'kyc_reject_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_reject', 'id' => $merchant->id]),
             'view_url' => new moodle_url('/local/lidio/admin/view_merchant.php', ['id' => $merchant->id]),
-            'view_kyc_url' => new moodle_url('/local/lidio/admin/view_kyc.php', ['id' => $merchant->id])
+            'view_kyc_url' => new moodle_url('/local/lidio/admin/view_kyc.php', ['id' => $merchant->id]),
+            'edit_url' => new moodle_url('/local/lidio/admin/edit_merchant.php', ['id' => $merchant->id])
         ];
         
         $templatecontext['merchants'][] = $merchantdata;
@@ -246,8 +252,11 @@ $templatecontext['strings'] = [
     'kycreject' => get_string('kycreject', 'local_lidio'),
     'view' => get_string('view', 'local_lidio'),
     'view_kyc' => get_string('view_kyc', 'local_lidio'),
+    'edit' => get_string('edit', 'local_lidio'),
     'nomerchants' => get_string('nomerchants', 'local_lidio'),
-    'nomerchantsdesc' => get_string('nomerchants', 'local_lidio')
+    'nomerchantsdesc' => get_string('nomerchants', 'local_lidio'),
+    'commissionrate' => get_string('commissionrate', 'local_lidio'),
+    'settlementperiod' => get_string('settlementperiod', 'local_lidio')
 ];
 
 // Render the template
