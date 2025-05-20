@@ -253,7 +253,7 @@ $primary_id_types = ['passport', 'id_card', 'driving_license'];
 
 // Check if user already has one of the primary ID documents
 foreach ($primary_id_types as $primary_type) {
-    if (isset($existing_documents[$primary_type])) {
+    if (isset($existing_documents[$primary_type]) && $existing_documents[$primary_type]['status'] === 'pending') {
         $has_primary_id = true;
         break;
     }
@@ -314,7 +314,19 @@ foreach ($document_types as $document) {
 // Determine if all required documents are uploaded
 $all_documents_submitted = false;
 $has_address_proof = isset($existing_documents['address_proof']);
-if ($has_primary_id && $has_address_proof) {
+$has_primary_id = false;
+$primary_id_types = ['passport', 'id_card', 'driving_license'];
+
+// Check if user already has one of the primary ID documents
+foreach ($primary_id_types as $primary_type) {
+    if (isset($existing_documents[$primary_type]) && $existing_documents[$primary_type]['status'] === 'pending') {
+        $has_primary_id = true;
+        break;
+    }
+}
+
+// Only show the "under review" message if documents are actually pending review
+if ($has_primary_id && $has_address_proof && $merchant->kyc_status === 'pending') {
     $all_documents_submitted = true;
 }
 
@@ -358,17 +370,7 @@ $templatecontext = [
 // Display the page
 echo $OUTPUT->header();
 
-// Skip the normal Moodle heading, we'll use our custom one
-// Show KYC status message if any
-if (!empty($status_message)) {
-    $notification_type = ($merchant->kyc_status === 'pending') ? 
-        \core\output\notification::NOTIFY_WARNING : 
-        \core\output\notification::NOTIFY_ERROR;
-    
-    echo $OUTPUT->notification($status_message, $notification_type);
-}
-
 // Render the new KYC verification template with Tailwind
-echo $OUTPUT->render_from_template('local_lidio/kyc_verification_tailwind', $templatecontext);
+echo $OUTPUT->render_from_template('local_lidio/kyc_verification', $templatecontext);
 
 echo $OUTPUT->footer(); 

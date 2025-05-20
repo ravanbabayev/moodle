@@ -1,0 +1,118 @@
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <a href="{{{back_url}}}" class="btn btn-secondary me-2">
+                <i class="fa fa-arrow-left"></i>
+                <span class="ms-1">{{strings.back}}</span>
+            </a>
+            <a href="{{{merchant_url}}}" class="btn btn-info">
+                {{strings.merchant_details}}
+            </a>
+        </div>
+    </div>
+
+    <!-- Merchant Info Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">{{strings.merchant_kyc}}</h3>
+        </div>
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <div class="d-flex align-items-center">
+                    <h4 class="mb-0">{{merchant.fullname}}</h4>
+                    <span class="badge ms-2
+                        {{#merchant.kyc_status_pending}}bg-warning{{/merchant.kyc_status_pending}}
+                        {{#merchant.kyc_status_approved}}bg-success{{/merchant.kyc_status_approved}}
+                        {{#merchant.kyc_status_rejected}}bg-danger{{/merchant.kyc_status_rejected}}">
+                        {{merchant.kyc_status_text}}
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                {{{merchant.picture}}}
+                <div class="ms-3">
+                    <h5 class="mb-0">{{merchant.company_name}}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KYC Documents Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h3 class="mb-0">{{strings.kyc_documents}}</h3>
+        </div>
+        
+        {{#has_documents}}
+        <div class="card-body p-0">
+            {{#documents}}
+            <div class="border-bottom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="mb-0">{{type_text}}</h4>
+                        <p class="text-muted mb-0">{{filename}}</p>
+                    </div>
+                    <span class="badge
+                        {{#status_pending}}bg-warning{{/status_pending}}
+                        {{#status_approved}}bg-success{{/status_approved}}
+                        {{#status_rejected}}bg-danger{{/status_rejected}}">
+                        {{status_text}}
+                    </span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        {{#is_image}}
+                        <div class="border rounded overflow-hidden mb-3">
+                            <img src="{{{preview_url}}}" alt="{{filename}}" class="img-fluid" style="max-height: 300px; object-fit: contain;">
+                        </div>
+                        {{/is_image}}
+                        
+                        {{#is_pdf}}
+                        <div class="bg-light p-4 rounded border d-flex justify-content-center mb-3">
+                            <i class="fa fa-file-pdf text-danger fa-3x"></i>
+                        </div>
+                        {{/is_pdf}}
+                        
+                        <div class="text-muted mb-3">
+                            <div><strong>{{strings.uploaddate}}:</strong> {{formatted_date}}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 d-flex flex-column justify-content-center">
+                        <div class="d-grid gap-2">
+                            <a href="{{{download_url}}}" class="btn btn-info">
+                                <i class="fa fa-download me-1"></i>
+                                {{strings.download}}
+                            </a>
+
+                            {{#can_approve}}
+                            <a href="{{{approve_url}}}" class="btn btn-success">
+                                <i class="fa fa-check me-1"></i>
+                                {{strings.approve}}
+                            </a>
+                            {{/can_approve}}
+
+                            {{#can_reject}}
+                            <a href="{{{reject_url}}}" class="btn btn-danger">
+                                <i class="fa fa-times me-1"></i>
+                                {{strings.reject}}
+                            </a>
+                            {{/can_reject}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/documents}}
+        </div>
+        {{/has_documents}}
+        
+        {{^has_documents}}
+        <div class="card-body text-center p-5">
+            <i class="fa fa-file-alt text-muted fa-4x mb-3"></i>
+            <h4>{{strings.no_documents}}</h4>
+        </div>
+        {{/has_documents}}
+    </div>
+</div> 

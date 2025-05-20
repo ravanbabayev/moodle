@@ -25,6 +25,7 @@
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
+require_once($CFG->libdir . '/weblib.php');
 
 // Import necessary classes
 use moodle_url;
@@ -220,7 +221,8 @@ if (!empty($merchants)) {
             'reject_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'reject', 'id' => $merchant->id]),
             'kyc_approve_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_approve', 'id' => $merchant->id]),
             'kyc_reject_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_reject', 'id' => $merchant->id]),
-            'view_url' => new moodle_url('/local/lidio/admin/view_merchant.php', ['id' => $merchant->id])
+            'view_url' => new moodle_url('/local/lidio/admin/view_merchant.php', ['id' => $merchant->id]),
+            'view_kyc_url' => new moodle_url('/local/lidio/admin/view_kyc.php', ['id' => $merchant->id])
         ];
         
         $templatecontext['merchants'][] = $merchantdata;
@@ -243,6 +245,7 @@ $templatecontext['strings'] = [
     'kycapprove' => get_string('kycapprove', 'local_lidio'),
     'kycreject' => get_string('kycreject', 'local_lidio'),
     'view' => get_string('view', 'local_lidio'),
+    'view_kyc' => get_string('view_kyc', 'local_lidio'),
     'nomerchants' => get_string('nomerchants', 'local_lidio'),
     'nomerchantsdesc' => get_string('nomerchants', 'local_lidio')
 ];

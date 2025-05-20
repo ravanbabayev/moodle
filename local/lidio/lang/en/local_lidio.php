@@ -261,4 +261,17 @@ $string['uploaddate'] = 'Upload Date';
 $string['nomerchantsdesc'] = 'No merchant applications have been submitted yet.';
 $string['merchantdetailsdesc'] = 'View detailed information about this merchant';
 $string['individual'] = 'Individual';
-$string['company'] = 'Company'; 
+$string['company'] = 'Company';
+
+// KYC Document management
+$string['kyc_documents'] = 'KYC Documents';
+$string['merchant_kyc'] = 'Merchant KYC Documents';
+$string['document_approved'] = 'Document approved successfully.';
+$string['document_approved_all'] = 'All documents approved and merchant KYC status verified.';
+$string['document_rejected'] = 'Document rejected.';
+$string['confirm_approve_document'] = 'Are you sure you want to approve this document?';
+$string['confirm_reject_document'] = 'Are you sure you want to reject this document?';
+$string['preview'] = 'Preview';
+$string['no_documents'] = 'No documents uploaded.';
+$string['processing'] = 'Processing...';
+$string['documents_under_review'] = 'Your documents are under review. We will notify you once they are verified.';
