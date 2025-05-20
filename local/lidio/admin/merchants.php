@@ -26,6 +26,9 @@ require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
 
+// Import necessary classes
+use moodle_url;
+
 // Check access
 admin_externalpage_setup('local_lidio_merchants');
 
@@ -176,101 +179,75 @@ $sql = "SELECT m.*, u.firstname, u.lastname, u.email
 
 $merchants = $DB->get_records_sql($sql);
 
-if (empty($merchants)) {
-    echo $OUTPUT->notification(get_string('nomerchants', 'local_lidio'), \core\output\notification::NOTIFY_INFO);
-} else {
-    // Display merchants table
-    $table = new html_table();
-    $table->head = array(
-        get_string('fullname', 'local_lidio'),
-        get_string('email', 'local_lidio'),
-        get_string('phone', 'local_lidio'),
-        get_string('merchantstatus', 'local_lidio'),
-        get_string('kycstatus', 'local_lidio'),
-        get_string('actions', 'local_lidio')
-    );
-    $table->colclasses = array(
-        'fullname', 'email', 'phone', 'status', 'kycstatus', 'actions'
-    );
-    
+// Prepare data for the template
+$templatecontext = [];
+$templatecontext['has_merchants'] = !empty($merchants);
+
+if (!empty($merchants)) {
+    $templatecontext['merchants'] = [];
     foreach ($merchants as $merchant) {
-        $userurl = new moodle_url('/user/profile.php', array('id' => $merchant->userid));
-        $namelink = html_writer::link($userurl, fullname($merchant));
+        // Get user data
+        $user = $DB->get_record('user', ['id' => $merchant->userid]);
         
-        // Status column
-        if ($merchant->status === 'pending') {
-            $statustext = get_string('pending', 'local_lidio');
-            $statusclass = 'warning';
-        } else if ($merchant->status === 'approved') {
-            $statustext = get_string('approved', 'local_lidio');
-            $statusclass = 'success';
-        } else {
-            $statustext = get_string('rejected', 'local_lidio');
-            $statusclass = 'danger';
-        }
-        $status = html_writer::tag('span', $statustext, array('class' => 'badge badge-' . $statusclass));
-        
-        // KYC status column
-        if ($merchant->kyc_status === 'pending') {
-            $kycstatustext = get_string('pending', 'local_lidio');
-            $kycstatusclass = 'warning';
-        } else if ($merchant->kyc_status === 'approved') {
-            $kycstatustext = get_string('approved', 'local_lidio');
-            $kycstatusclass = 'success';
-        } else {
-            $kycstatustext = get_string('rejected', 'local_lidio');
-            $kycstatusclass = 'danger';
-        }
-        $kycstatus = html_writer::tag('span', $kycstatustext, array('class' => 'badge badge-' . $kycstatusclass));
-        
-        // Actions
-        $actions = array();
-        
-        // Merchant status actions
-        if ($merchant->status === 'pending') {
-            $approveurl = new moodle_url('/local/lidio/admin/merchants.php', 
-                            array('action' => 'approve', 'id' => $merchant->id));
-            $actions[] = html_writer::link($approveurl, get_string('approve', 'local_lidio'), 
-                            array('class' => 'btn btn-sm btn-success'));
+        // Build merchant data
+        $merchantdata = [
+            'id' => $merchant->id,
+            'fullname' => fullname($user),
+            'email' => $merchant->email,
+            'company_name' => $merchant->company_name,
+            'phone' => $merchant->phone,
+            'location' => '', // Not currently stored
+            'profile_image_url' => $OUTPUT->user_picture($user, ['size' => 35, 'link' => false, 'class' => '']),
+            'profile_url' => new moodle_url('/user/profile.php', ['id' => $merchant->userid]),
+            'formatted_date' => userdate($merchant->timecreated, get_string('strftimedatetime', 'langconfig')),
             
-            $rejecturl = new moodle_url('/local/lidio/admin/merchants.php', 
-                            array('action' => 'reject', 'id' => $merchant->id));
-            $actions[] = html_writer::link($rejecturl, get_string('reject', 'local_lidio'), 
-                            array('class' => 'btn btn-sm btn-danger'));
-        }
-        
-        // KYC status actions
-        if ($merchant->kyc_status === 'pending') {
-            $kycapproveurl = new moodle_url('/local/lidio/admin/merchants.php', 
-                            array('action' => 'kyc_approve', 'id' => $merchant->id));
-            $actions[] = html_writer::link($kycapproveurl, get_string('kycapprove', 'local_lidio'), 
-                            array('class' => 'btn btn-sm btn-outline-success'));
+            // Status
+            'status_text' => get_string($merchant->status, 'local_lidio'),
+            'status_pending' => ($merchant->status === 'pending'),
+            'status_approved' => ($merchant->status === 'approved'),
+            'status_rejected' => ($merchant->status === 'rejected'),
             
-            $kycrejecturl = new moodle_url('/local/lidio/admin/merchants.php', 
-                            array('action' => 'kyc_reject', 'id' => $merchant->id));
-            $actions[] = html_writer::link($kycrejecturl, get_string('kycreject', 'local_lidio'), 
-                            array('class' => 'btn btn-sm btn-outline-danger'));
-        }
+            // KYC Status
+            'kyc_status_text' => get_string($merchant->kyc_status, 'local_lidio'),
+            'kyc_status_pending' => ($merchant->kyc_status === 'pending'),
+            'kyc_status_approved' => ($merchant->kyc_status === 'approved'),
+            'kyc_status_rejected' => ($merchant->kyc_status === 'rejected'),
+            
+            // Action URLs
+            'show_approve' => ($merchant->status === 'pending'),
+            'show_kyc_approve' => ($merchant->kyc_status === 'pending'),
+            'approve_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'approve', 'id' => $merchant->id]),
+            'reject_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'reject', 'id' => $merchant->id]),
+            'kyc_approve_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_approve', 'id' => $merchant->id]),
+            'kyc_reject_url' => new moodle_url('/local/lidio/admin/merchants.php', ['action' => 'kyc_reject', 'id' => $merchant->id]),
+            'view_url' => new moodle_url('/local/lidio/admin/view_merchant.php', ['id' => $merchant->id])
+        ];
         
-        $viewurl = new moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $merchant->id));
-        $actions[] = html_writer::link($viewurl, get_string('view', 'local_lidio'), 
-                        array('class' => 'btn btn-sm btn-info'));
-        
-        $actionshtml = implode(' ', $actions);
-        
-        $row = new html_table_row(array(
-            $namelink,
-            $merchant->email,
-            $merchant->phone,
-            $status,
-            $kycstatus,
-            $actionshtml
-        ));
-        
-        $table->data[] = $row;
+        $templatecontext['merchants'][] = $merchantdata;
     }
-    
-    echo html_writer::table($table);
 }
+
+// Language strings
+$templatecontext['strings'] = [
+    'merchantmanagement' => get_string('merchantmanagement', 'local_lidio'),
+    'merchantmanagementdesc' => get_string('merchantmanagement', 'local_lidio') . ' - ' . get_string('pluginname', 'local_lidio'),
+    'merchant' => get_string('fullname', 'local_lidio'),
+    'companyname' => get_string('companyname', 'local_lidio'),
+    'contact' => get_string('contact', 'local_lidio'),
+    'applicationdate' => get_string('applicationdate', 'local_lidio'),
+    'status' => get_string('status', 'local_lidio'),
+    'kycstatus' => get_string('kycstatus', 'local_lidio'),
+    'actions' => get_string('actions', 'local_lidio'),
+    'approve' => get_string('approve', 'local_lidio'),
+    'reject' => get_string('reject', 'local_lidio'),
+    'kycapprove' => get_string('kycapprove', 'local_lidio'),
+    'kycreject' => get_string('kycreject', 'local_lidio'),
+    'view' => get_string('view', 'local_lidio'),
+    'nomerchants' => get_string('nomerchants', 'local_lidio'),
+    'nomerchantsdesc' => get_string('nomerchants', 'local_lidio')
+];
+
+// Render the template
+echo $OUTPUT->render_from_template('local_lidio/admin_merchants_list', $templatecontext);
 
 echo $OUTPUT->footer(); 

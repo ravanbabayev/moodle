@@ -56,18 +56,27 @@ function local_lidio_extend_navigation(global_navigation $navigation) {
             // Find the correct node to add our links to
             $myprofile = $navigation->find('myprofile', null);
             if ($myprofile) {
-                $url = $CFG->wwwroot . '/local/lidio/merchant.php';
                 if (!$record) {
                     // User is not a merchant, show apply link
+                    $url = $CFG->wwwroot . '/local/lidio/merchant_application.php';
                     $myprofile->add(
                         get_string('applyasmerchant', 'local_lidio'),
                         $url,
                         navigation_node::TYPE_SETTING
                     );
-                } else {
-                    // User is a merchant, show dashboard link
+                } else if ($record->status === 'approved') {
+                    // User is an approved merchant, show dashboard link
+                    $url = $CFG->wwwroot . '/local/lidio/merchant_dashboard.php';
                     $myprofile->add(
                         get_string('merchantdashboard', 'local_lidio'),
+                        $url,
+                        navigation_node::TYPE_SETTING
+                    );
+                } else {
+                    // User has a pending application
+                    $url = $CFG->wwwroot . '/local/lidio/merchant_application.php';
+                    $myprofile->add(
+                        get_string('merchantapplication', 'local_lidio'),
                         $url,
                         navigation_node::TYPE_SETTING
                     );
@@ -116,28 +125,26 @@ function local_lidio_before_standard_html_head() {
 function local_lidio_user_loggedin(\core\event\user_loggedin $event) {
     global $USER, $DB, $CFG, $SESSION;
     
-    // Kullanıcı giriş yaptıktan sonra yapılacak kontroller
     if (empty(get_config('local_lidio', 'enabled'))) {
         return true;
     }
-    
-    // Örnek olarak, kullanıcının rol veya grubunu kontrol edip
-    // belirli bir sayfaya yönlendirme yapabilirsiniz
+
     $userId = $event->objectid;
     
-    // Merchant olup olmadığını kontrol et
-    $isMerchant = $DB->record_exists('local_lidio_merchants', ['userid' => $userId]);
+    $isMerchant = $DB->get_record('local_lidio_merchants', ['userid' => $userId]);
     
-    if ($isMerchant) {
-        // Eğer merchant ise, merchant dashboard'a yönlendir
-        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant.php?ismerchant=true';
-    } else {
-        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant.php?ismerchant=false';
-        // Belirli şartlara göre diğer yönlendirmeler
-        // Örnek: Önceki sayfaya dön veya anasayfaya git
-        // $SESSION->lidio_redirect_after_login = $CFG->wwwroot;
+    if (!$isMerchant || $isMerchant->status === 'pending') {
+        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant_application.php';
+        return true;
     }
-    
+
+    if ($isMerchant && $isMerchant->kyc_status == 'pending') {
+        $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/kyc.php';
+        return true;
+    }
+
+    $SESSION->lidio_redirect_after_login = $CFG->wwwroot . '/local/lidio/merchant_dashboard.php';
+
     return true;
 }
 
@@ -183,7 +190,7 @@ function local_lidio_require_merchant() {
     
     $merchant = local_lidio_is_merchant();
     if (!$merchant) {
-        redirect($CFG->wwwroot . '/local/lidio/merchant.php',
+        redirect($CFG->wwwroot . '/local/lidio/merchant_application.php',
             get_string('notamerchant', 'local_lidio'),
             null,
             \core\output\notification::NOTIFY_ERROR);

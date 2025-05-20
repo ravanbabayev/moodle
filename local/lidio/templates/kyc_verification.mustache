@@ -50,7 +50,10 @@
             {{#document_types}}
             <div class="document-upload-section">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-                    <label for="document_{{type}}" class="text-sm font-medium text-gray-700 pt-2">{{name}} *</label>
+                    <div class="md:col-span-1">
+                        <label for="document_{{type}}" class="text-sm font-medium text-gray-700">{{name}} *</label>
+                        <p class="text-xs text-gray-500 mt-1">{{description}}</p>
+                    </div>
                     <div class="md:col-span-2 space-y-2">
                         <div class="flex items-center space-x-2">
                             <input type="file" id="document_{{type}}" name="document_{{type}}" 
@@ -86,7 +89,7 @@
                             <p class="text-sm text-green-800">{{filename}} <span class="text-xs text-green-600">({{strings.uploaded}} {{timeformatted}})</span></p>
                         </div>
                         <div class="ml-auto">
-                            <a href="{{deleteurl}}" class="flex items-center text-xs text-red-600 hover:text-red-800">
+                            <a href="{{{deleteurl}}}" class="flex items-center text-xs text-red-600 hover:text-red-800">
                                 <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
@@ -131,8 +134,8 @@
         </div>
 
         <!-- Buttons -->
-        <div class="px-6 py-4 bg-gray-100 border-t border-gray-200 flex justify-end">
-            <button type="submit" name="submitbutton" value="1" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+        <div class="px-6 py-4 bg-gray-100 border-t border-gray-200 text-right">
+            <button type="submit" name="submitbutton" value="1" class="btn btn-primary">
                 {{strings.submit}}
             </button>
         </div>

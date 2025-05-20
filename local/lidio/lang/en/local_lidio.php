@@ -50,12 +50,42 @@ $string['notamerchant'] = 'You are not registered as a merchant. Please apply fi
 // KYC Verification
 $string['kycverification'] = 'KYC Verification';
 $string['kycverification_desc'] = 'Complete KYC verification to become a merchant';
+$string['kycverificationintro'] = 'To activate your merchant account, we need to verify your identity. Please upload the required documents below.';
 $string['kycstatus'] = 'KYC Status';
 $string['kycstatus_pending'] = 'Your KYC verification is pending.';
 $string['kycstatus_approved'] = 'Your KYC verification has been approved.';
 $string['kycstatus_rejected'] = 'Your KYC verification has been rejected.';
 $string['completekycverification'] = 'Complete KYC Verification';
 $string['kycwarning'] = 'Please ensure all uploaded documents are clear and legible. Blurry or incomplete documents will be rejected. Documents must be less than 5MB in size.';
+$string['kycuploaddocuments'] = 'Upload Verification Documents';
+$string['acceptedformats'] = 'Accepted Formats';
+$string['maxfilesize'] = 'Maximum File Size';
+$string['uploaded'] = 'Uploaded';
+$string['upload'] = 'Upload';
+$string['delete'] = 'Delete';
+$string['submit'] = 'Submit Documents';
+$string['documentdeleted'] = 'Document has been deleted successfully.';
+
+// KYC Document Types
+$string['passport'] = 'Passport';
+$string['passport_desc'] = 'Upload a clear scan or photo of your passport';
+$string['id_card'] = 'ID Card';
+$string['id_card_desc'] = 'Upload a clear scan or photo of your ID card (front and back)';
+$string['driving_license'] = 'Driving License';
+$string['driving_license_desc'] = 'Upload a clear scan or photo of your driving license';
+$string['address_proof'] = 'Proof of Address';
+$string['address_proof_desc'] = 'Upload a utility bill, bank statement or other official document showing your address (issued within the last 3 months)';
+$string['company_registration'] = 'Company Registration Certificate';
+$string['company_registration_desc'] = 'Upload your company registration certificate or business license (optional)';
+
+// Additional KYC strings
+$string['optional'] = 'Optional';
+$string['processing'] = 'Processing...';
+$string['documents_under_review'] = 'Your documents are under review. We will notify you once they are verified.';
+$string['confirmdeletedocument'] = 'Are you sure you want to delete this document?';
+$string['filetoolarge'] = 'The file size exceeds the maximum allowed (5MB).';
+$string['invalidfiletype'] = 'Invalid file type. Please upload JPG, JPEG, PNG, or PDF files only.';
+$string['merchantstatusnotapproved'] = 'Your merchant status is not yet approved.';
 
 // Form fields
 $string['fullname'] = 'Full Name';
@@ -221,4 +251,14 @@ $string['of'] = 'of';
 $string['results'] = 'results';
 $string['previous'] = 'Previous';
 $string['next'] = 'Next';
-$string['merchantnotapproved'] = 'Your merchant account is not yet approved.'; 
+$string['merchantnotapproved'] = 'Your merchant account is not yet approved.';
+
+// Admin interface
+$string['merchantmanagementdesc'] = 'Manage Lidio payment system merchants';
+$string['merchant'] = 'Merchant';
+$string['contact'] = 'Contact Information';
+$string['uploaddate'] = 'Upload Date';
+$string['nomerchantsdesc'] = 'No merchant applications have been submitted yet.';
+$string['merchantdetailsdesc'] = 'View detailed information about this merchant';
+$string['individual'] = 'Individual';
+$string['company'] = 'Company'; 

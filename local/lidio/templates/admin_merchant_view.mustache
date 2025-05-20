@@ -1,0 +1,219 @@
+<div class="max-w-7xl mx-auto">
+    <!-- Back button -->
+    <div class="mb-6">
+        <a href="{{{back_url}}}" class="btn btn-secondary">
+            <svg class="-ml-1 mr-2 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            {{strings.back}}
+        </a>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">{{strings.merchantdetails}}</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">{{strings.merchantdetailsdesc}}</p>
+            </div>
+            <div class="flex space-x-3">
+                {{#show_approve}}
+                <a href="{{{approve_url}}}" class="btn btn-success">
+                    {{strings.approve}}
+                </a>
+                <a href="{{{reject_url}}}" class="btn btn-danger">
+                    {{strings.reject}}
+                </a>
+                {{/show_approve}}
+                {{#show_kyc_approve}}
+                <a href="{{{kyc_approve_url}}}" class="btn btn-primary">
+                    {{strings.kycapprove}}
+                </a>
+                <a href="{{{kyc_reject_url}}}" class="btn btn-warning">
+                    {{strings.kycreject}}
+                </a>
+                {{/show_kyc_approve}}
+            </div>
+        </div>
+
+        <!-- User Information -->
+        <div class="border-t border-gray-200">
+            <dl>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.userprofile}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <a href="{{{profile_url}}}" class="text-indigo-600 hover:text-indigo-900">{{user.fullname}}</a>
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.email}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{user.email}}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.companytype}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.company_type_text}}</dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.companyname}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.company_name}}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.phone}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.phone}}</dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.status}}</dt>
+                    <dd class="mt-1 text-sm sm:mt-0 sm:col-span-2">
+                        <span class="badge
+                            {{#merchant.status_pending}}badge-warning{{/merchant.status_pending}}
+                            {{#merchant.status_approved}}badge-success{{/merchant.status_approved}}
+                            {{#merchant.status_rejected}}badge-danger{{/merchant.status_rejected}}">
+                            {{merchant.status_text}}
+                        </span>
+                    </dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.kycstatus}}</dt>
+                    <dd class="mt-1 text-sm sm:mt-0 sm:col-span-2">
+                        <span class="badge
+                            {{#merchant.kyc_status_pending}}badge-warning{{/merchant.kyc_status_pending}}
+                            {{#merchant.kyc_status_approved}}badge-success{{/merchant.kyc_status_approved}}
+                            {{#merchant.kyc_status_rejected}}badge-danger{{/merchant.kyc_status_rejected}}">
+                            {{merchant.kyc_status_text}}
+                        </span>
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.applicationdate}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.formatted_date}}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Business Information -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">{{strings.businessinformation}}</h3>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.website}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{#merchant.website}}
+                        <a href="{{{merchant.website}}}" class="text-indigo-600 hover:text-indigo-900" target="_blank">{{merchant.website}}</a>
+                        {{/merchant.website}}
+                        {{^merchant.website}}
+                        -
+                        {{/merchant.website}}
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.socialmedialinks}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{#merchant.social_media}}
+                        <p class="whitespace-pre-line">{{merchant.social_media}}</p>
+                        {{/merchant.social_media}}
+                        {{^merchant.social_media}}
+                        -
+                        {{/merchant.social_media}}
+                    </dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.businessarea}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <p class="whitespace-pre-line">{{merchant.business_area}}</p>
+                    </dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.monthlysalesvolume}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.monthly_volume_text}}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.paymentmethods}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <div class="flex flex-wrap gap-2">
+                            {{#merchant.payment_methods_array}}
+                            <span class="badge badge-info">
+                                {{.}}
+                            </span>
+                            {{/merchant.payment_methods_array}}
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Bank Information -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">{{strings.bankinformation}}</h3>
+        </div>
+        <div class="border-t border-gray-200">
+            <dl>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.accountholder}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.account_holder}}</dd>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.bankname}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{merchant.bank_name}}</dd>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">{{strings.iban}}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 font-mono">{{merchant.iban}}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Documents -->
+    {{#has_documents}}
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">{{strings.documents}}</h3>
+        </div>
+        <div class="border-t border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{strings.documenttype}}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{strings.filename}}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{strings.uploaddate}}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{strings.status}}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{strings.actions}}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {{#documents}}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{type_text}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{filename}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{formatted_date}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="badge
+                                    {{#status_pending}}badge-warning{{/status_pending}}
+                                    {{#status_approved}}badge-success{{/status_approved}}
+                                    {{#status_rejected}}badge-danger{{/status_rejected}}">
+                                    {{status_text}}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{{download_url}}}" class="btn btn-sm btn-secondary">
+                                    <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    {{strings.download}}
+                                </a>
+                            </td>
+                        </tr>
+                        {{/documents}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {{/has_documents}}
+</div> 

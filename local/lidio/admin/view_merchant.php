@@ -26,133 +26,293 @@ require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
 
+global $PAGE, $DB, $USER, $OUTPUT;
+
+// Import necessary classes
+use core\output\notification;
+
 // Check access
 admin_externalpage_setup('local_lidio_merchants');
 
 // Get merchant ID
 $id = required_param('id', PARAM_INT);
 
+// Get action parameters
+$action = optional_param('action', '', PARAM_ALPHA);
+$confirm = optional_param('confirm', 0, PARAM_BOOL);
+
 // Get merchant record
 $merchant = $DB->get_record('local_lidio_merchants', array('id' => $id), '*', MUST_EXIST);
 $user = $DB->get_record('user', array('id' => $merchant->userid), '*', MUST_EXIST);
 
+// Process actions
+if ($action) {
+    if ($action === 'approve') {
+        // Approve merchant
+        if ($confirm) {
+            $merchant->status = 'approved';
+            $merchant->timemodified = time();
+            $DB->update_record('local_lidio_merchants', $merchant);
+            
+            // Send notification to the user about KYC verification
+            $message = get_string('merchantstatus_approved', 'local_lidio') . ' ' . get_string('completekycverification', 'local_lidio');
+            \core\notification::success($message);
+            redirect(new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id)));
+        } else {
+            // Display confirmation page
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('merchantdetails', 'local_lidio'));
+            
+            $confirmurl = new \moodle_url('/local/lidio/admin/view_merchant.php', 
+                            array('action' => 'approve', 'id' => $id, 'confirm' => 1));
+            $cancelurl = new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id));
+            
+            echo $OUTPUT->confirm(
+                get_string('confirmapprovemerchant', 'local_lidio', fullname($user)),
+                $confirmurl,
+                $cancelurl
+            );
+            
+            echo $OUTPUT->footer();
+            exit;
+        }
+    } else if ($action === 'reject') {
+        // Reject merchant
+        if ($confirm) {
+            $merchant->status = 'rejected';
+            $merchant->timemodified = time();
+            $DB->update_record('local_lidio_merchants', $merchant);
+            
+            // Send notification to the user
+            $message = get_string('merchantstatus_rejected', 'local_lidio');
+            \core\notification::error($message);
+            redirect(new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id)));
+        } else {
+            // Display confirmation page
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('merchantdetails', 'local_lidio'));
+            
+            $confirmurl = new \moodle_url('/local/lidio/admin/view_merchant.php', 
+                            array('action' => 'reject', 'id' => $id, 'confirm' => 1));
+            $cancelurl = new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id));
+            
+            echo $OUTPUT->confirm(
+                get_string('confirmrejectmerchant', 'local_lidio', fullname($user)),
+                $confirmurl,
+                $cancelurl
+            );
+            
+            echo $OUTPUT->footer();
+            exit;
+        }
+    } else if ($action === 'kyc_approve') {
+        // Approve KYC
+        if ($confirm) {
+            $merchant->kyc_status = 'approved';
+            $merchant->timemodified = time();
+            $DB->update_record('local_lidio_merchants', $merchant);
+            
+            // Update document status as well
+            $DB->set_field('local_lidio_documents', 'status', 'approved', array('merchantid' => $id));
+            
+            // Send notification to the user
+            $message = get_string('kycstatus_approved', 'local_lidio');
+            \core\notification::success($message);
+            redirect(new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id)));
+        } else {
+            // Display confirmation page
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('merchantdetails', 'local_lidio'));
+            
+            $confirmurl = new \moodle_url('/local/lidio/admin/view_merchant.php', 
+                            array('action' => 'kyc_approve', 'id' => $id, 'confirm' => 1));
+            $cancelurl = new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id));
+            
+            echo $OUTPUT->confirm(
+                get_string('confirmkycapprove', 'local_lidio', fullname($user)),
+                $confirmurl,
+                $cancelurl
+            );
+            
+            echo $OUTPUT->footer();
+            exit;
+        }
+    } else if ($action === 'kyc_reject') {
+        // Reject KYC
+        if ($confirm) {
+            $merchant->kyc_status = 'rejected';
+            $merchant->timemodified = time();
+            $DB->update_record('local_lidio_merchants', $merchant);
+            
+            // Update document status as well
+            $DB->set_field('local_lidio_documents', 'status', 'rejected', array('merchantid' => $id));
+            
+            // Send notification to the user
+            $message = get_string('kycstatus_rejected', 'local_lidio');
+            \core\notification::error($message);
+            redirect(new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id)));
+        } else {
+            // Display confirmation page
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('merchantdetails', 'local_lidio'));
+            
+            $confirmurl = new \moodle_url('/local/lidio/admin/view_merchant.php', 
+                            array('action' => 'kyc_reject', 'id' => $id, 'confirm' => 1));
+            $cancelurl = new \moodle_url('/local/lidio/admin/view_merchant.php', array('id' => $id));
+            
+            echo $OUTPUT->confirm(
+                get_string('confirmkycreject', 'local_lidio', fullname($user)),
+                $confirmurl,
+                $cancelurl
+            );
+            
+            echo $OUTPUT->footer();
+            exit;
+        }
+    }
+}
+
 // Get documents
 $documents = $DB->get_records('local_lidio_documents', array('merchantid' => $id));
 
-// Display the page
+// Start page output
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('merchantdetails', 'local_lidio'));
 
-// Display user profile link
-$profileurl = $CFG->wwwroot . '/user/profile.php?id=' . $user->id;
-echo html_writer::tag('p', 
-    get_string('userprofile', 'local_lidio') . ': ' . 
-    html_writer::link($profileurl, fullname($user)), 
-    array('class' => 'lead')
-);
+// Prepare template context
+$templatecontext = [];
 
-// Display merchant details
-$merchanttable = new html_table();
-$merchanttable->attributes['class'] = 'table table-striped';
-$merchanttable->head = array(get_string('field', 'local_lidio'), get_string('value', 'local_lidio'));
-$merchanttable->colclasses = array('field', 'value');
+// Merchant data with formatted values
+$templatecontext['merchant'] = [
+    'id' => $merchant->id,
+    'userid' => $merchant->userid,
+    'company_type' => $merchant->company_type,
+    'company_type_text' => get_string($merchant->company_type, 'local_lidio'),
+    'company_name' => $merchant->company_name,
+    'email' => $merchant->email,
+    'phone' => $merchant->phone,
+    'website' => $merchant->website,
+    'social_media' => $merchant->social_media,
+    'business_area' => $merchant->business_area,
+    'monthly_volume' => $merchant->monthly_volume,
+    'monthly_volume_text' => format_monthly_volume($merchant->monthly_volume),
+    'payment_methods' => $merchant->payment_methods,
+    'payment_methods_array' => explode(',', $merchant->payment_methods),
+    'iban' => $merchant->iban,
+    'account_holder' => $merchant->account_holder,
+    'bank_name' => $merchant->bank_name,
+    'formatted_date' => userdate($merchant->timecreated, get_string('strftimedatetime', 'langconfig')),
+    
+    // Status flags
+    'status' => $merchant->status,
+    'kyc_status' => $merchant->kyc_status,
+    'status_text' => get_string($merchant->status, 'local_lidio'),
+    'kyc_status_text' => get_string($merchant->kyc_status, 'local_lidio'),
+    'status_pending' => ($merchant->status === 'pending'),
+    'status_approved' => ($merchant->status === 'approved'),
+    'status_rejected' => ($merchant->status === 'rejected'),
+    'kyc_status_pending' => ($merchant->kyc_status === 'pending'),
+    'kyc_status_approved' => ($merchant->kyc_status === 'approved'),
+    'kyc_status_rejected' => ($merchant->kyc_status === 'rejected')
+];
 
-// Add merchant details to table
-$merchanttable->data[] = array(get_string('fullname', 'local_lidio'), $merchant->fullname);
-$merchanttable->data[] = array(get_string('address', 'local_lidio'), $merchant->address);
-$merchanttable->data[] = array(get_string('phone', 'local_lidio'), $merchant->phone);
-$merchanttable->data[] = array(get_string('idnumber', 'local_lidio'), $merchant->idnumber);
+// User data
+$templatecontext['user'] = [
+    'id' => $user->id,
+    'fullname' => fullname($user),
+    'email' => $user->email,
+    'picture' => $OUTPUT->user_picture($user, ['size' => 100, 'link' => false, 'class' => 'profile-image'])
+];
 
-// Status
-if ($merchant->status === 'pending') {
-    $statustext = get_string('pending', 'local_lidio');
-    $statusclass = 'warning';
-} else if ($merchant->status === 'approved') {
-    $statustext = get_string('approved', 'local_lidio');
-    $statusclass = 'success';
-} else {
-    $statustext = get_string('rejected', 'local_lidio');
-    $statusclass = 'danger';
-}
-$status = html_writer::tag('span', $statustext, array('class' => 'badge badge-' . $statusclass));
-$merchanttable->data[] = array(get_string('merchantstatus', 'local_lidio'), $status);
-
-// KYC status
-if ($merchant->kyc_status === 'pending') {
-    $kycstatustext = get_string('pending', 'local_lidio');
-    $kycstatusclass = 'warning';
-} else if ($merchant->kyc_status === 'approved') {
-    $kycstatustext = get_string('approved', 'local_lidio');
-    $kycstatusclass = 'success';
-} else {
-    $kycstatustext = get_string('rejected', 'local_lidio');
-    $kycstatusclass = 'danger';
-}
-$kycstatus = html_writer::tag('span', $kycstatustext, array('class' => 'badge badge-' . $kycstatusclass));
-$merchanttable->data[] = array(get_string('kycstatus', 'local_lidio'), $kycstatus);
-
-// Registration date
-$merchanttable->data[] = array(
-    get_string('registrationdate', 'local_lidio'), 
-    userdate($merchant->timecreated, get_string('strftimedatetime', 'langconfig'))
-);
-
-// Display the merchant details table
-echo html_writer::table($merchanttable);
-
-// Display documents section if there are any
+// Prepare documents
+$templatecontext['has_documents'] = !empty($documents);
 if (!empty($documents)) {
-    echo $OUTPUT->heading(get_string('documents', 'local_lidio'), 3);
-    
-    $documentstable = new html_table();
-    $documentstable->attributes['class'] = 'table table-striped';
-    $documentstable->head = array(
-        get_string('documenttype', 'local_lidio'),
-        get_string('filename', 'local_lidio'),
-        get_string('status', 'local_lidio'),
-        get_string('actions', 'local_lidio')
-    );
-    
+    $templatecontext['documents'] = [];
     foreach ($documents as $document) {
-        // Document status
-        if ($document->status === 'pending') {
-            $docstatustext = get_string('pending', 'local_lidio');
-            $docstatusclass = 'warning';
-        } else if ($document->status === 'approved') {
-            $docstatustext = get_string('approved', 'local_lidio');
-            $docstatusclass = 'success';
-        } else {
-            $docstatustext = get_string('rejected', 'local_lidio');
-            $docstatusclass = 'danger';
-        }
-        $docstatus = html_writer::tag('span', $docstatustext, 
-                        array('class' => 'badge badge-' . $docstatusclass));
-        
-        // Document download link
-        $downloadurl = $CFG->wwwroot . '/local/lidio/admin/download.php?id=' . $document->id;
-        $downloadlink = html_writer::link($downloadurl, get_string('download', 'local_lidio'), 
-                            array('class' => 'btn btn-sm btn-primary'));
-        
-        // Document type
-        $documentType = get_string($document->type, 'local_lidio');
-        
-        $documentstable->data[] = array(
-            $documentType,
-            $document->filename,
-            $docstatus,
-            $downloadlink
-        );
+        $document_data = [
+            'id' => $document->id,
+            'type_text' => get_string($document->type, 'local_lidio'),
+            'filename' => $document->filename,
+            'status' => $document->status,
+            'status_text' => get_string($document->status, 'local_lidio'),
+            'status_pending' => ($document->status === 'pending'),
+            'status_approved' => ($document->status === 'approved'),
+            'status_rejected' => ($document->status === 'rejected'),
+            'formatted_date' => userdate($document->timecreated, get_string('strftimedatetime', 'langconfig')),
+            'download_url' => new \moodle_url('/local/lidio/admin/download.php', ['id' => $document->id])
+        ];
+        $templatecontext['documents'][] = $document_data;
     }
-    
-    echo html_writer::table($documentstable);
 }
 
-// Back button
-$backurl = $CFG->wwwroot . '/local/lidio/admin/merchants.php';
-echo html_writer::div(
-    html_writer::link($backurl, get_string('back', 'local_lidio'), 
-        array('class' => 'btn btn-secondary')),
-    'mt-4'
-);
+// URLs
+$templatecontext['back_url'] = new \moodle_url('/local/lidio/admin/merchants.php');
+$templatecontext['profile_url'] = new \moodle_url('/user/profile.php', ['id' => $user->id]);
+$templatecontext['show_approve'] = ($merchant->status === 'pending');
+$templatecontext['show_kyc_approve'] = ($merchant->kyc_status === 'pending');
+$templatecontext['approve_url'] = new \moodle_url('/local/lidio/admin/view_merchant.php', ['action' => 'approve', 'id' => $merchant->id]);
+$templatecontext['reject_url'] = new \moodle_url('/local/lidio/admin/view_merchant.php', ['action' => 'reject', 'id' => $merchant->id]);
+$templatecontext['kyc_approve_url'] = new \moodle_url('/local/lidio/admin/view_merchant.php', ['action' => 'kyc_approve', 'id' => $merchant->id]);
+$templatecontext['kyc_reject_url'] = new \moodle_url('/local/lidio/admin/view_merchant.php', ['action' => 'kyc_reject', 'id' => $merchant->id]);
 
-echo $OUTPUT->footer(); 
+// Language strings
+$templatecontext['strings'] = [
+    'back' => get_string('back', 'local_lidio'),
+    'merchantdetails' => get_string('merchantdetails', 'local_lidio'),
+    'merchantdetailsdesc' => get_string('merchantdetails', 'local_lidio') . ' - ' . $merchant->company_name,
+    'userprofile' => get_string('userprofile', 'local_lidio'),
+    'email' => get_string('email', 'local_lidio'),
+    'companytype' => get_string('companytype', 'local_lidio'),
+    'companyname' => get_string('companyname', 'local_lidio'),
+    'phone' => get_string('phone', 'local_lidio'),
+    'status' => get_string('status', 'local_lidio'),
+    'kycstatus' => get_string('kycstatus', 'local_lidio'),
+    'applicationdate' => get_string('applicationdate', 'local_lidio'),
+    'businessinformation' => get_string('businessinformation', 'local_lidio'),
+    'website' => get_string('website', 'local_lidio'),
+    'socialmedialinks' => get_string('socialmedialinks', 'local_lidio'),
+    'businessarea' => get_string('businessarea', 'local_lidio'),
+    'monthlysalesvolume' => get_string('monthlysalesvolume', 'local_lidio'),
+    'paymentmethods' => get_string('paymentmethods', 'local_lidio'),
+    'bankinformation' => get_string('bankinformation', 'local_lidio'),
+    'accountholder' => get_string('accountholder', 'local_lidio'),
+    'bankname' => get_string('bankname', 'local_lidio'),
+    'iban' => get_string('iban', 'local_lidio'),
+    'documents' => get_string('documents', 'local_lidio'),
+    'documenttype' => get_string('documenttype', 'local_lidio'),
+    'filename' => get_string('filename', 'local_lidio'),
+    'uploaddate' => get_string('uploaddate', 'local_lidio'), 
+    'approve' => get_string('approve', 'local_lidio'),
+    'reject' => get_string('reject', 'local_lidio'),
+    'kycapprove' => get_string('kycapprove', 'local_lidio'),
+    'kycreject' => get_string('kycreject', 'local_lidio'),
+    'download' => get_string('download', 'local_lidio'),
+    'actions' => get_string('actions', 'local_lidio')
+];
+
+// Render template
+echo $OUTPUT->render_from_template('local_lidio/admin_merchant_view', $templatecontext);
+
+echo $OUTPUT->footer();
+
+/**
+ * Format monthly volume to human-readable text
+ *
+ * @param string $volume Volume code
+ * @return string Formatted text
+ */
+function format_monthly_volume($volume) {
+    switch ($volume) {
+        case '0-5000':
+            return '0 - 5.000 ₺';
+        case '5000-20000':
+            return '5.000 - 20.000 ₺';
+        case '20000-50000':
+            return '20.000 - 50.000 ₺';
+        case '50000-100000':
+            return '50.000 - 100.000 ₺';
+        case '100000+':
+            return '100.000+ ₺';
+        default:
+            return $volume;
+    }
+} 

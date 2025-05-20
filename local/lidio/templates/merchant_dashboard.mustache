@@ -26,6 +26,8 @@
     * merchant - Merchant data object
     * strings - Array of language strings
     * transactions_url - URL to transactions page
+    * is_admin - Boolean indicating if the user is an admin
+    * admin_url - URL to merchant management page
 }}
 
 <div class="flex flex-col lg:flex-row min-h-screen">
@@ -73,6 +75,17 @@
                         {{strings.help}}
                     </a>
                 </li>
+                
+                {{#is_admin}}
+                <li class="border-t border-gray-200 mt-2 pt-2">
+                    <a href="{{admin_url}}" class="flex items-center px-4 py-3 text-sm font-medium text-indigo-700 hover:bg-indigo-50 rounded-lg">
+                        <svg class="mr-3 h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{strings.merchantmanagement}}
+                    </a>
+                </li>
+                {{/is_admin}}
             </ul>
         </nav>
     </div>
@@ -153,9 +166,47 @@
                         </p>
                         <p class="mt-1">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                {{strings.merchantstatus_approved}}
+                                {{strings.approved}}
                             </span>
                         </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KYC Status Card -->
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300 mb-8">
+            <div class="flex items-center">
+                <div class="flex-shrink-0 p-3 rounded-lg bg-blue-100">
+                    <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <div class="ml-5 w-full">
+                    <p class="text-sm font-medium text-gray-500">
+                        {{strings.kycstatus}}
+                    </p>
+                    <div class="mt-1 flex items-center justify-between">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+                            {{#merchant.kyc_status_approved}}bg-green-100 text-green-800{{/merchant.kyc_status_approved}}
+                            {{#merchant.kyc_status_pending}}bg-yellow-100 text-yellow-800{{/merchant.kyc_status_pending}}
+                            {{#merchant.kyc_status_rejected}}bg-red-100 text-red-800{{/merchant.kyc_status_rejected}}">
+                            {{#merchant.kyc_status_approved}}{{strings.approved}}{{/merchant.kyc_status_approved}}
+                            {{#merchant.kyc_status_pending}}{{strings.pending}}{{/merchant.kyc_status_pending}}
+                            {{#merchant.kyc_status_rejected}}{{strings.rejected}}{{/merchant.kyc_status_rejected}}
+                        </span>
+                        
+                        {{#merchant.kyc_status_pending}}
+                        <a href="{{{kyc_url}}}" class="btn btn-primary btn-sm">
+                            {{strings.completekycverification}}
+                        </a>
+                        {{/merchant.kyc_status_pending}}
+                        
+                        {{#merchant.kyc_status_rejected}}
+                        <a href="{{{kyc_url}}}" class="btn btn-danger btn-sm">
+                            {{strings.completekycverification}}
+                        </a>
+                        {{/merchant.kyc_status_rejected}}
                     </div>
                 </div>
             </div>
