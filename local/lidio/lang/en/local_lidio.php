@@ -253,6 +253,30 @@ $string['previous'] = 'Previous';
 $string['next'] = 'Next';
 $string['merchantnotapproved'] = 'Your merchant account is not yet approved.';
 
+// Modern Dashboard
+$string['earnings'] = 'Earnings';
+$string['totalrevenue'] = 'Total Revenue';
+$string['totalproducts'] = 'Total Products';
+$string['totalsales'] = 'Total Sales';
+$string['totalcustomers'] = 'Total Customers';
+$string['salessummary'] = 'Sales Summary';
+$string['salesfunnel'] = 'Sales Funnel';
+$string['topproduct'] = 'Top Product';
+$string['showall'] = 'Show All';
+$string['totalsold'] = 'Total sold';
+$string['viewsandclick'] = 'Views & Click';
+$string['averageviews'] = 'Average views';
+$string['averageclick'] = 'Average click';
+$string['agerange'] = 'Age Range';
+$string['visit'] = 'Visit';
+$string['click'] = 'Click';
+$string['purchased'] = 'Purchased';
+$string['newcustomerthisyear'] = 'New customer this year';
+$string['customeracquisition'] = 'Your customer acquisition grows by about';
+$string['eachmonth'] = 'each month';
+$string['youngadults'] = 'Young adults make up your biggest shoppers, with';
+$string['ofcustomers'] = 'of customers aged';
+
 // Admin interface
 $string['merchantmanagementdesc'] = 'Manage Lidio payment system merchants';
 $string['merchant'] = 'Merchant';

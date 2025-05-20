@@ -51,11 +51,6 @@ $user = $DB->get_record('user', array('id' => $merchant->userid), '*', MUST_EXIS
 if ($action && $docid) {
     $document = $DB->get_record('local_lidio_documents', array('id' => $docid, 'merchantid' => $id), '*', MUST_EXIST);
 
-    echo '<pre>';
-    print_r($document);
-    print_r($action);
-    echo '</pre>';
-
     if ($action === 'approve') {
         $document->status = 'approved';
         $document->timemodified = time();
@@ -86,39 +81,17 @@ if ($action && $docid) {
             redirect(new \moodle_url('/local/lidio/admin/view_kyc.php', array('id' => $id)));
         }
     } else if ($action === 'reject') {
-        // Reject document
-        if ($confirm) {
-            $document->status = 'rejected';
-            $document->timemodified = time();
-            $DB->update_record('local_lidio_documents', $document);
+        $document->status = 'rejected';
+        $document->timemodified = time();
+        $DB->update_record('local_lidio_documents', $document);
 
-            // Update merchant KYC status to rejected
-            $merchant->kyc_status = 'rejected';
-            $merchant->timemodified = time();
-            $DB->update_record('local_lidio_merchants', $merchant);
+        // Update merchant KYC status to rejected
+        $merchant->kyc_status = 'rejected';
+        $merchant->timemodified = time();
+        $DB->update_record('local_lidio_merchants', $merchant);
 
-            \core\notification::error(get_string('document_rejected', 'local_lidio'));
-            redirect(new \moodle_url('/local/lidio/admin/view_kyc.php', array('id' => $id)));
-        } else {
-            // Display confirmation page
-            echo $OUTPUT->header();
-            echo $OUTPUT->heading(get_string('kyc_documents', 'local_lidio'));
-
-            $confirmurl = new \moodle_url(
-                '/local/lidio/admin/view_kyc.php',
-                array('action' => 'reject_doc', 'id' => $id, 'docid' => $docid, 'confirm' => 1)
-            );
-            $cancelurl = new \moodle_url('/local/lidio/admin/view_kyc.php', array('id' => $id));
-
-            echo $OUTPUT->confirm(
-                get_string('confirm_reject_document', 'local_lidio'),
-                $confirmurl,
-                $cancelurl
-            );
-
-            echo $OUTPUT->footer();
-            exit;
-        }
+        \core\notification::error(get_string('document_rejected', 'local_lidio'));
+        redirect(new \moodle_url('/local/lidio/admin/view_kyc.php', array('id' => $id)));
     }
 }
 

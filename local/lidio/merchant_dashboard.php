@@ -100,7 +100,10 @@ $templatecontext = [
         'norecords' => get_string('norecords', 'local_lidio'),
         'merchantstatus_approved' => get_string('merchantstatus_approved', 'local_lidio'),
         'merchantdashboard' => get_string('merchantdashboard', 'local_lidio'),
-        'updateapplication' => get_string('updateapplication', 'local_lidio')
+        'updateapplication' => get_string('updateapplication', 'local_lidio'),
+        'withdraw' => get_string('withdraw', 'local_lidio'),
+        'viewall' => get_string('viewall', 'local_lidio'),
+        'refresh' => get_string('refresh', 'local_lidio')
     ]
 ];
 
@@ -122,6 +125,9 @@ $stats->pending_payments = $DB->count_records('local_lidio_transactions',
 
 // Add stats to template context
 $templatecontext['stats'] = $stats;
+
+// Add merchant username for link generation
+$templatecontext['merchant']->username = 'merhaba';
 
 // Get recent transactions (last 5)
 $transactions = $DB->get_records('local_lidio_transactions', 

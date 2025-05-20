@@ -57,5 +57,66 @@
         <INDEX NAME="merchantid-type" UNIQUE="false" FIELDS="merchantid, type"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="local_lidio_payment_links" COMMENT="Stores payment links created by merchants">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="merchantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Payment link title"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Payment link description"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="true" SEQUENCE="false" COMMENT="Payment amount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="true" DEFAULT="TRY" SEQUENCE="false" COMMENT="Currency code (TRY, USD, EUR)"/>
+        <FIELD NAME="link_code" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="Unique code for the payment link"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active" SEQUENCE="false" COMMENT="Link status (active, inactive, expired)"/>
+        <FIELD NAME="expiry_date" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Link expiry timestamp (optional)"/>
+        <FIELD NAME="max_uses" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of times the link can be used (optional)"/>
+        <FIELD NAME="current_uses" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Current number of times the link has been used"/>
+        <FIELD NAME="custom_fields" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded custom fields"/>
+        <FIELD NAME="success_url" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="URL to redirect after successful payment"/>
+        <FIELD NAME="cancel_url" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="URL to redirect after cancelled payment"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="merchantid" TYPE="foreign" FIELDS="merchantid" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="link_code" FIELDS="link_code" UNIQUE="true"/>
+        <INDEX NAME="status" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_lidio_transactions" COMMENT="Stores payment transactions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="merchant_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="payment_link_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Payment link ID if payment was made through a link"/>
+        <FIELD NAME="reference" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Unique transaction reference"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="true" SEQUENCE="false" COMMENT="Transaction amount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="true" DEFAULT="TRY" SEQUENCE="false" COMMENT="Currency code (TRY, USD, EUR)"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Transaction status (pending, completed, failed, refunded)"/>
+        <FIELD NAME="payment_method" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Payment method used"/>
+        <FIELD NAME="payment_details" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded payment details"/>
+        <FIELD NAME="customer_name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Customer name"/>
+        <FIELD NAME="customer_email" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Customer email"/>
+        <FIELD NAME="customer_phone" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Customer phone"/>
+        <FIELD NAME="customer_data" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded additional customer data"/>
+        <FIELD NAME="gateway_response" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Response from payment gateway"/>
+        <FIELD NAME="error_message" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Error message if transaction failed"/>
+        <FIELD NAME="refund_reference" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="Reference to refund transaction"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time when transaction was completed"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="merchant_id" TYPE="foreign" FIELDS="merchant_id" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+        <KEY NAME="payment_link_id" TYPE="foreign" FIELDS="payment_link_id" REFTABLE="local_lidio_payment_links" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="reference" FIELDS="reference" UNIQUE="true"/>
+        <INDEX NAME="status" FIELDS="status"/>
+        <INDEX NAME="customer_email" FIELDS="customer_email"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB> 
