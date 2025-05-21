@@ -81,8 +81,8 @@
         <KEY NAME="merchantid" TYPE="foreign" FIELDS="merchantid" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="link_code" FIELDS="link_code" UNIQUE="true"/>
-        <INDEX NAME="status" FIELDS="status"/>
+        <INDEX NAME="link_code" UNIQUE="true" FIELDS="link_code"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="local_lidio_transactions" COMMENT="Stores payment transactions">
@@ -113,9 +113,9 @@
         <KEY NAME="payment_link_id" TYPE="foreign" FIELDS="payment_link_id" REFTABLE="local_lidio_payment_links" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="reference" FIELDS="reference" UNIQUE="true"/>
-        <INDEX NAME="status" FIELDS="status"/>
-        <INDEX NAME="customer_email" FIELDS="customer_email"/>
+        <INDEX NAME="reference" UNIQUE="true" FIELDS="reference"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="customer_email" UNIQUE="false" FIELDS="customer_email"/>
       </INDEXES>
     </TABLE>
   </TABLES>

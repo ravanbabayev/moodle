@@ -28,9 +28,9 @@ require_once($CFG->libdir . '/formslib.php');
 
 // Import necessary classes
 use core\notification;
+use core\output\html_writer;
+use core_table\output\html_table;
 use moodle_url;
-use html_writer;
-use html_table;
 
 // Check access
 admin_externalpage_setup('local_lidio_merchants');
