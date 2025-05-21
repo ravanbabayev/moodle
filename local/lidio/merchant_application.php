@@ -248,6 +248,14 @@ if (isset($errors)) {
 // Start output
 echo $OUTPUT->header();
 
+if ($merchant && $merchant->kyc_status === 'pending') {
+    redirect(
+        $CFG->wwwroot . '/local/lidio/kyc.php',
+        get_string('kycstatus_pending', 'local_lidio'),
+        null,
+        \core\output\notification::NOTIFY_SUCCESS
+    );
+}
 // Display appropriate content based on merchant status
 if ($merchant && $merchant->status === 'pending' && !$edit) {
     echo $OUTPUT->render_from_template('local_lidio/merchant_pending', $templatecontext);
