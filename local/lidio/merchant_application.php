@@ -216,6 +216,8 @@ $templatecontext = [
         'termsapprovaltext' => get_string('termsapprovaltext', 'local_lidio'),
         'submit' => get_string('submit'),
         'cancel' => get_string('cancel'),
+        'status' => get_string('status', 'local_lidio'),
+        'kycstatus' => get_string('kycstatus', 'local_lidio'),
         
         // Common strings
         'merchantapplication' => get_string('merchantapplication', 'local_lidio'),
