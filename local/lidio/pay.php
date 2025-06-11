@@ -79,24 +79,31 @@ if ($data = data_submitted() && confirm_sesskey()) {
     $customer_email = !empty($data->customer_email) ? trim($data->customer_email) : '';
     $customer_phone = !empty($data->customer_phone) ? trim($data->customer_phone) : '';
     
-    // Doğrulama kodu tamamen kaldırıldı
+    // Form verilerini yazdır
+    echo "<div style='background-color: #e2f0ff; border: 1px solid #b8daff; padding: 15px; margin: 15px; border-radius: 5px;'>";
+    echo "<h3>Form Verileri (data_submitted):</h3>";
+    echo "<pre>" . print_r($data, true) . "</pre>";
+    echo "</div>";
+    
+    // $_POST verilerini de yazdır
+    echo "<div style='background-color: #e9ecef; border: 1px solid #ced4da; padding: 15px; margin: 15px; border-radius: 5px;'>";
+    echo "<h3>POST Verileri:</h3>";
+    echo "<pre>" . print_r($_POST, true) . "</pre>";
+    echo "</div>";
     
     // Hata ayıklama için
     try {
-        // Form verilerini yazdır
-        echo "<div style='background-color: #e2f0ff; border: 1px solid #b8daff; padding: 15px; margin: 15px; border-radius: 5px;'>";
-        echo "<h3>Form Verileri:</h3>";
-        echo "<pre>" . print_r($data, true) . "</pre>";
-        echo "</div>";
-        
         // Increment the usage counter
         $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+        
+        // Benzersiz bir referans kodu oluştur
+        $reference_code = uniqid('LIDIO-');
         
         // Create a new transaction record
         $transaction = new \stdClass();
         $transaction->merchant_id = $paymentlink->merchantid;
         $transaction->payment_link_id = $paymentlink->id;
-        $transaction->gateway_transaction_id = uniqid('LIDIO-');
+        $transaction->reference = $reference_code; // Veritabanında reference alanı var
         $transaction->amount = $paymentlink->amount;
         $transaction->currency = $paymentlink->currency;
         $transaction->status = 'pending';
@@ -107,10 +114,22 @@ if ($data = data_submitted() && confirm_sesskey()) {
             $transaction->payment_method = $data->payment_method;
         }
         
-        // Müşteri bilgileri
-        $transaction->customer_name = isset($data->customer_name) ? $data->customer_name : '';
-        $transaction->customer_email = $customer_email;
-        $transaction->customer_phone = $customer_phone;
+        // Müşteri bilgileri - data_submitted() nesnesi kullanılırken doğru alanlara erişim sağlandığından emin olalım
+        $transaction->customer_name = '';
+        if (isset($data->customer_name)) {
+            $transaction->customer_name = trim($data->customer_name);
+        }
+        
+        $transaction->customer_email = '';
+        if (isset($data->customer_email)) {
+            $transaction->customer_email = trim($data->customer_email);
+        }
+        
+        $transaction->customer_phone = '';
+        if (isset($data->customer_phone)) {
+            $transaction->customer_phone = trim($data->customer_phone);
+        }
+        
         $transaction->timecreated = time();
         $transaction->timemodified = time();
         
