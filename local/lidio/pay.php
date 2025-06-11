@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Payment link handler for Lidio payment system
+ * Payment page for Lidio payment links
  *
  * @package    local_lidio
- * @copyright  2023 onwards
+ * @copyright  2023 Your Name <your.email@example.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,74 +30,46 @@ use \context_system;
 use \moodle_url;
 
 // Get the payment link code from the URL
-$linkcode = required_param('code', PARAM_ALPHANUM);
+$code = required_param('code', PARAM_ALPHANUM);
 
-// Check if the link code exists
-global $DB;
-$paymentlink = $DB->get_record('local_lidio_payment_links', ['link_code' => $linkcode, 'status' => 'active']);
-
+// Fetch the payment link from the database
+$paymentlink = $DB->get_record('local_lidio_payment_links', ['link_code' => $code, 'status' => 'active']);
 if (!$paymentlink) {
-    throw new \core\exception\moodle_exception('invalidpaymentlink', 'local_lidio', '', null, 'Invalid or expired payment link');
+    throw new \moodle_exception('invalidpaymentlink', 'local_lidio');
 }
 
 // Check if the link has expired
-if (!empty($paymentlink->expiry_date) && $paymentlink->expiry_date < time()) {
-    $DB->set_field('local_lidio_payment_links', 'status', 'expired', ['id' => $paymentlink->id]);
-    throw new \core\exception\moodle_exception('expiredpaymentlink', 'local_lidio', '', null, 'This payment link has expired');
+if (!empty($paymentlink->expires_at) && $paymentlink->expires_at < time()) {
+    throw new \moodle_exception('paymentlinkexpired', 'local_lidio');
 }
 
-// Check if the link has reached maximum uses
+// Check if the link has reached its maximum uses
 if (!empty($paymentlink->max_uses) && $paymentlink->current_uses >= $paymentlink->max_uses) {
-    $DB->set_field('local_lidio_payment_links', 'status', 'inactive', ['id' => $paymentlink->id]);
-    throw new \core\exception\moodle_exception('maxusesreached', 'local_lidio', '', null, 'This payment link has reached its maximum number of uses');
+    throw new \moodle_exception('paymentlinkmaxuses', 'local_lidio');
 }
 
-// Get merchant details
-$merchant = $DB->get_record('local_lidio_merchants', ['id' => $paymentlink->merchantid], '*', MUST_EXIST);
+// Get the merchant details
+$merchant = $DB->get_record('local_lidio_merchants', ['id' => $paymentlink->merchantid]);
+if (!$merchant) {
+    throw new \moodle_exception('invalidmerchant', 'local_lidio');
+}
 
-// Page setup
+// Set up the page
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url('/local/lidio/pay.php', ['code' => $linkcode]);
-$PAGE->set_title(get_string('paytitle', 'local_lidio', $paymentlink->title));
-$PAGE->set_heading(get_string('paytitle', 'local_lidio', $paymentlink->title));
-$PAGE->set_pagelayout('popup');  // Use popup layout for payment pages
+$PAGE->set_url(new moodle_url('/local/lidio/pay.php', ['code' => $code]));
+$PAGE->set_title(get_string('paynow', 'local_lidio') . ': ' . $paymentlink->title);
+$PAGE->set_heading($paymentlink->title);
+$PAGE->set_pagelayout('standard');
 
-// Add Tailwind CSS
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
+// Format the amount with currency
+$amount_formatted = number_format($paymentlink->amount, 2) . ' ' . $paymentlink->currency;
 
-// Display the payment form
-echo $OUTPUT->header();
-
-// Prepare contact requirements for template
+// Determine contact requirements
 $contact_requirements = [
-    'phone_or_email' => false,
-    'phone_required' => false,
-    'email_required' => false,
-    'both_required' => false
-];
-
-// Set the appropriate requirement based on payment link settings
-if ($paymentlink->require_phone && $paymentlink->require_email) {
-    $contact_requirements['both_required'] = true;
-    $requirement = 'both_required';
-} elseif ($paymentlink->require_phone) {
-    $contact_requirements['phone_required'] = true;
-    $requirement = 'phone_required';
-} elseif ($paymentlink->require_email) {
-    $contact_requirements['email_required'] = true;
-    $requirement = 'email_required';
-} else {
-    $contact_requirements['phone_or_email'] = true;
-    $requirement = 'phone_or_email';
-}
-
-$templatecontext = [
-    'paymentlink' => $paymentlink,
-    'merchant' => $merchant,
-    'amount_formatted' => number_format($paymentlink->amount, 2) . ' ' . $paymentlink->currency,
-    'wwwroot' => $CFG->wwwroot,
-    'sesskey' => sesskey(),
-    'contact_requirements' => $contact_requirements,
+    'phone_required' => ($paymentlink->require_phone == 1 && $paymentlink->require_email == 0),
+    'email_required' => ($paymentlink->require_phone == 0 && $paymentlink->require_email == 1),
+    'both_required' => ($paymentlink->require_phone == 1 && $paymentlink->require_email == 1),
+    'phone_or_email' => ($paymentlink->require_phone == 0 && $paymentlink->require_email == 0),
 ];
 
 // Process payment form submission
@@ -109,38 +81,93 @@ if ($data = data_submitted() && confirm_sesskey()) {
     
     // Doğrulama kodu tamamen kaldırıldı
     
-    // Increment the usage counter
-    $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
-    
-    // Create a new transaction record
-    $transaction = new \stdClass();
-    $transaction->merchant_id = $paymentlink->merchantid;
-    $transaction->payment_link_id = $paymentlink->id;
-    $transaction->gateway_transaction_id = uniqid('LIDIO-');
-    $transaction->amount = $paymentlink->amount;
-    $transaction->currency = $paymentlink->currency;
-    $transaction->status = 'pending';
-    $transaction->payment_method = $data->payment_method;
-    $transaction->customer_name = $data->customer_name;
-    $transaction->customer_email = $customer_email; // Use validated email
-    $transaction->customer_phone = $customer_phone; // Use validated phone
-    $transaction->timecreated = time();
-    $transaction->timemodified = time();
-    
-    $transactionid = $DB->insert_record('local_lidio_transactions', $transaction);
-    
-    // Redirect to payment gateway or process payment
-    // This is a placeholder for the actual payment processing logic
-    // In a real implementation, you would redirect to a payment gateway or process the payment here
-    
-    // For now, just redirect to a success page
-    if (!empty($paymentlink->success_url)) {
-        redirect($paymentlink->success_url);
-    } else {
-        $successurl = $CFG->wwwroot . '/local/lidio/payment_success.php?reference=' . $transaction->gateway_transaction_id;
-        redirect($successurl);
+    // Hata ayıklama için
+    try {
+        // Form verilerini yazdır
+        echo "<div style='background-color: #e2f0ff; border: 1px solid #b8daff; padding: 15px; margin: 15px; border-radius: 5px;'>";
+        echo "<h3>Form Verileri:</h3>";
+        echo "<pre>" . print_r($data, true) . "</pre>";
+        echo "</div>";
+        
+        // Increment the usage counter
+        $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+        
+        // Create a new transaction record
+        $transaction = new \stdClass();
+        $transaction->merchant_id = $paymentlink->merchantid;
+        $transaction->payment_link_id = $paymentlink->id;
+        $transaction->gateway_transaction_id = uniqid('LIDIO-');
+        $transaction->amount = $paymentlink->amount;
+        $transaction->currency = $paymentlink->currency;
+        $transaction->status = 'pending';
+        
+        // Ödeme yöntemi için varsayılan değer
+        $transaction->payment_method = 'credit_card'; // Varsayılan değer
+        if (isset($data->payment_method) && !empty($data->payment_method)) {
+            $transaction->payment_method = $data->payment_method;
+        }
+        
+        // Müşteri bilgileri
+        $transaction->customer_name = isset($data->customer_name) ? $data->customer_name : '';
+        $transaction->customer_email = $customer_email;
+        $transaction->customer_phone = $customer_phone;
+        $transaction->timecreated = time();
+        $transaction->timemodified = time();
+        
+        // Debug bilgisi
+        echo "<div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; margin: 15px; border-radius: 5px;'>";
+        echo "<h3>Transaction Verileri:</h3>";
+        echo "<pre>" . print_r($transaction, true) . "</pre>";
+        echo "</div>";
+        
+        // Veritabanı şemasını kontrol et
+        $table_info = $DB->get_columns('local_lidio_transactions');
+        echo "<div style='background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin: 15px; border-radius: 5px;'>";
+        echo "<h3>Veritabanı Şeması:</h3>";
+        echo "<pre>" . print_r($table_info, true) . "</pre>";
+        echo "</div>";
+        
+        $transactionid = $DB->insert_record('local_lidio_transactions', $transaction);
+        
+        echo "<p style='background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px;'>İşlem ID: " . $transactionid . "</p>";
+        
+        // Redirect to payment gateway or process payment
+        // This is a placeholder for the actual payment processing logic
+        // In a real implementation, you would redirect to a payment gateway or process the payment here
+        
+        // For now, just redirect to a success page
+        if (!empty($paymentlink->success_url)) {
+            redirect($paymentlink->success_url);
+        } else {
+            $successurl = $CFG->wwwroot . '/local/lidio/payment_success.php?reference=' . $transaction->gateway_transaction_id;
+            redirect($successurl);
+        }
+    } catch (Exception $e) {
+        echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';
+        echo '<h3>Hata Oluştu:</h3>';
+        echo '<p>' . $e->getMessage() . '</p>';
+        echo '<p>Dosya: ' . $e->getFile() . ' (Satır: ' . $e->getLine() . ')</p>';
+        echo '<p>Hata Kodu: ' . $e->getCode() . '</p>';
+        echo '<p>Hata İzleme:</p>';
+        echo '<pre>' . $e->getTraceAsString() . '</pre>';
+        echo '</div>';
     }
 }
 
+// Render the payment form
+echo $OUTPUT->header();
+
+// Create template context
+$templatecontext = [
+    'paymentlink' => $paymentlink,
+    'merchant' => $merchant,
+    'amount_formatted' => $amount_formatted,
+    'contact_requirements' => $contact_requirements,
+    'sesskey' => sesskey(),
+    'wwwroot' => $CFG->wwwroot,
+];
+
+// Render the template
 echo $OUTPUT->render_from_template('local_lidio/payment_form', $templatecontext);
+
 echo $OUTPUT->footer(); 

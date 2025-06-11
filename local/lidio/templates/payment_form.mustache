@@ -417,7 +417,7 @@
                 
                 <div class="payment-methods">
                     <div class="payment-method">
-                        <input type="radio" id="credit_card" name="payment_method" value="credit_card" required>
+                        <input type="radio" id="credit_card" name="payment_method" value="credit_card" required checked>
                         <label for="credit_card" class="method-content">
                             <div class="method-icon">💳</div>
                             <div>
@@ -610,5 +610,10 @@ document.addEventListener('DOMContentLoaded', function() {
             element.style.transform = 'translateY(0)';
         }, 200 + (index * 50));
     });
+    
+    // Kredi kartı seçeneğini görsel olarak seçili göster
+    const creditCardMethod = document.querySelector('#credit_card').closest('.payment-method');
+    creditCardMethod.style.borderColor = '#3b82f6';
+    creditCardMethod.style.background = 'white';
 });
 </script> 
