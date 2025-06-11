@@ -59,7 +59,7 @@ if ($action && $docid) {
         // Check if all documents are approved
         $all_approved = true;
         $documents = $DB->get_records('local_lidio_documents', array('merchantid' => $id));
-        if (count($documents) >= 3) {
+        if (count($documents) >= 2) {
             foreach ($documents as $doc) {
                 if ($doc->status !== 'approved') {
                     $all_approved = false;
@@ -69,7 +69,7 @@ if ($action && $docid) {
         }
 
         // If all documents are approved, update merchant KYC status
-        if ($all_approved) {
+        if ($all_approved === true) {
             $merchant->kyc_status = 'approved';
             $merchant->timemodified = time();
             $DB->update_record('local_lidio_merchants', $merchant);

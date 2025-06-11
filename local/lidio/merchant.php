@@ -50,4 +50,4 @@ if ($merchant && $merchant->status === 'approved') {
 } else {
     // User needs to apply or view pending application
     redirect($CFG->wwwroot . '/local/lidio/merchant_application.php');
-} 
+}

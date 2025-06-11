@@ -1,0 +1,230 @@
+// Modern Frontpage Theme - Post SCSS
+// This file contains additional styling that will be loaded after the main SCSS
+
+// Custom styles for the modern frontpage theme
+.modern-frontpage {
+  font-family: $font-family-sans;
+  
+  // Hero section enhancements
+  .hero-section {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KPGcgZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIwLjAzIj4KPHBhdGggZD0iTTUwIDMwYzAtMTEuMDQ2LTguOTU0LTIwLTIwLTIwcy0yMCA4Ljk1NC0yMCAyMCA4Ljk1NCAyMCAyMCAyMCAyMC04Ljk1NCAyMC0yMHoiLz4KPC9nPgo8L2c+Cjwvc3ZnPgo=') repeat;
+      opacity: 0.05;
+      z-index: -1;
+    }
+  }
+  
+  // Feature cards
+  .feature-card {
+    transition: $transition-base;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $box-shadow-lg;
+    }
+  }
+  
+  // Button styles
+  .btn-modern {
+    border-radius: $border-radius-lg;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: $transition-base;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    &:hover::before {
+      left: 100%;
+    }
+    
+    &.btn-primary {
+      background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+      border: none;
+      color: white;
+      
+      &:hover {
+        background: linear-gradient(135deg, darken($primary-color, 5%) 0%, darken($primary-color, 15%) 100%);
+        transform: translateY(-2px);
+        box-shadow: $box-shadow-lg;
+      }
+    }
+  }
+  
+  // Navigation enhancements
+  .navbar-modern {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    
+    .nav-link {
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background: $primary-color;
+        transition: width 0.3s ease;
+      }
+      
+      &:hover::after,
+      &.active::after {
+        width: 100%;
+      }
+    }
+  }
+  
+  // Card styles
+  .card-modern {
+    border: none;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    overflow: hidden;
+    
+    &:hover {
+      box-shadow: $box-shadow-lg;
+      transform: translateY(-2px);
+    }
+  }
+  
+  // Content sections
+  .content-section {
+    padding: 5rem 0;
+    
+    &.bg-light {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+  }
+  
+  // Animations
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  // Responsive improvements
+  @media (max-width: 768px) {
+    .hero-section {
+      min-height: 60vh;
+      padding: 2rem 0;
+    }
+    
+    .content-section {
+      padding: 3rem 0;
+    }
+  }
+  
+  // Dark mode support
+  @media (prefers-color-scheme: dark) {
+    .hero-section {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
+    }
+    
+    .navbar-modern {
+      background: rgba(30, 41, 59, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// Moodle specific overrides
+.pagelayout-frontpage {
+  .modern-frontpage {
+    // Override default Moodle styles
+    #page-wrapper {
+      background: none;
+    }
+    
+    // Course content styling
+    .course-content {
+      .section {
+        background: white;
+        border-radius: $border-radius-lg;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: $box-shadow;
+        border: none;
+      }
+    }
+    
+    // Block styling
+    .block {
+      background: white;
+      border-radius: $border-radius;
+      box-shadow: $box-shadow-sm;
+      border: none;
+      margin-bottom: 1.5rem;
+      
+      .header {
+        background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+        color: white;
+        border-radius: $border-radius $border-radius 0 0;
+        padding: 1rem;
+        font-weight: 600;
+      }
+      
+      .content {
+        padding: 1.5rem;
+      }
+    }
+  }
+}
+
+// Utility classes
+.text-gradient {
+  background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+}
+
+.shadow-modern {
+  box-shadow: $box-shadow-lg;
+}
+
+.rounded-modern {
+  border-radius: $border-radius-lg;
+} 

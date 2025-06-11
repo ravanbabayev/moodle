@@ -1,0 +1,190 @@
+<style>
+    /* Custom styles to enhance Tailwind */
+    .payment-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .payment-header {
+        background-color: #005eff;
+        padding: 1.5rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .payment-body {
+        padding: 2rem;
+        background-color: white;
+    }
+    
+    .payment-amount {
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: #005eff;
+        box-shadow: 0 0 0 3px rgba(0, 94, 255, 0.1);
+    }
+    
+    .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .payment-method {
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        background-color: #f9fafb;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .payment-method:hover {
+        border-color: #005eff;
+        background-color: #f0f7ff;
+    }
+    
+    .payment-method input[type="radio"] {
+        margin-right: 0.75rem;
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    .payment-method input[type="radio"]:checked + label {
+        color: #005eff;
+        font-weight: 600;
+    }
+    
+    .payment-method-icon {
+        margin-right: 0.5rem;
+        color: #005eff;
+    }
+    
+    .submit-button {
+        width: 100%;
+        background-color: #005eff;
+        color: white;
+        font-weight: 600;
+        padding: 0.875rem;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 1rem;
+    }
+    
+    .submit-button:hover {
+        background-color: #0046cc;
+    }
+    
+    .merchant-info {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<div class="payment-container">
+    <div class="payment-header">
+        <h2 class="text-2xl font-bold">{{paymentlink.title}}</h2>
+        <p class="merchant-info" style="color: white;">{{merchant.company_name}}</p>
+    </div>
+    
+    <div class="payment-body">
+        <div class="payment-amount">
+            <div class="flex justify-between items-center">
+                <span class="text-gray-700 font-medium">Amount:</span>
+                <span class="text-2xl font-bold text-gray-900">{{amount_formatted}}</span>
+            </div>
+            
+            {{#paymentlink.description}}
+            <div class="mt-3 pt-3 border-t border-gray-200">
+                <span class="text-gray-700 font-medium">Description:</span>
+                <p class="text-gray-600 mt-1">{{paymentlink.description}}</p>
+            </div>
+            {{/paymentlink.description}}
+        </div>
+        
+        <form action="{{wwwroot}}/local/lidio/pay.php?code={{paymentlink.link_code}}" method="post">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            
+            <div class="form-group">
+                <label for="customer_name" class="form-label">Your Name</label>
+                <input type="text" id="customer_name" name="customer_name" required class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="customer_email" class="form-label">Email Address</label>
+                <input type="email" id="customer_email" name="customer_email" required class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="customer_phone" class="form-label">Phone Number</label>
+                <input type="tel" id="customer_phone" name="customer_phone" required class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Payment Method</label>
+                <div class="payment-methods">
+                    <div class="payment-method">
+                        <input type="radio" id="credit_card" name="payment_method" value="credit_card" required>
+                        <label for="credit_card" class="flex items-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="payment-method-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+                            </svg>
+                            Credit Card
+                        </label>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer">
+                        <label for="bank_transfer" class="flex items-center cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="payment-method-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="8" width="20" height="12" rx="2" ry="2"></rect>
+                                <path d="M12 2l8 4-8 4-8-4 8-4z"></path>
+                            </svg>
+                            Bank Transfer
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-button">
+                Pay {{amount_formatted}}
+            </button>
+        </form>
+    </div>
+</div> 

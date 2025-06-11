@@ -1,0 +1,570 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_modernfrontpage/frontpage
+
+    Modern Frontpage template with Tailwind CSS.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - standard moodle output object
+    * sidepreblocks - HTML for the blocks
+    * hasblocks - Whether there are blocks on this page
+    * bodyattributes - attributes for the body tag as a string of html attributes
+    * regionmainsettingsmenu - HTML for the region main settings menu
+    * hasregionmainsettingsmenu - There is a region main settings menu on this page.
+}}
+<!DOCTYPE html>
+<html {{{ output.htmlattributes }}}>
+<head>
+    <title>{{{ output.page_title }}}</title>
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        secondary: '#64748b',
+                        accent: '#06b6d4',
+                        lidio: {
+                            green: '#10b981',
+                            'green-dark': '#059669',
+                            navy: '#1e293b',
+                            gray: '#6b7280'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body {{{ bodyattributes }}} class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+
+<div id="page-wrapper" class="min-h-screen flex flex-col">
+
+    <!-- Modern Header - Lidio Style -->
+    <header class="bg-white z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo and Site Name -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-lidio-green to-lidio-green-dark rounded-lg flex items-center justify-center shadow-md">
+                        <span class="text-white font-bold text-xl">L</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ sitename }}</h1>
+                        <p class="text-sm text-lidio-gray">Linkle Ödeme Alma</p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="hidden lg:flex space-x-8">
+                    <div class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium py-2">Hakkımızda</a>
+                    </div>
+                    <div class="relative group">
+                        <a href="#features" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium py-2">Çözümlerimiz</a>
+                        <div class="absolute top-full left-0 w-48 bg-white shadow-lg rounded-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 mt-1">
+                            <div class="py-2">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-lidio-green">Core Ödeme Geçidi</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-lidio-green">Linkle Ödeme Alma</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-lidio-green">Pass Tek Tıkla Ödeme</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium py-2">Bireysel Çözümler</a>
+                    </div>
+                    <div class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium py-2">Lidio Lab</a>
+                    </div>
+                    <div class="relative group">
+                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium py-2">Destek</a>
+                    </div>
+                </nav>
+
+                <!-- User Menu and CTA -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-3">
+                        <span class="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded">TR</span>
+                        <div class="w-px h-4 bg-gray-300"></div>
+                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium text-sm">Giriş Yap</a>
+                    </div>
+                    {{{ output.user_menu }}}
+                    <a href="#courses" class="bg-lidio-green hover:bg-lidio-green-dark text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                        Başvur
+                    </a>
+                    <button class="lg:hidden text-gray-700 hover:text-lidio-green p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section - Lidio Style -->
+    <section class="flex-1 relative bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
+                <!-- Left Content -->
+                <div class="lg:col-span-6 mb-16 lg:mb-0">
+                    <div class="max-w-2xl">
+                        <h1 class="text-4xl lg:text-5xl xl:text-6xl font-bold text-lidio-navy mb-8 leading-tight">
+                            <span class="text-lidio-green">Linkle Ödeme</span>
+                        </h1>
+                        
+                        <p class="text-lg lg:text-xl text-gray-600 mb-10 leading-relaxed">
+                            Ödeme almak için bir internet sitenizin olmasına gerek yok! Lidio ile SMS veya e-posta üzerinden göndereceğiniz bir link ile ödemelerinizi 7/24 anlık olarak gerçekleştirin.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <a href="#courses" class="bg-lidio-green hover:bg-lidio-green-dark text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center inline-flex items-center justify-center">
+                                Hemen Başvur
+                                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                            <a href="#features" class="border-2 border-lidio-green text-lidio-green px-8 py-4 rounded-lg font-semibold text-lg hover:bg-lidio-green hover:text-white transition-all duration-300 text-center">
+                                Çözümleri İncele
+                            </a>
+                        </div>
+
+                        <!-- Trust Indicators -->
+                        <div class="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-lidio-green rounded-full mr-2"></div>
+                                <span>TCMB Lisanslı</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-lidio-green rounded-full mr-2"></div>
+                                <span>PCI DSS Level 1</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-lidio-green rounded-full mr-2"></div>
+                                <span>7/24 Destek</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Image -->
+                <div class="lg:col-span-6 lg:flex lg:justify-end">
+                    <div class="relative">
+                        <div class="w-full max-w-2xl mx-auto lg:mx-0">
+                            <div class="relative">
+                                <img src="https://www.lidio.com/img/products/link-payment/link-payment-hero@2x.png" 
+                                     alt="Linkle Ödeme - Profesyonel Ödeme Çözümleri" 
+                                     class="w-full h-auto rounded-2xl">
+                                
+                                <!-- Floating Card Elements -->
+                                <div class="absolute top-8 -left-8 bg-white rounded-xl shadow-xl p-4 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-lidio-green rounded-full"></div>
+                                        <span class="text-sm font-medium text-gray-700">Güvenli Ödeme</span>
+                                    </div>
+                                </div>
+
+                                <div class="absolute bottom-8 -right-8 bg-white rounded-xl shadow-xl p-4 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-gray-700">7/24 Aktif</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Background Elements -->
+                        <div class="absolute -top-4 -left-4 w-24 h-24 bg-lidio-green/10 rounded-full animate-pulse"></div>
+                        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-500/10 rounded-full animate-pulse animation-delay-2000"></div>
+                        <div class="absolute top-1/2 -right-12 w-16 h-16 bg-purple-500/10 rounded-full animate-pulse animation-delay-4000"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 -z-10">
+            <svg class="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" fill="none">
+                <defs>
+                    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.02"/>
+                        <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.02"/>
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#heroGradient)"/>
+                <circle cx="100" cy="100" r="2" fill="#10b981" opacity="0.1"/>
+                <circle cx="300" cy="200" r="1" fill="#3b82f6" opacity="0.1"/>
+                <circle cx="800" cy="150" r="1.5" fill="#10b981" opacity="0.1"/>
+                <circle cx="1000" cy="300" r="1" fill="#8b5cf6" opacity="0.1"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Partner Logos Section -->
+    <section class="py-12 bg-white border-t border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <p class="text-sm text-gray-500 font-medium">Güvenilir markalar tarafından tercih ediliyor</p>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-8 items-center justify-items-center opacity-60">
+                <img src="https://www.lidio.com/img/customer-logos/mediamarkt@2x.png" alt="MediaMarkt" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+                <img src="https://www.lidio.com/img/customer-logos/lcwaikiki@2x.png" alt="LC Waikiki" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+                <img src="https://www.lidio.com/img/customer-logos/tchibo@2x.png" alt="Tchibo" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+                <img src="https://www.lidio.com/img/customer-logos/unicef@2x.png" alt="UNICEF" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+                <img src="https://www.lidio.com/img/customer-logos/watsons@2x.png" alt="Watsons" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+                <img src="https://www.lidio.com/img/customer-logos/defacto@2x.png" alt="DeFacto" class="h-8 w-auto filter grayscale hover:grayscale-0 transition-all duration-300">
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">Linkle Ödeme Alma Nasıl Çalışır?</h2>
+                <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    Müşterileriniz ile aynı ortamda bulunmadan, uzaktan gönderebileceğiniz bir link ile ödeme 
+                    alabilmeniz mümkün. İş Yeri Paneli üzerinden veya API yardımı ile müşterilerinize göndereceğiniz 
+                    link ile tüm banka kartlarından tek çekim veya taksitli olarak işlemlerinizi gerçekleştirin.
+                </p>
+            </div>
+
+            <!-- Flow Diagram -->
+            <div class="mb-20 flex justify-center">
+                <img src="https://www.lidio.com/img/products/link-payment/link-payment.svg" 
+                     alt="Linkle Ödeme Akışı" 
+                     class="w-full max-w-4xl h-auto">
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Güvenli Altyapı</h3>
+                    <p class="text-gray-600">
+                        Kişiselleştirilebilen ödeme araçlarımız TCMB Lisansı'na sahiptir ve 
+                        PCI DSS Level 1 Güvenlik Sertifikalı güvenlik standartları ile korunur.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Sınırsız Özgürlük</h3>
+                    <p class="text-gray-600">
+                        Link üzerinden alacağınız ödemelerde müşterilerinizin kredi kartını 
+                        güvenli altyapımızda saklayın, tekrarlayan ödemelerinize hız kazandırın.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Detaylı Raporlama</h3>
+                    <p class="text-gray-600">
+                        İşlemlerinize ait raporlara tek platformdan ulaşabilirsiniz. 
+                        Böylelikle finansal süreçlerinizi kontrol altına almış olursunuz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+                <!-- Left Image -->
+                <div class="mb-12 lg:mb-0">
+                    <img src="https://www.lidio.com/img/products/link-payment/link-payment-detail@2x.jpg" 
+                         alt="Linkle Ödeme Detay" 
+                         class="w-full h-auto rounded-2xl shadow-2xl">
+                </div>
+
+                <!-- Right Content -->
+                <div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">
+                        Müşterileriniz ne zaman ve nerede ödeme yapmak isterse biz oradayız
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-8">
+                        Lidio'nun tüm kabiliyetlerini kullanarak tek bir link ile dilediğiniz yerden ödeme alın.
+                    </p>
+
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="ml-4 text-gray-700">
+                                İş yerleri link ile tahsilat yaparak mesafe sorununu ortadan kaldırır.
+                            </p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="ml-4 text-gray-700">
+                                Saklı kart ile ödeme almanın sınırı yok! Müşterileriniz link ile ödeme alırken de kartlarını altyapımızda saklayabilir.
+                            </p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="ml-4 text-gray-700">
+                                7/24 uzaktan ödeme alma imkanı sunuyoruz.
+                            </p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p class="ml-4 text-gray-700">
+                                Linkle Ödeme Alma ile 12 taksite varan taksit seçeneklerine sahip olun.
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-6">
+                    Ödemeleri yeniden, sizin ve müşterileriniz için şekillendiriyoruz
+                </h2>
+                <div class="w-full max-w-md mx-auto mb-12">
+                    <img src="https://www.lidio.com/img/sections/benefit-description@2x.png" 
+                         alt="Benefit Description" 
+                         class="w-full h-auto">
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Stat 1 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">+54M</h3>
+                    <p class="text-gray-600">
+                        Güvenli altyapımızda saklanan 54M+ kart bilgisi
+                    </p>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">+16M</h3>
+                    <p class="text-gray-600">
+                        Aylık 16 milyondan fazla başarılı işlem adedi
+                    </p>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="text-center p-8 bg-white rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-2">100+</h3>
+                    <p class="text-gray-600">
+                        Farklı ödeme çözümü ve sınır ötesi güvenli ödeme altyapısı
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Content -->
+    <section id="courses" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">İşinize değer katacak diğer ürünlerimiz</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Her işe ve ölçeğe uygun ürünlerimiz ile ödemeler dünyasını özgürleştiriyoruz. 
+                    Tüm servislerimiz işinizi büyütmek için tasarlandı.
+                </p>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div id="region-main-box">
+                    <section id="region-main" class="prose max-w-none">
+                        {{{ output.course_content_header }}}
+                        {{{ output.main_content }}}
+                        {{{ output.course_content_footer }}}
+                    </section>
+                </div>
+            </div>
+
+            {{#hasregionmainsettingsmenu}}
+            <div class="mt-8">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+                    {{{ regionmainsettingsmenu }}}
+                </div>
+            </div>
+            {{/hasregionmainsettingsmenu}}
+        </div>
+    </section>
+
+    {{#hasblocks}}
+    <!-- Sidebar -->
+    <aside class="bg-white border-l border-gray-200">
+        <div class="p-6">
+            {{{ sidepreblocks }}}
+        </div>
+    </aside>
+    {{/hasblocks}}
+
+    <!-- Modern Footer - Lidio Style -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-5 gap-8">
+                <!-- Company Info -->
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold">L</span>
+                        </div>
+                        <h3 class="text-xl font-bold">{{ sitename }}</h3>
+                    </div>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Ödeme Hizmetleri A.Ş.
+                    </p>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <p>📞 0212 290 27 37</p>
+                        <p>✉️ info@example.com</p>
+                    </div>
+                </div>
+                
+                <!-- Solutions -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-green-400">Çözümlerimiz</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Core Ödeme Geçidi</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Pazaryeri</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Pass Tek Tıkla Ödeme</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Toplu Ödeme</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Sahtecilik Önleme</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-green-400">Ödeme Yöntemleri</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Sanal POS</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Havale / EFT</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Alternatif Ödeme</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Anında Kredi</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Linkle Ödeme Alma</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-green-400">Destek</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">API Dokümantasyonu</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Test Kartları</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Entegrasyon</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">Teknik Destek</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-green-400 transition-colors duration-200">İletişim</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                        &copy; 2024 {{ sitename }} Ödeme Hizmetleri A.Ş. Tüm hakları saklıdır.
+                    </p>
+                    <div class="flex space-x-6 text-sm">
+                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors duration-200">Yasal Bilgilendirme</a>
+                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors duration-200">Güvenlik</a>
+                        <a href="#" class="text-gray-400 hover:text-green-400 transition-colors duration-200">Çerez Politikası</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+{{{ output.standard_footer_html }}}
+
+<style>
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.4; }
+}
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
+</style>
+
+</body>
+</html> 

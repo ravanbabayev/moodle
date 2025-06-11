@@ -216,9 +216,7 @@ function local_lidio_require_kyc($merchant) {
     }
     
     return true;
-}
-
-/*
+}/*
 function local_lidio_extend_navigation(global_navigation $navigation) {
     global $USER;
 
@@ -233,3 +231,4 @@ function local_lidio_extend_navigation(global_navigation $navigation) {
     $main_node->collapse = false;
     $main_node->foreceopen = true;
 }*/
+

@@ -1,0 +1,199 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/payment_success
+
+    Payment success template for Lidio payment system
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * transaction - The transaction object
+    * paymentlink - The payment link object (optional)
+    * merchant - The merchant object
+    * amount_formatted - Formatted amount with currency
+    * wwwroot - Site root URL
+}}
+
+<style>
+    /* Custom styles to enhance Tailwind */
+    .success-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .success-header {
+        background-color: #10b981;
+        padding: 2rem 1.5rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+    }
+    
+    .success-body {
+        padding: 2rem;
+        background-color: white;
+    }
+    
+    .success-details {
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .detail-row:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        font-weight: 500;
+        color: #4b5563;
+    }
+    
+    .detail-value {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .detail-value.amount {
+        font-size: 1.25rem;
+        color: #10b981;
+    }
+    
+    .success-message {
+        text-align: center;
+        margin: 2rem 0;
+    }
+    
+    .success-message p {
+        margin-bottom: 0.5rem;
+        color: #4b5563;
+    }
+    
+    .button-container {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+    
+    .primary-button {
+        display: inline-block;
+        background-color: #005eff;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    
+    .primary-button:hover {
+        background-color: #0046cc;
+    }
+    
+    .secondary-button {
+        display: inline-block;
+        background-color: #e5e7eb;
+        color: #374151;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        text-decoration: none;
+        transition: background-color 0.2s;
+        margin-top: 1rem;
+    }
+    
+    .secondary-button:hover {
+        background-color: #d1d5db;
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-header">
+        <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <h2 class="text-2xl font-bold">Payment Successful!</h2>
+    </div>
+    
+    <div class="success-body">
+        <div class="success-details">
+            <div class="detail-row">
+                <span class="detail-label">Amount:</span>
+                <span class="detail-value amount">{{amount_formatted}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Reference:</span>
+                <span class="detail-value">{{transaction.reference}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{#userdate}}{{transaction.timecreated}}, %d %B %Y %H:%M{{/userdate}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Merchant:</span>
+                <span class="detail-value">{{merchant.company_name}}</span>
+            </div>
+        </div>
+
+        <div class="success-message">
+            <p>Thank you for your payment. A confirmation has been sent to your email address.</p>
+            <p>If you have any questions about your payment, please contact the merchant directly.</p>
+        </div>
+
+        {{#paymentlink}}
+            {{#success_url}}
+            <div class="button-container">
+                <a href="{{success_url}}" class="primary-button">
+                    Return to Merchant
+                </a>
+            </div>
+            {{/success_url}}
+        {{/paymentlink}}
+
+        <div class="button-container">
+            <a href="{{wwwroot}}" class="secondary-button">
+                Return to Home
+            </a>
+        </div>
+    </div>
+</div> 
