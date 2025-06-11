@@ -1,0 +1,468 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/payment_processor
+
+    Payment processor template for Lidio payment system
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * transaction - The transaction object
+    * paymentlink - The payment link object
+    * merchant - The merchant object
+    * amount_formatted - Formatted amount with currency
+    * processor_url - The URL for form submission
+    * wwwroot - Site root URL
+    * exp_years - Array of expiry years
+    * exp_months - Array of expiry months
+}}
+
+<div class="payment-container">
+    <div class="payment-card">
+        <div class="payment-header">
+            <h2 class="payment-title">Ödeme İşlemi</h2>
+            <div class="payment-amount">{{amount_formatted}}</div>
+        </div>
+        
+        <div class="payment-product">
+            <div class="product-details">
+                <div class="merchant-name">{{merchant.merchant_name}}</div>
+                <div class="product-title">{{paymentlink.title}}</div>
+                {{#paymentlink.description}}
+                <div class="product-description">{{paymentlink.description}}</div>
+                {{/paymentlink.description}}
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress" style="width: 66%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Müşteri Bilgileri</div>
+                </div>
+                <div class="step active">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Ödeme</div>
+                </div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Tamamlandı</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="payment-form-section">
+            <h3 class="section-title">💳 Kredi Kartı Bilgileri</h3>
+            
+            <form action="{{processor_url}}" method="post" id="payment-form">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                
+                <div class="card-container">
+                    <div class="card-wrapper"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="card_holder" class="form-label">Kart Üzerindeki İsim</label>
+                    <input type="text" id="card_holder" name="card_holder" class="form-input" required placeholder="Kart üzerindeki ismi girin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="card_number" class="form-label">Kart Numarası</label>
+                    <input type="text" id="card_number" name="card_number" class="form-input" required placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label class="form-label">Son Kullanma Tarihi</label>
+                        <div class="expiry-inputs">
+                            <select name="exp_month" class="form-select" required>
+                                <option value="" disabled selected>Ay</option>
+                                {{#exp_months}}
+                                <option value="{{.}}">{{.}}</option>
+                                {{/exp_months}}
+                            </select>
+                            <select name="exp_year" class="form-select" required>
+                                <option value="" disabled selected>Yıl</option>
+                                {{#exp_years}}
+                                <option value="{{.}}">{{.}}</option>
+                                {{/exp_years}}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group half">
+                        <label for="cvv" class="form-label">Güvenlik Kodu (CVV)</label>
+                        <input type="text" id="cvv" name="cvv" class="form-input" required placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-button">
+                    🔒 Güvenli Ödeme Yap - {{amount_formatted}}
+                </button>
+                
+                <div class="secure-badge">
+                    🔐 256-bit SSL ile güvenli ödeme
+                </div>
+                
+                <div class="card-icons">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349221.png" alt="Visa" width="40">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349228.png" alt="MasterCard" width="40">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+.payment-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.payment-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1a202c;
+}
+
+.payment-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.payment-product {
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e2e8f0;
+}
+
+.merchant-name {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+}
+
+.product-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.product-description {
+    font-size: 0.875rem;
+    color: #4a5568;
+}
+
+.progress-container {
+    margin: 2rem 0;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 33.333%;
+}
+
+.step-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.step.completed .step-circle {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.step.active .step-circle {
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.step-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: center;
+}
+
+.step.completed .step-label,
+.step.active .step-label {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.payment-form-section {
+    margin-top: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 1.25rem;
+}
+
+.card-container {
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-row {
+    display: flex;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.form-group.half {
+    flex: 1;
+    padding: 0 0.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 1rem;
+    color: #1a202c;
+    background-color: white;
+    transition: border-color 0.15s;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-input::placeholder {
+    color: #a0aec0;
+}
+
+.expiry-inputs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.expiry-inputs .form-select {
+    flex: 1;
+}
+
+.submit-button {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+}
+
+.secure-badge {
+    text-align: center;
+    margin-top: 1rem;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.card-icons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .payment-card {
+        padding: 1.5rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group.half {
+        padding: 0;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Credit card number formatting
+    const cardNumberInput = document.getElementById('card_number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            // Remove all non-digits
+            let value = this.value.replace(/\D/g, '');
+            
+            // Add a space after every 4 digits
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            // Update the input value
+            this.value = formattedValue;
+        });
+    }
+    
+    // CVV validation - only digits
+    const cvvInput = document.getElementById('cvv');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+    
+    // Form submission animation
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('.submit-button');
+            submitButton.innerHTML = '⏳ Ödemeniz İşleniyor...';
+            submitButton.disabled = true;
+            
+            // Re-enable button after 30 seconds in case of timeout
+            setTimeout(() => {
+                if (submitButton.disabled) {
+                    submitButton.innerHTML = '🔒 Güvenli Ödeme Yap - {{amount_formatted}}';
+                    submitButton.disabled = false;
+                }
+            }, 30000);
+        });
+    }
+    
+    // Card type detection and visuals
+    function detectCardType(number) {
+        const patterns = {
+            visa: /^4/,
+            mastercard: /^(5[1-5]|2[2-7])/,
+            amex: /^3[47]/,
+            discover: /^(6011|65|64[4-9]|622)/,
+        };
+        
+        number = number.replace(/\D/g, '');
+        
+        for (const card in patterns) {
+            if (patterns[card].test(number)) {
+                return card;
+            }
+        }
+        
+        return '';
+    }
+    
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function() {
+            const cardType = detectCardType(this.value);
+            
+            // Here you could add visual indicators for card type
+            // For example, change card icon or add card brand name
+            console.log('Detected card type:', cardType);
+        });
+    }
+});
+</script> 

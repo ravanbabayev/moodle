@@ -496,3 +496,35 @@ $string['invalidmerchant'] = 'Invalid merchant information';
 $string['customerphonevalidation'] = 'Please provide a valid phone number';
 $string['customeremailvalidation'] = 'Please provide a valid email address';
 $string['customernamevalidation'] = 'Please provide your name';
+
+// Additional strings for payment processing
+$string['paymentprocessing'] = 'Payment Processing';
+$string['invalidcardnumber'] = 'Invalid card number.';
+$string['invalidcardholder'] = 'Please enter the cardholder name.';
+$string['invalidexpiry'] = 'Invalid expiry date.';
+$string['invalidcvv'] = 'Invalid security code (CVV).';
+$string['tryagain'] = 'Try Again';
+$string['paymentsuccessful'] = 'Payment Successful';
+$string['paymentfailed'] = 'Payment Failed';
+$string['cardinformation'] = 'Card Information';
+$string['transaction_id'] = 'Transaction ID';
+$string['order_date'] = 'Order Date';
+$string['viewtransactiondetails'] = 'View Transaction Details';
+$string['backtomerchant'] = 'Back to Merchant';
+$string['backtohome'] = 'Back to Home';
+
+// Credit card related strings
+$string['card_name'] = 'Cardholder Name';
+$string['card_number'] = 'Card Number';
+$string['card_expiry'] = 'Expiry Date';
+$string['card_cvv'] = 'Security Code (CVV)';
+$string['card_expired'] = 'This card has expired.';
+$string['processingsecurely'] = 'Your payment is being processed securely.';
+$string['paymentprocessorinfo'] = 'This is a demo payment processor. No real payments will be processed.';
+$string['willberedirected'] = 'You will be redirected after payment is processed.';
+
+// Currency strings
+$string['currency_try'] = 'Turkish Lira';
+$string['currency_usd'] = 'US Dollar';
+$string['currency_eur'] = 'Euro';
+$string['currency_gbp'] = 'British Pound';

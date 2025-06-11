@@ -75,9 +75,6 @@ $contact_requirements = [
 // Process payment form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     try {
-        // Increment the usage counter
-        $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
-        
         // Benzersiz bir referans kodu oluştur
         $reference_code = uniqid('LIDIO-');
         
@@ -118,14 +115,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         // Insert transaction record
         $transactionid = $DB->insert_record('local_lidio_transactions', $transaction);
         
-        // İşlem kaydı oluşturulduktan sonra, ödeme yöntemine göre ödeme detayları sayfasına yönlendir
-        $payment_details_url = new moodle_url('/local/lidio/payment_details.php', [
-            'id' => $transactionid, 
-            'method' => $transaction->payment_method
-        ]);
-        
-        // Yönlendirme öncesi çıktı verilmemeli
-        redirect($payment_details_url);
+        // Ödeme yöntemine göre yönlendirme yap
+        if ($transaction->payment_method === 'credit_card') {
+            // Kredi kartı ödemesi için doğrudan ödeme işlemcisine yönlendir
+            // Bu örnekte, payment_processor.php adında bir dosya kullandığımızı varsayıyoruz
+            $payment_url = new moodle_url('/local/lidio/payment_processor.php', [
+                'id' => $transactionid, 
+                'reference' => $transaction->reference
+            ]);
+            
+            // Linki kullanım sayacını artır
+            $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+            
+            // Yönlendirme öncesi çıktı verilmemeli
+            redirect($payment_url);
+        } else if ($transaction->payment_method === 'bank_transfer') {
+            // Banka havalesi için banka bilgileri sayfasına yönlendir
+            $bank_details_url = new moodle_url('/local/lidio/payment_bank_details.php', [
+                'id' => $transactionid
+            ]);
+            
+            // Linki kullanım sayacını artır
+            $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+            
+            // Yönlendirme öncesi çıktı verilmemeli
+            redirect($bank_details_url);
+        }
         
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';
