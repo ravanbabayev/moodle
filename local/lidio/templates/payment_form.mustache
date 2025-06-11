@@ -123,6 +123,24 @@
     </div>
     
     <div class="payment-body">
+        {{#paymentlink.product_name}}
+        <div class="product-info mb-6">
+            {{#paymentlink.product_image}}
+            <div class="product-image mb-4">
+                <img src="{{paymentlink.product_image}}" alt="{{paymentlink.product_name}}" 
+                     class="w-full max-w-md mx-auto rounded-lg shadow-md object-cover" style="max-height: 300px;">
+            </div>
+            {{/paymentlink.product_image}}
+            
+            <div class="product-details">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">{{paymentlink.product_name}}</h3>
+                {{#paymentlink.product_description}}
+                <p class="text-gray-600 mb-4">{{paymentlink.product_description}}</p>
+                {{/paymentlink.product_description}}
+            </div>
+        </div>
+        {{/paymentlink.product_name}}
+        
         <div class="payment-amount">
             <div class="flex justify-between items-center">
                 <span class="text-gray-700 font-medium">Amount:</span>
@@ -137,7 +155,7 @@
             {{/paymentlink.description}}
         </div>
         
-        <form action="{{wwwroot}}/local/lidio/pay.php?code={{paymentlink.link_code}}" method="post">
+        <form action="{{wwwroot}}/local/lidio/pay.php?code={{paymentlink.link_code}}" method="post" id="payment-form">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             
             <div class="form-group">
@@ -145,15 +163,43 @@
                 <input type="text" id="customer_name" name="customer_name" required class="form-input">
             </div>
             
+            {{#contact_requirements.email_required}}
             <div class="form-group">
-                <label for="customer_email" class="form-label">Email Address</label>
+                <label for="customer_email" class="form-label">Email Address <span class="text-red-500">*</span></label>
+                <input type="email" id="customer_email" name="customer_email" required class="form-input">
+            </div>
+            {{/contact_requirements.email_required}}
+            
+            {{#contact_requirements.phone_required}}
+            <div class="form-group">
+                <label for="customer_phone" class="form-label">Phone Number <span class="text-red-500">*</span></label>
+                <input type="tel" id="customer_phone" name="customer_phone" required class="form-input">
+            </div>
+            {{/contact_requirements.phone_required}}
+            
+            {{#contact_requirements.phone_or_email}}
+            <div class="form-group">
+                <label for="customer_email" class="form-label">Email Address <span class="text-sm text-gray-500">(Email or Phone required)</span></label>
+                <input type="email" id="customer_email" name="customer_email" class="form-input contact-field">
+            </div>
+            
+            <div class="form-group">
+                <label for="customer_phone" class="form-label">Phone Number <span class="text-sm text-gray-500">(Email or Phone required)</span></label>
+                <input type="tel" id="customer_phone" name="customer_phone" class="form-input contact-field">
+            </div>
+            {{/contact_requirements.phone_or_email}}
+            
+            {{#contact_requirements.both_required}}
+            <div class="form-group">
+                <label for="customer_email" class="form-label">Email Address <span class="text-red-500">*</span></label>
                 <input type="email" id="customer_email" name="customer_email" required class="form-input">
             </div>
             
             <div class="form-group">
-                <label for="customer_phone" class="form-label">Phone Number</label>
+                <label for="customer_phone" class="form-label">Phone Number <span class="text-red-500">*</span></label>
                 <input type="tel" id="customer_phone" name="customer_phone" required class="form-input">
             </div>
+            {{/contact_requirements.both_required}}
             
             <div class="form-group">
                 <label class="form-label">Payment Method</label>
@@ -187,4 +233,56 @@
             </button>
         </form>
     </div>
-</div> 
+</div>
+
+<script>
+// Validation for "phone or email" requirement
+{{#contact_requirements.phone_or_email}}
+document.getElementById('payment-form').addEventListener('submit', function(e) {
+    const email = document.getElementById('customer_email').value.trim();
+    const phone = document.getElementById('customer_phone').value.trim();
+    
+    if (!email && !phone) {
+        e.preventDefault();
+        alert('Please provide either an email address or phone number.');
+        return false;
+    }
+    
+    // Validate email format if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        e.preventDefault();
+        alert('Please provide a valid email address.');
+        return false;
+    }
+    
+    // Validate phone format if provided (basic validation)
+    if (phone && !/^[\+]?[\d\s\-\(\)]{10,}$/.test(phone)) {
+        e.preventDefault();
+        alert('Please provide a valid phone number.');
+        return false;
+    }
+});
+{{/contact_requirements.phone_or_email}}
+
+// Real-time validation feedback for phone_or_email
+{{#contact_requirements.phone_or_email}}
+const emailField = document.getElementById('customer_email');
+const phoneField = document.getElementById('customer_phone');
+
+function updateValidationState() {
+    const hasEmail = emailField.value.trim().length > 0;
+    const hasPhone = phoneField.value.trim().length > 0;
+    
+    if (hasEmail || hasPhone) {
+        emailField.style.borderColor = hasEmail ? '#10b981' : '#d1d5db';
+        phoneField.style.borderColor = hasPhone ? '#10b981' : '#d1d5db';
+    } else {
+        emailField.style.borderColor = '#ef4444';
+        phoneField.style.borderColor = '#ef4444';
+    }
+}
+
+emailField.addEventListener('input', updateValidationState);
+phoneField.addEventListener('input', updateValidationState);
+{{/contact_requirements.phone_or_email}}
+</script> 

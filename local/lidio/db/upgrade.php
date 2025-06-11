@@ -146,5 +146,37 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025052006, 'local', 'lidio');
     }
 
+    if ($oldversion < 2025061104) {
+        // Add product information fields to payment links table.
+        $table = new xmldb_table('local_lidio_payment_links');
+
+        // Add product name field
+        $field = new xmldb_field('product_name', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'description');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add product image field
+        $field = new xmldb_field('product_image', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'product_name');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add product description field (separate from link description)
+        $field = new xmldb_field('product_description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'product_image');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add require customer contact field (phone_or_email, phone_required, email_required, both_required)
+        $field = new xmldb_field('customer_contact_requirement', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'phone_or_email', 'custom_fields');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025061104, 'local', 'lidio');
+    }
+
     return true;
 } 

@@ -44,6 +44,10 @@ $PAGE->set_pagelayout('standard');
 // Add TailwindCSS
 $PAGE->requires->css(new moodle_url('/local/lidio/styles.css'));
 
+// Add Bootstrap for modal functionality
+$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'));
+$PAGE->requires->js(new moodle_url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'));
+
 $PAGE->requires->js('/local/lidio/scripts.js');
 
 // Get merchant data
@@ -139,6 +143,9 @@ class create_payment_link_form extends moodleform {
         $mform = $this->_form;
         $merchant = $this->_customdata['merchant'];
         
+        // Basic Information Header
+        $mform->addElement('header', 'basicinfo', get_string('generalinformation', 'local_lidio'));
+        
         // Title
         $mform->addElement('text', 'title', get_string('paymentlinktitle', 'local_lidio'));
         $mform->setType('title', PARAM_TEXT);
@@ -162,6 +169,47 @@ class create_payment_link_form extends moodleform {
         );
         $mform->addElement('select', 'currency', get_string('currency', 'local_lidio'), $currencies);
         $mform->setDefault('currency', 'TRY');
+        
+        // Product Information Header
+        $mform->addElement('header', 'productinfo', get_string('productinformation', 'local_lidio'));
+        
+        // Product Name
+        $mform->addElement('text', 'product_name', get_string('productname', 'local_lidio'));
+        $mform->setType('product_name', PARAM_TEXT);
+        $mform->addHelpButton('product_name', 'productname', 'local_lidio');
+        
+        // Product Image Upload
+        $mform->addElement('filemanager', 'product_image', get_string('productimage', 'local_lidio'), null, 
+                          array('subdirs' => 0, 'maxbytes' => 5242880, 'maxfiles' => 1, 'accepted_types' => array('.jpg', '.jpeg', '.png')));
+        $mform->addHelpButton('product_image', 'productimage', 'local_lidio');
+        
+        // Set default value for file manager
+        if (isset($this->_customdata['product_image'])) {
+            $mform->setDefault('product_image', $this->_customdata['product_image']);
+        }
+        
+        // Product Description
+        $mform->addElement('textarea', 'product_description', get_string('productdescription', 'local_lidio'),
+                          array('rows' => 4, 'cols' => 50));
+        $mform->setType('product_description', PARAM_TEXT);
+        $mform->addHelpButton('product_description', 'productdescription', 'local_lidio');
+        
+        // Customer Contact Requirements
+        $mform->addElement('header', 'customerinfo', get_string('customercontactrequirement', 'local_lidio'));
+        
+        $contact_options = array(
+            'phone_or_email' => get_string('phone_or_email', 'local_lidio'),
+            'phone_required' => get_string('phone_required', 'local_lidio'),
+            'email_required' => get_string('email_required', 'local_lidio'),
+            'both_required' => get_string('both_required', 'local_lidio')
+        );
+        $mform->addElement('select', 'customer_contact_requirement', 
+                          get_string('customercontactrequirement', 'local_lidio'), $contact_options);
+        $mform->setDefault('customer_contact_requirement', 'phone_or_email');
+        $mform->addHelpButton('customer_contact_requirement', 'customercontactrequirement', 'local_lidio');
+        
+        // Advanced Settings Header
+        $mform->addElement('header', 'advancedsettings', get_string('advancedsettings', 'core_admin'));
         
         // Expiry date
         $mform->addElement('date_selector', 'expiry_date', get_string('expirydate', 'local_lidio'), array('optional' => true));
@@ -203,8 +251,13 @@ class create_payment_link_form extends moodleform {
     }
 }
 
+// Initialize file manager for product images
+$draftitemid = file_get_submitted_draft_itemid('product_image');
+file_prepare_draft_area($draftitemid, context_system::instance()->id, 'local_lidio', 'product_image', null,
+                       array('subdirs' => 0, 'maxbytes' => 5242880, 'maxfiles' => 1));
+
 // Create instance of the form
-$form = new create_payment_link_form($url, array('merchant' => $merchant));
+$form = new create_payment_link_form($url, array('merchant' => $merchant, 'product_image' => $draftitemid));
 
 // Process form submission
 if ($form->is_cancelled()) {
@@ -212,6 +265,27 @@ if ($form->is_cancelled()) {
 } else if ($data = $form->get_data()) {
     // Generate unique link code
     $link_code = md5(uniqid(rand(), true));
+    
+    // Handle file upload for product image
+    $product_image_url = '';
+    if (!empty($data->product_image)) {
+        $context = context_system::instance();
+        $fs = get_file_storage();
+        
+        // Save the file to Moodle's file system
+        $files = $fs->get_area_files($context->id, 'local_lidio', 'product_image', $data->product_image, 'filename', false);
+        if (!empty($files)) {
+            $file = reset($files);
+            $product_image_url = moodle_url::make_pluginfile_url(
+                $context->id,
+                'local_lidio',
+                'product_image',
+                $data->product_image,
+                '/',
+                $file->get_filename()
+            )->out();
+        }
+    }
     
     // Prepare record
     $record = new stdClass();
@@ -227,11 +301,44 @@ if ($form->is_cancelled()) {
     $record->current_uses = 0;
     $record->success_url = $data->success_url;
     $record->cancel_url = $data->cancel_url;
+    
+    // Add product information fields
+    $record->product_name = !empty($data->product_name) ? $data->product_name : null;
+    $record->product_image = $product_image_url;
+    $record->product_description = !empty($data->product_description) ? $data->product_description : null;
+    $record->customer_contact_requirement = $data->customer_contact_requirement;
+    
     $record->timecreated = time();
     $record->timemodified = time();
     
-    // Insert record
-    $DB->insert_record('local_lidio_payment_links', $record);
+    // Process file upload after getting the record ID
+    $recordid = $DB->insert_record('local_lidio_payment_links', $record);
+    
+    // Handle file manager upload
+    if (!empty($data->product_image)) {
+        $draftitemid = $data->product_image;
+        $context = context_system::instance();
+        
+        file_save_draft_area_files($draftitemid, $context->id, 'local_lidio', 'product_image', $recordid,
+                                  array('subdirs' => 0, 'maxbytes' => 5242880, 'maxfiles' => 1));
+        
+        // Update the record with the actual file URL
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context->id, 'local_lidio', 'product_image', $recordid, 'filename', false);
+        if (!empty($files)) {
+            $file = reset($files);
+            $fileurl = moodle_url::make_pluginfile_url(
+                $context->id,
+                'local_lidio',
+                'product_image',
+                $recordid,
+                '/',
+                $file->get_filename()
+            )->out();
+            
+            $DB->set_field('local_lidio_payment_links', 'product_image', $fileurl, array('id' => $recordid));
+        }
+    }
     
     redirect($url, get_string('paymentlinkcreated', 'local_lidio'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
@@ -250,9 +357,19 @@ echo $OUTPUT->header();
             <h1 class="text-2xl font-bold text-gray-900"><?php echo get_string('paymentlinks', 'local_lidio'); ?></h1>
             <p class="mt-1 text-sm text-gray-500">Create and manage payment links for your customers</p>
         </div>
-        <button type="button" class="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200" data-bs-toggle="modal" data-bs-target="#createLinkModal">
+        <a href="<?php echo new moodle_url('/local/lidio/create_payment_link.php'); ?>" class="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
             <i class="fas fa-plus-circle mr-3"></i><?php echo get_string('createpaymentlink', 'local_lidio'); ?>
-        </button>
+        </a>
+    </div>
+
+    <!-- Create Payment Link Form (Hidden by default) -->
+    <div id="createFormContainer" class="bg-white rounded-xl shadow-lg mb-8" style="display: none;">
+        <div class="border-b border-gray-200 px-6 py-5">
+            <h2 class="text-lg font-medium text-gray-900"><?php echo get_string('createpaymentlink', 'local_lidio'); ?></h2>
+        </div>
+        <div class="p-6">
+            <?php $form->display(); ?>
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-lg mb-8">
@@ -369,9 +486,9 @@ echo $OUTPUT->header();
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">No payment links yet</h3>
             <p class="text-gray-500 max-w-md mx-auto mb-6"><?php echo get_string('nopaymentlinks', 'local_lidio'); ?> Create your first payment link to start accepting payments.</p>
-            <button type="button" class="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200" data-bs-toggle="modal" data-bs-target="#createLinkModal">
+            <a href="<?php echo new moodle_url('/local/lidio/create_payment_link.php'); ?>" class="inline-flex items-center px-5 py-3 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
                 <i class="fas fa-plus-circle mr-2"></i> <?php echo get_string('createpaymentlink', 'local_lidio'); ?>
-            </button>
+            </a>
         </div>
         <?php endif; ?>
     </div>
@@ -413,23 +530,112 @@ echo $OUTPUT->header();
     </div>
 </div>
 
-<!-- Create Payment Link Modal -->
-<div class="modal fade" id="createLinkModal" tabindex="-1" aria-labelledby="createLinkModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content rounded-lg shadow-xl">
-            <div class="modal-header border-b border-gray-200 py-4 px-6 flex items-center justify-between">
-                <h5 class="modal-title text-xl font-medium text-gray-900" id="createLinkModalLabel"><?php echo get_string('createpaymentlink', 'local_lidio'); ?></h5>
-                <button type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none" data-bs-dismiss="modal" aria-label="Close">
-                    <span class="sr-only">Close</span>
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body p-6">
-                <?php $form->display(); ?>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+/* Form styling */
+#createFormContainer .form-group {
+    margin-bottom: 1.5rem;
+}
+
+#createFormContainer .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+#createFormContainer input[type="text"],
+#createFormContainer input[type="email"], 
+#createFormContainer input[type="url"],
+#createFormContainer input[type="number"],
+#createFormContainer select,
+#createFormContainer textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+#createFormContainer input:focus,
+#createFormContainer select:focus,
+#createFormContainer textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+#createFormContainer .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+#createFormContainer .btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+#createFormContainer .btn-secondary {
+    background-color: #6b7280;
+    color: white;
+}
+
+#createFormContainer .helptooltip {
+    margin-left: 0.25rem;
+}
+
+/* Fix for file manager */
+#createFormContainer .filemanager {
+    min-height: 100px;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+/* Collapsible headers */
+#createFormContainer .collapsible-actions {
+    background-color: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+#createFormContainer .collapsible-actions legend {
+    background-color: #f1f5f9;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    width: 100%;
+}
+
+#createFormContainer .collapsible-actions .fcontainer {
+    padding: 1rem;
+}
+
+#createFormContainer .fitem {
+    margin-bottom: 1rem;
+}
+
+#createFormContainer .fitemtitle {
+    margin-bottom: 0.5rem;
+}
+
+#createFormContainer .felement {
+    margin-bottom: 0.25rem;
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

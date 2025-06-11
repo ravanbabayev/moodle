@@ -216,7 +216,56 @@ function local_lidio_require_kyc($merchant) {
     }
     
     return true;
-}/*
+}
+
+/**
+ * Serves the product image files for payment links.
+ *
+ * @param stdClass $course the course object
+ * @param stdClass $cm the course module object
+ * @param stdClass $context the context
+ * @param string $filearea the name of the file area
+ * @param array $args extra arguments (itemid, path)
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if the file not found, just send the file otherwise and do not return anything
+ */
+function local_lidio_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array()) {
+    global $DB, $CFG;
+
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
+        return false;
+    }
+
+    if ($filearea !== 'product_image') {
+        return false;
+    }
+
+    require_login();
+
+    $itemid = array_shift($args);
+    $filename = array_pop($args);
+    $filepath = $args ? '/' . implode('/', $args) . '/' : '/';
+
+    // Get file from storage
+    $fs = get_file_storage();
+    $file = $fs->get_file($context->id, 'local_lidio', $filearea, $itemid, $filepath, $filename);
+
+    if (!$file) {
+        return false;
+    }
+
+    // Security: check if the payment link exists
+    $paymentlink = $DB->get_record('local_lidio_payment_links', array('id' => $itemid));
+    if (!$paymentlink) {
+        return false;
+    }
+
+    // Send the file
+    send_stored_file($file, 86400, 0, $forcedownload, $options);
+}
+
+/*
 function local_lidio_extend_navigation(global_navigation $navigation) {
     global $USER;
 
@@ -230,5 +279,6 @@ function local_lidio_extend_navigation(global_navigation $navigation) {
     $main_node->nodetype = 1;
     $main_node->collapse = false;
     $main_node->foreceopen = true;
-}*/
+}
+*/
 

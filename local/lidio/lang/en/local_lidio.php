@@ -373,3 +373,54 @@ $string['paymentreturnhome'] = 'Return to Home';
 $string['paymentthankyou'] = 'Thank you for your payment';
 $string['paymentconfirmationsent'] = 'A confirmation has been sent to your email address';
 $string['paymentcontactmerchant'] = 'If you have any questions about your payment, please contact the merchant directly';
+
+// Additional dashboard strings
+$string['merchantstatusnotapproved'] = 'Your merchant status is not yet approved';
+$string['successfultransactions'] = 'Successful Transactions';
+$string['recenttransactions'] = 'Recent Transactions';
+$string['reference'] = 'Reference';
+$string['pending'] = 'Pending';
+
+// Product information strings
+$string['generalinformation'] = 'General Information';
+$string['productinformation'] = 'Product Information';
+$string['productname'] = 'Product Name';
+$string['productname_help'] = 'Enter the name of the product or service you are selling';
+$string['productimage'] = 'Product Image';
+$string['productimage_help'] = 'Upload an image of your product (optional)';
+$string['productdescription'] = 'Product Description';
+$string['productdescription_help'] = 'Provide a detailed description of your product or service';
+$string['customercontactrequirement'] = 'Customer Contact Requirement';
+$string['customercontactrequirement_help'] = 'Choose what contact information is required from customers';
+$string['phone_or_email'] = 'Phone or Email (either one required)';
+$string['phone_required'] = 'Phone Number Required';
+$string['email_required'] = 'Email Address Required';
+$string['both_required'] = 'Both Phone and Email Required';
+$string['invalidamount'] = 'Amount must be greater than 0';
+$string['invalidmaxuses'] = 'Maximum uses must be greater than 0';
+$string['createlink'] = 'Create Link';
+$string['currency'] = 'Currency';
+$string['expirydate'] = 'Expiry Date';
+$string['maxuses'] = 'Maximum Uses';
+$string['successurl'] = 'Success URL';
+$string['cancelurl'] = 'Cancel URL';
+$string['linkstatus'] = 'Status';
+$string['currentuses'] = 'Uses';
+$string['confirmdeletepaymentlink'] = 'Are you sure you want to delete this payment link?';
+
+// Customer contact validation
+$string['customercontactvalidation'] = 'Please provide at least one contact method';
+$string['customerphonevalidation'] = 'Please provide a valid phone number';
+$string['customeremailvalidation'] = 'Please provide a valid email address';
+
+// Additional missing strings
+$string['active'] = 'Active';
+$string['inactive'] = 'Inactive';
+$string['expired'] = 'Expired';
+$string['amount'] = 'Amount';
+$string['date'] = 'Date';
+$string['activate'] = 'Activate';
+$string['deactivate'] = 'Deactivate';
+$string['delete'] = 'Delete';
+$string['copypaymentlink'] = 'Copy Payment Link';
+$string['nopaymentlinks'] = 'You haven\'t created any payment links yet.';

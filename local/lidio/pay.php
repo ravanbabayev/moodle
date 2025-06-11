@@ -63,16 +63,79 @@ $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.
 // Display the payment form
 echo $OUTPUT->header();
 
+// Prepare contact requirements for template
+$contact_requirements = [
+    'phone_or_email' => false,
+    'phone_required' => false,
+    'email_required' => false,
+    'both_required' => false
+];
+
+// Set the appropriate requirement based on payment link settings
+$requirement = !empty($paymentlink->customer_contact_requirement) ? $paymentlink->customer_contact_requirement : 'phone_or_email';
+$contact_requirements[$requirement] = true;
+
 $templatecontext = [
     'paymentlink' => $paymentlink,
     'merchant' => $merchant,
     'amount_formatted' => number_format($paymentlink->amount, 2) . ' ' . $paymentlink->currency,
     'wwwroot' => $CFG->wwwroot,
     'sesskey' => sesskey(),
+    'contact_requirements' => $contact_requirements,
 ];
 
 // Process payment form submission
 if ($data = data_submitted() && confirm_sesskey()) {
+    // Validate customer contact information based on requirements
+    $errors = [];
+    $customer_email = !empty($data->customer_email) ? trim($data->customer_email) : '';
+    $customer_phone = !empty($data->customer_phone) ? trim($data->customer_phone) : '';
+    
+    switch ($requirement) {
+        case 'email_required':
+            if (empty($customer_email)) {
+                $errors[] = get_string('customeremailvalidation', 'local_lidio');
+            } elseif (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = get_string('customeremailvalidation', 'local_lidio');
+            }
+            break;
+            
+        case 'phone_required':
+            if (empty($customer_phone)) {
+                $errors[] = get_string('customerphonevalidation', 'local_lidio');
+            }
+            break;
+            
+        case 'both_required':
+            if (empty($customer_email)) {
+                $errors[] = get_string('customeremailvalidation', 'local_lidio');
+            } elseif (!filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = get_string('customeremailvalidation', 'local_lidio');
+            }
+            if (empty($customer_phone)) {
+                $errors[] = get_string('customerphonevalidation', 'local_lidio');
+            }
+            break;
+            
+        case 'phone_or_email':
+        default:
+            if (empty($customer_email) && empty($customer_phone)) {
+                $errors[] = get_string('customercontactvalidation', 'local_lidio');
+            } elseif (!empty($customer_email) && !filter_var($customer_email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = get_string('customeremailvalidation', 'local_lidio');
+            }
+            break;
+    }
+    
+    // If there are validation errors, display them and show the form again
+    if (!empty($errors)) {
+        foreach ($errors as $error) {
+            echo $OUTPUT->notification($error, 'error');
+        }
+        echo $OUTPUT->render_from_template('local_lidio/payment_form', $templatecontext);
+        echo $OUTPUT->footer();
+        exit;
+    }
     // Increment the usage counter
     $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
     
@@ -86,8 +149,8 @@ if ($data = data_submitted() && confirm_sesskey()) {
     $transaction->status = 'pending';
     $transaction->payment_method = $data->payment_method;
     $transaction->customer_name = $data->customer_name;
-    $transaction->customer_email = $data->customer_email;
-    $transaction->customer_phone = $data->customer_phone;
+    $transaction->customer_email = $customer_email; // Use validated email
+    $transaction->customer_phone = $customer_phone; // Use validated phone
     $transaction->timecreated = time();
     $transaction->timemodified = time();
     
