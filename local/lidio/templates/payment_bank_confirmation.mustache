@@ -1,0 +1,168 @@
+{{!
+    Bank transfer confirmation template for Lidio payment system.
+    @template local_lidio/payment_bank_confirmation
+}}
+
+<div class="payment-container" style="max-width: 800px; margin: 0 auto; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: white;">
+    <div class="payment-content">
+        <!-- Payment Header -->
+        <div class="payment-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="merchant-info">
+                <h2 style="margin: 0; font-size: 1.8rem; color: #333;">{{paymentlink.title}}</h2>
+                <p style="margin: 5px 0 0; color: #666;">{{merchant.company_name}}</p>
+            </div>
+            <div class="amount-display" style="font-size: 1.5rem; font-weight: bold; color: #3b82f6; background: #f0f7ff; padding: 10px 20px; border-radius: 10px;">
+                {{amount_formatted}}
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar" style="margin: 30px 0; position: relative;">
+            <div style="height: 6px; background: #e2e8f0; border-radius: 3px; width: 100%;">
+                <div style="height: 6px; background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); border-radius: 3px; width: 100%;"></div>
+            </div>
+            <div class="progress-steps" style="display: flex; justify-content: space-between; margin-top: 8px;">
+                <div class="step completed" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">✓</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Müşteri Bilgileri</div>
+                </div>
+                <div class="step completed" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">✓</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Ödeme Bilgileri</div>
+                </div>
+                <div class="step active" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">3</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Tamamlandı</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" style="text-align: center; margin: 40px 0;">
+            <div class="success-icon" style="margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <div style="font-size: 40px;">🏦</div>
+                </div>
+            </div>
+            
+            <h3 style="font-size: 1.5rem; color: #065f46; margin-bottom: 10px;">Havale Bilgileriniz Alındı</h3>
+            <p style="color: #047857; font-size: 1.1rem; margin-bottom: 30px;">Ödemeniz banka havalesi ile yapılacak.</p>
+            
+            <div class="transaction-details" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">İşlem Numarası:</div>
+                    <div style="color: #334155; font-weight: 600;">{{transaction.gateway_transaction_id}}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Tutar:</div>
+                    <div style="color: #334155; font-weight: 600;">{{amount_formatted}}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Havale Yapılacak Banka:</div>
+                    <div style="color: #334155; font-weight: 600;">{{bank_name}}</div>
+                </div>
+            </div>
+            
+            <!-- Bank Details -->
+            <div class="bank-details" style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <h4 style="color: #92400e; margin-top: 0; margin-bottom: 15px; font-size: 1.1rem;">Havale Bilgileri</h4>
+                
+                <div style="display: flex; margin-bottom: 10px;">
+                    <div style="width: 120px; font-weight: 500; color: #92400e;">Banka Adı:</div>
+                    <div style="color: #78350f;">{{merchant.company_name}} Banka Hesabı</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                    <div style="width: 120px; font-weight: 500; color: #92400e;">IBAN:</div>
+                    <div style="color: #78350f;">TR12 3456 7890 1234 5678 9012 34</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                    <div style="width: 120px; font-weight: 500; color: #92400e;">Hesap Sahibi:</div>
+                    <div style="color: #78350f;">{{merchant.company_name}}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 10px;">
+                    <div style="width: 120px; font-weight: 500; color: #92400e;">Açıklama:</div>
+                    <div style="color: #78350f; font-weight: 600;">{{transaction.gateway_transaction_id}}</div>
+                </div>
+            </div>
+            
+            <div class="alert" style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 8px; text-align: left;">
+                <p style="margin: 0; color: #b91c1c; font-weight: 500;">
+                    <strong>Önemli Not:</strong> Havale yaparken açıklama kısmına mutlaka <strong>{{transaction.gateway_transaction_id}}</strong> kodunu yazınız. Bu kod ile ödemenizi eşleştirebiliriz.
+                </p>
+            </div>
+            
+            <div class="next-steps" style="margin-top: 30px;">
+                <p style="color: #475569; margin-bottom: 5px;">Havale işleminizi tamamladıktan sonra,</p>
+                <p style="color: #475569; margin-bottom: 20px;">Havale onayı genellikle 1-2 iş günü içinde gerçekleşir.</p>
+                
+                <a href="{{wwwroot}}" class="button" style="display: inline-block; background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); color: white; text-decoration: none; border-radius: 8px; padding: 12px 25px; font-weight: 600; margin-top: 10px;">
+                    Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate elements on page load
+    const container = document.querySelector('.payment-container');
+    container.style.opacity = '0';
+    container.style.transform = 'translateY(50px)';
+    
+    setTimeout(() => {
+        container.style.transition = 'all 0.6s ease';
+        container.style.opacity = '1';
+        container.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Add confetti effect for success
+    createConfetti();
+    
+    function createConfetti() {
+        const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
+        const container = document.createElement('div');
+        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;';
+        document.body.appendChild(container);
+        
+        for (let i = 0; i < 100; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                const size = Math.random() * 10 + 5;
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: -10px;
+                    left: ${Math.random() * 100}vw;
+                    opacity: ${Math.random() * 0.7 + 0.3};
+                    transform: rotate(${Math.random() * 360}deg);
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                `;
+                
+                const keyframes = `
+                    @keyframes fall {
+                        to {
+                            transform: translateY(100vh) rotate(${Math.random() * 720}deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                
+                const style = document.createElement('style');
+                style.appendChild(document.createTextNode(keyframes));
+                document.head.appendChild(style);
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                    style.remove();
+                }, 5000);
+            }, i * 50);
+        }
+    }
+});
+</script> 

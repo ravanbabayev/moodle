@@ -131,17 +131,13 @@ if ($data = data_submitted() && confirm_sesskey()) {
         
         echo "<p style='background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px;'>İşlem ID: " . $transactionid . "</p>";
         
-        // Redirect to payment gateway or process payment
-        // This is a placeholder for the actual payment processing logic
-        // In a real implementation, you would redirect to a payment gateway or process the payment here
+        // İşlem kaydı oluşturulduktan sonra, ödeme yöntemine göre ödeme detayları sayfasına yönlendir
+        $payment_details_url = new moodle_url('/local/lidio/payment_details.php', [
+            'id' => $transactionid, 
+            'method' => $transaction->payment_method
+        ]);
+        redirect($payment_details_url);
         
-        // For now, just redirect to a success page
-        if (!empty($paymentlink->success_url)) {
-            redirect($paymentlink->success_url);
-        } else {
-            $successurl = $CFG->wwwroot . '/local/lidio/payment_success.php?reference=' . $transaction->gateway_transaction_id;
-            redirect($successurl);
-        }
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';
         echo '<h3>Hata Oluştu:</h3>';

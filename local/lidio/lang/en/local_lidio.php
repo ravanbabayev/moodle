@@ -484,3 +484,15 @@ $string['refundsuccess'] = 'The transaction has been refunded successfully.';
 $string['refunderror'] = 'There was an error processing the refund.';
 $string['refunderror_wrongstatus'] = 'This transaction cannot be refunded because it is not in "completed" status.';
 $string['refundconfirm'] = 'Are you sure you want to refund this transaction?';
+
+// Payment page strings
+$string['paynow'] = 'Pay Now';
+$string['paymentdetails'] = 'Payment Details for {$a->amount}';
+$string['bankdetails'] = 'Bank Transfer Details';
+$string['invalidpaymentlink'] = 'Invalid or expired payment link';
+$string['paymentlinkexpired'] = 'This payment link has expired';
+$string['paymentlinkmaxuses'] = 'This payment link has reached its maximum number of uses';
+$string['invalidmerchant'] = 'Invalid merchant information';
+$string['customerphonevalidation'] = 'Please provide a valid phone number';
+$string['customeremailvalidation'] = 'Please provide a valid email address';
+$string['customernamevalidation'] = 'Please provide your name';
