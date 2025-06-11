@@ -252,5 +252,34 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025061109, 'local', 'lidio');
     }
 
+    if ($oldversion < 2025061112) {
+        // Rename 'reference' field to 'gateway_transaction_id' in transactions table
+        $table = new xmldb_table('local_lidio_transactions');
+        
+        // Check if the old field exists and the new one doesn't
+        $oldfield = new xmldb_field('reference', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+        $newfield = new xmldb_field('gateway_transaction_id', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        
+        if ($dbman->field_exists($table, $oldfield) && !$dbman->field_exists($table, $newfield)) {
+            // First, drop the index on the old field if it exists
+            $index = new xmldb_index('reference', XMLDB_INDEX_UNIQUE, ['reference']);
+            if ($dbman->index_exists($table, $index)) {
+                $dbman->drop_index($table, $index);
+            }
+            
+            // Rename the field
+            $dbman->rename_field($table, $oldfield, 'gateway_transaction_id');
+            
+            // Add a new index on the renamed field
+            $index = new xmldb_index('gateway_transaction_id', XMLDB_INDEX_NOTUNIQUE, ['gateway_transaction_id']);
+            if (!$dbman->index_exists($table, $index)) {
+                $dbman->add_index($table, $index);
+            }
+        }
+        
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025061112, 'local', 'lidio');
+    }
+
     return true;
 } 
