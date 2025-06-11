@@ -18,48 +18,62 @@
  * Payment success page for Lidio payment system
  *
  * @package    local_lidio
- * @copyright  2023 onwards
+ * @copyright  2023 Your Name <your.email@example.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
 
-// Get the transaction reference from the URL
-$reference = required_param('reference', PARAM_TEXT);
+// Import required classes
+use \context_system;
+use \moodle_url;
 
-// Check if the transaction exists
-global $DB;
+// Get transaction reference from URL
+$reference = required_param('reference', PARAM_ALPHANUM);
+
+// Fetch transaction data
 $transaction = $DB->get_record('local_lidio_transactions', ['reference' => $reference], '*', MUST_EXIST);
 
-// Get payment link details
-$paymentlink = null;
-if (!empty($transaction->payment_link_id)) {
-    $paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id]);
-}
+// Fetch payment link
+$paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id], '*', MUST_EXIST);
 
-// Get merchant details
+// Fetch merchant
 $merchant = $DB->get_record('local_lidio_merchants', ['id' => $transaction->merchant_id], '*', MUST_EXIST);
 
-// Page setup
-$PAGE->set_context(\context_system::instance());
-$PAGE->set_url('/local/lidio/payment_success.php', ['reference' => $reference]);
+// Set up the page
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url(new moodle_url('/local/lidio/payment_success.php', ['reference' => $reference]));
 $PAGE->set_title(get_string('paymentsuccess', 'local_lidio'));
 $PAGE->set_heading(get_string('paymentsuccess', 'local_lidio'));
+$PAGE->set_pagelayout('standard');
 
-// Add Tailwind CSS
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
+// Format the amount with currency
+$amount_formatted = number_format($transaction->amount, 2) . ' ' . $transaction->currency;
 
-// Display the success page
+// Render the success page
 echo $OUTPUT->header();
 
+// Create template context
 $templatecontext = [
     'transaction' => $transaction,
     'paymentlink' => $paymentlink,
     'merchant' => $merchant,
-    'amount_formatted' => number_format($transaction->amount, 2) . ' ' . $transaction->currency,
+    'amount_formatted' => $amount_formatted,
     'wwwroot' => $CFG->wwwroot,
+    'is_credit_card' => ($transaction->payment_method === 'credit_card'),
+    'is_bank_transfer' => ($transaction->payment_method === 'bank_transfer'),
 ];
 
+// Get card last 4 digits from gateway response if available
+if (!empty($transaction->gateway_response)) {
+    $gateway_response = json_decode($transaction->gateway_response, true);
+    if (isset($gateway_response['card_last4'])) {
+        $templatecontext['card_last4'] = $gateway_response['card_last4'];
+    }
+}
+
+// Render the template
 echo $OUTPUT->render_from_template('local_lidio/payment_success', $templatecontext);
+
 echo $OUTPUT->footer(); 

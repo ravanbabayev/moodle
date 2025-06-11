@@ -33,167 +33,165 @@
     * wwwroot - Site root URL
 }}
 
-<style>
-    /* Custom styles to enhance Tailwind */
-    .success-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
-    
-    .success-header {
-        background-color: #10b981;
-        padding: 2rem 1.5rem;
-        color: white;
-        text-align: center;
-    }
-    
-    .success-icon {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 1rem;
-    }
-    
-    .success-body {
-        padding: 2rem;
-        background-color: white;
-    }
-    
-    .success-details {
-        background-color: #f9fafb;
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #e5e7eb;
-    }
-    
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    
-    .detail-row:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
-    
-    .detail-label {
-        font-weight: 500;
-        color: #4b5563;
-    }
-    
-    .detail-value {
-        font-weight: 600;
-        color: #111827;
-    }
-    
-    .detail-value.amount {
-        font-size: 1.25rem;
-        color: #10b981;
-    }
-    
-    .success-message {
-        text-align: center;
-        margin: 2rem 0;
-    }
-    
-    .success-message p {
-        margin-bottom: 0.5rem;
-        color: #4b5563;
-    }
-    
-    .button-container {
-        text-align: center;
-        margin-top: 1.5rem;
-    }
-    
-    .primary-button {
-        display: inline-block;
-        background-color: #005eff;
-        color: white;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.375rem;
-        text-decoration: none;
-        transition: background-color 0.2s;
-    }
-    
-    .primary-button:hover {
-        background-color: #0046cc;
-    }
-    
-    .secondary-button {
-        display: inline-block;
-        background-color: #e5e7eb;
-        color: #374151;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.375rem;
-        text-decoration: none;
-        transition: background-color 0.2s;
-        margin-top: 1rem;
-    }
-    
-    .secondary-button:hover {
-        background-color: #d1d5db;
-    }
-</style>
-
-<div class="success-container">
-    <div class="success-header">
-        <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
-        <h2 class="text-2xl font-bold">Payment Successful!</h2>
-    </div>
-    
-    <div class="success-body">
-        <div class="success-details">
-            <div class="detail-row">
-                <span class="detail-label">Amount:</span>
-                <span class="detail-value amount">{{amount_formatted}}</span>
+<div class="payment-container" style="max-width: 800px; margin: 0 auto; padding: 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); background: white;">
+    <div class="payment-content">
+        <!-- Payment Header -->
+        <div class="payment-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="merchant-info">
+                <h2 style="margin: 0; font-size: 1.8rem; color: #333;">{{paymentlink.title}}</h2>
+                <p style="margin: 5px 0 0; color: #666;">{{merchant.company_name}}</p>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Reference:</span>
-                <span class="detail-value">{{transaction.reference}}</span>
+            <div class="amount-display" style="font-size: 1.5rem; font-weight: bold; color: #3b82f6; background: #f0f7ff; padding: 10px 20px; border-radius: 10px;">
+                {{amount_formatted}}
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Date:</span>
-                <span class="detail-value">{{#userdate}}{{transaction.timecreated}}, %d %B %Y %H:%M{{/userdate}}</span>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar" style="margin: 30px 0; position: relative;">
+            <div style="height: 6px; background: #e2e8f0; border-radius: 3px; width: 100%;">
+                <div style="height: 6px; background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); border-radius: 3px; width: 100%;"></div>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Merchant:</span>
-                <span class="detail-value">{{merchant.company_name}}</span>
+            <div class="progress-steps" style="display: flex; justify-content: space-between; margin-top: 8px;">
+                <div class="step completed" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">✓</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Müşteri Bilgileri</div>
+                </div>
+                <div class="step completed" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">✓</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Ödeme Bilgileri</div>
+                </div>
+                <div class="step completed" style="text-align: center; position: relative;">
+                    <div style="width: 26px; height: 26px; background: #3b82f6; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto;">✓</div>
+                    <div style="font-size: 0.85rem; color: #3b82f6; margin-top: 4px;">Tamamlandı</div>
+                </div>
             </div>
         </div>
 
-        <div class="success-message">
-            <p>Thank you for your payment. A confirmation has been sent to your email address.</p>
-            <p>If you have any questions about your payment, please contact the merchant directly.</p>
-        </div>
-
-        {{#paymentlink}}
-            {{#success_url}}
-            <div class="button-container">
-                <a href="{{success_url}}" class="primary-button">
-                    Return to Merchant
+        <!-- Success Message -->
+        <div class="success-message" style="text-align: center; margin: 40px 0;">
+            <div class="success-icon" style="margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <div style="font-size: 40px;">✅</div>
+                </div>
+            </div>
+            
+            <h3 style="font-size: 1.5rem; color: #065f46; margin-bottom: 10px;">Ödemeniz Başarıyla Alındı</h3>
+            <p style="color: #047857; font-size: 1.1rem; margin-bottom: 30px;">İşleminiz tamamlandı, teşekkür ederiz!</p>
+            
+            <div class="transaction-details" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">İşlem Numarası:</div>
+                    <div style="color: #334155; font-weight: 600;">{{transaction.reference}}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Tutar:</div>
+                    <div style="color: #334155; font-weight: 600;">{{amount_formatted}}</div>
+                </div>
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Ödeme Yöntemi:</div>
+                    <div style="color: #334155; font-weight: 600;">
+                        {{#is_credit_card}}Kredi Kartı{{/is_credit_card}}
+                        {{#is_bank_transfer}}Banka Havalesi{{/is_bank_transfer}}
+                    </div>
+                </div>
+                {{#is_credit_card}}
+                {{#card_last4}}
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Kart Numarası:</div>
+                    <div style="color: #334155; font-weight: 600;">**** **** **** {{card_last4}}</div>
+                </div>
+                {{/card_last4}}
+                {{/is_credit_card}}
+                <div style="display: flex; margin-bottom: 12px;">
+                    <div style="width: 170px; font-weight: 500; color: #475569;">Tarih:</div>
+                    <div style="color: #334155; font-weight: 600;">{{#transaction.timecompleted}}{{.}}{{/transaction.timecompleted}}{{^transaction.timecompleted}}{{transaction.timemodified}}{{/transaction.timecompleted}}</div>
+                </div>
+            </div>
+            
+            <!-- Receipt Notice -->
+            <div class="receipt-notice" style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px;">
+                <h4 style="color: #1e40af; margin-top: 0; margin-bottom: 10px; font-size: 1.1rem;">Ödeme Bilgileri</h4>
+                <p style="color: #1e3a8a; margin-bottom: 5px;">
+                    Ödeme makbuzunuz e-posta adresinize gönderilecektir. Ayrıca bu sayfayı yazdırabilir veya kaydedebilirsiniz.
+                </p>
+                <p style="color: #1e3a8a; margin-bottom: 0;">
+                    Sorularınız için lütfen <strong>{{merchant.email}}</strong> adresine e-posta gönderin veya <strong>{{merchant.phone}}</strong> numaralı telefondan iletişime geçin.
+                </p>
+            </div>
+            
+            <div class="next-steps" style="margin-top: 30px;">
+                <a href="{{wwwroot}}" class="button" style="display: inline-block; background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); color: white; text-decoration: none; border-radius: 8px; padding: 12px 25px; font-weight: 600; margin-top: 10px;">
+                    Ana Sayfaya Dön
                 </a>
+                
+                <button onclick="window.print()" class="button secondary" style="display: inline-block; background: white; border: 1px solid #d1d5db; color: #4b5563; text-decoration: none; border-radius: 8px; padding: 12px 25px; font-weight: 600; margin-top: 10px; margin-left: 10px; cursor: pointer;">
+                    🖨️ Yazdır
+                </button>
             </div>
-            {{/success_url}}
-        {{/paymentlink}}
-
-        <div class="button-container">
-            <a href="{{wwwroot}}" class="secondary-button">
-                Return to Home
-            </a>
         </div>
     </div>
-</div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate elements on page load
+    const container = document.querySelector('.payment-container');
+    container.style.opacity = '0';
+    container.style.transform = 'translateY(50px)';
+    
+    setTimeout(() => {
+        container.style.transition = 'all 0.6s ease';
+        container.style.opacity = '1';
+        container.style.transform = 'translateY(0)';
+    }, 100);
+    
+    // Add confetti effect for success
+    createConfetti();
+    
+    function createConfetti() {
+        const colors = ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'];
+        const container = document.createElement('div');
+        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;';
+        document.body.appendChild(container);
+        
+        for (let i = 0; i < 100; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                const size = Math.random() * 10 + 5;
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: -10px;
+                    left: ${Math.random() * 100}vw;
+                    opacity: ${Math.random() * 0.7 + 0.3};
+                    transform: rotate(${Math.random() * 360}deg);
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    animation: fall ${Math.random() * 3 + 2}s linear forwards;
+                `;
+                
+                const keyframes = `
+                    @keyframes fall {
+                        to {
+                            transform: translateY(100vh) rotate(${Math.random() * 720}deg);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                
+                const style = document.createElement('style');
+                style.appendChild(document.createTextNode(keyframes));
+                document.head.appendChild(style);
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                    style.remove();
+                }, 5000);
+            }, i * 50);
+        }
+    }
+});
+</script> 
