@@ -32,6 +32,7 @@ $THEME->enable_dock = false;
 $THEME->yuicssmodules = array();
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->csspostprocess = 'theme_modernfrontpage_process_css';
+$THEME->removedprimarynavitems = ['courses'];
 
 $THEME->layouts = array(
     'base' => array(

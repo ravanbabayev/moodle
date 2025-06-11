@@ -71,8 +71,7 @@
                         <span class="text-white font-bold text-xl">L</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ sitename }}</h1>
-                        <p class="text-sm text-lidio-gray">Linkle Ödeme Alma</p>
+                        <h1 class="text-2xl font-bold text-gray-900">Lidio</h1>
                     </div>
                 </div>
 
@@ -107,10 +106,9 @@
                     <div class="hidden md:flex items-center space-x-3">
                         <span class="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded">TR</span>
                         <div class="w-px h-4 bg-gray-300"></div>
-                        <a href="#" class="text-gray-700 hover:text-lidio-green transition-colors duration-200 font-medium text-sm">Giriş Yap</a>
                     </div>
                     {{{ output.user_menu }}}
-                    <a href="#courses" class="bg-lidio-green hover:bg-lidio-green-dark text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+                    <a href="{{{ $CFG->wwwroot }}}/local/lidio/merchant_dashboard.php" class="bg-lidio-green hover:bg-lidio-green-dark text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
                         Başvur
                     </a>
                     <button class="lg:hidden text-gray-700 hover:text-lidio-green p-2">
@@ -438,24 +436,16 @@
     <!-- Course Content -->
     <section id="courses" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">İşinize değer katacak diğer ürünlerimiz</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Her işe ve ölçeğe uygun ürünlerimiz ile ödemeler dünyasını özgürleştiriyoruz. 
-                    Tüm servislerimiz işinizi büyütmek için tasarlandı.
-                </p>
-            </div>
 
             <!-- Main Content Area -->
-            <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg p-8 border border-gray-100">
-                <div id="region-main-box">
-                    <section id="region-main" class="prose max-w-none">
-                        {{{ output.course_content_header }}}
+                                    <div style="display: none;">
+                            {{{ output.course_content_header }}}
+                        </div>
                         {{{ output.main_content }}}
-                        {{{ output.course_content_footer }}}
-                    </section>
-                </div>
-            </div>
+                        <div style="display: none;">
+                            {{{ output.course_content_footer }}}
+                        </div>
+
 
             {{#hasregionmainsettingsmenu}}
             <div class="mt-8">
@@ -470,7 +460,7 @@
     {{#hasblocks}}
     <!-- Sidebar -->
     <aside class="bg-white border-l border-gray-200">
-        <div class="p-6">
+        <div class="p-6" style="display: none;">
             {{{ sidepreblocks }}}
         </div>
     </aside>

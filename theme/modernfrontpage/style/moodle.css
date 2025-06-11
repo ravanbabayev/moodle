@@ -157,6 +157,21 @@ a:hover {
     color: var(--lidio-green) !important;
 }
 
+/* Hide navigation/breadcrumb on frontpage */
+.pagelayout-frontpage .breadcrumb,
+.pagelayout-frontpage #page-navbar,
+.pagelayout-frontpage .navbar:not(.fixed-top):not(.sticky-top),
+.pagelayout-frontpage .secondary-navigation,
+.pagelayout-frontpage .tertiary-navigation {
+    display: none !important;
+}
+
+/* Hide course header navigation elements */
+.pagelayout-frontpage .course-content-header,
+.pagelayout-frontpage .activity-navigation {
+    display: none !important;
+}
+
 /* Hero Section Specific Styles */
 .hero-floating-card {
     animation: float 6s ease-in-out infinite;
@@ -245,3 +260,7 @@ a:hover {
 .animate-slide-in-right {
     animation: slideInFromRight 0.8s ease-out;
 } 
+
+.mobilelink, .tool_dataprivacy {
+    display: none !important;
+}
