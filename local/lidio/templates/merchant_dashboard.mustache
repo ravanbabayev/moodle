@@ -118,11 +118,11 @@
 
     <!-- Add a new section for recent transactions -->
     <div class="bg-white rounded-lg p-5 shadow mb-6 mx-4 md:mx-6">
-        <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-gray-800">{{strings.recenttransactions}}</h3>
             <a href="{{transactions_url}}" class="text-sm text-blue-500">{{strings.viewalltransactions}}</a>
         </div>
-        
+
         {{#has_transactions}}
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white">
@@ -156,7 +156,7 @@
         <div class="bg-gray-50 p-6 rounded-lg text-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+                        </svg>
             <p class="text-gray-600">{{strings.notransactions}}</p>
             <a href="{{create_payment_link_url}}" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Create a payment link

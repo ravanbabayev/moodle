@@ -116,7 +116,7 @@ if ($data = data_submitted() && confirm_sesskey()) {
     $transaction = new \stdClass();
     $transaction->merchant_id = $paymentlink->merchantid;
     $transaction->payment_link_id = $paymentlink->id;
-    $transaction->reference = uniqid('LIDIO-');
+    $transaction->gateway_transaction_id = uniqid('LIDIO-');
     $transaction->amount = $paymentlink->amount;
     $transaction->currency = $paymentlink->currency;
     $transaction->status = 'pending';
@@ -137,7 +137,7 @@ if ($data = data_submitted() && confirm_sesskey()) {
     if (!empty($paymentlink->success_url)) {
         redirect($paymentlink->success_url);
     } else {
-        $successurl = $CFG->wwwroot . '/local/lidio/payment_success.php?reference=' . $transaction->reference;
+        $successurl = $CFG->wwwroot . '/local/lidio/payment_success.php?reference=' . $transaction->gateway_transaction_id;
         redirect($successurl);
     }
 }
