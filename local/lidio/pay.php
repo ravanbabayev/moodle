@@ -73,25 +73,7 @@ $contact_requirements = [
 ];
 
 // Process payment form submission
-if ($data = data_submitted() && confirm_sesskey()) {
-    // Doğrulamayı tamamen kaldırıyoruz
-    $errors = [];
-    $customer_email = !empty($data->customer_email) ? trim($data->customer_email) : '';
-    $customer_phone = !empty($data->customer_phone) ? trim($data->customer_phone) : '';
-    
-    // Form verilerini yazdır
-    echo "<div style='background-color: #e2f0ff; border: 1px solid #b8daff; padding: 15px; margin: 15px; border-radius: 5px;'>";
-    echo "<h3>Form Verileri (data_submitted):</h3>";
-    echo "<pre>" . print_r($data, true) . "</pre>";
-    echo "</div>";
-    
-    // $_POST verilerini de yazdır
-    echo "<div style='background-color: #e9ecef; border: 1px solid #ced4da; padding: 15px; margin: 15px; border-radius: 5px;'>";
-    echo "<h3>POST Verileri:</h3>";
-    echo "<pre>" . print_r($_POST, true) . "</pre>";
-    echo "</div>";
-    
-    // Hata ayıklama için
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     try {
         // Increment the usage counter
         $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
@@ -110,61 +92,45 @@ if ($data = data_submitted() && confirm_sesskey()) {
         
         // Ödeme yöntemi için varsayılan değer
         $transaction->payment_method = 'credit_card'; // Varsayılan değer
-        if (isset($data->payment_method) && !empty($data->payment_method)) {
-            $transaction->payment_method = $data->payment_method;
+        if (isset($_POST['payment_method']) && !empty($_POST['payment_method'])) {
+            $transaction->payment_method = $_POST['payment_method'];
         }
         
-        // Müşteri bilgileri - data_submitted() nesnesi kullanılırken doğru alanlara erişim sağlandığından emin olalım
+        // Müşteri bilgileri - direct $_POST erişimi
         $transaction->customer_name = '';
-        if (isset($data->customer_name)) {
-            $transaction->customer_name = trim($data->customer_name);
+        if (isset($_POST['customer_name'])) {
+            $transaction->customer_name = trim($_POST['customer_name']);
         }
         
         $transaction->customer_email = '';
-        if (isset($data->customer_email)) {
-            $transaction->customer_email = trim($data->customer_email);
+        if (isset($_POST['customer_email'])) {
+            $transaction->customer_email = trim($_POST['customer_email']);
         }
         
         $transaction->customer_phone = '';
-        if (isset($data->customer_phone)) {
-            $transaction->customer_phone = trim($data->customer_phone);
+        if (isset($_POST['customer_phone'])) {
+            $transaction->customer_phone = trim($_POST['customer_phone']);
         }
         
         $transaction->timecreated = time();
         $transaction->timemodified = time();
         
-        // Debug bilgisi
-        echo "<div style='background-color: #d4edda; border: 1px solid #c3e6cb; padding: 15px; margin: 15px; border-radius: 5px;'>";
-        echo "<h3>Transaction Verileri:</h3>";
-        echo "<pre>" . print_r($transaction, true) . "</pre>";
-        echo "</div>";
-        
-        // Veritabanı şemasını kontrol et
-        $table_info = $DB->get_columns('local_lidio_transactions');
-        echo "<div style='background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin: 15px; border-radius: 5px;'>";
-        echo "<h3>Veritabanı Şeması:</h3>";
-        echo "<pre>" . print_r($table_info, true) . "</pre>";
-        echo "</div>";
-        
+        // Insert transaction record
         $transactionid = $DB->insert_record('local_lidio_transactions', $transaction);
-        
-        echo "<p style='background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px;'>İşlem ID: " . $transactionid . "</p>";
         
         // İşlem kaydı oluşturulduktan sonra, ödeme yöntemine göre ödeme detayları sayfasına yönlendir
         $payment_details_url = new moodle_url('/local/lidio/payment_details.php', [
             'id' => $transactionid, 
             'method' => $transaction->payment_method
         ]);
+        
+        // Yönlendirme öncesi çıktı verilmemeli
         redirect($payment_details_url);
         
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';
         echo '<h3>Hata Oluştu:</h3>';
         echo '<p>' . $e->getMessage() . '</p>';
-        echo '<p>Dosya: ' . $e->getFile() . ' (Satır: ' . $e->getLine() . ')</p>';
-        echo '<p>Hata Kodu: ' . $e->getCode() . '</p>';
-        echo '<p>Hata İzleme:</p>';
-        echo '<pre>' . $e->getTraceAsString() . '</pre>';
         echo '</div>';
     }
 }
