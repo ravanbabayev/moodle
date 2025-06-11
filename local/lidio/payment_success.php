@@ -32,8 +32,31 @@ use \moodle_url;
 // Get transaction reference from URL
 $transaction_id = required_param('transaction_id', PARAM_ALPHANUM);
 
+// Debug bilgisi ekle
+$transactions = $DB->get_records_sql("SELECT id, gateway_transaction_id FROM {local_lidio_transactions} ORDER BY id DESC LIMIT 10");
+echo "<div style='background-color: #f0f0f0; padding: 15px; margin: 15px; border-radius: 5px;'>";
+echo "<h3>Debug Bilgisi:</h3>";
+echo "<p>Aranan transaction_id: " . $transaction_id . "</p>";
+echo "<p>Son 10 transaction kaydı:</p><ul>";
+foreach ($transactions as $t) {
+    echo "<li>ID: " . $t->id . ", gateway_transaction_id: " . $t->gateway_transaction_id . 
+         ($t->gateway_transaction_id == $transaction_id ? " <strong>(EŞLEŞME VAR)</strong>" : "") . "</li>";
+}
+echo "</ul></div>";
+
 // Fetch transaction data
-$transaction = $DB->get_record('local_lidio_transactions', ['gateway_transaction_id' => $transaction_id], '*', MUST_EXIST);
+$transaction = $DB->get_record('local_lidio_transactions', ['gateway_transaction_id' => $transaction_id]);
+
+// Eğer transaction bulunamadıysa, hata mesajı göster
+if (!$transaction) {
+    echo $OUTPUT->header();
+    echo "<div style='background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;'>";
+    echo "<h3>Hata:</h3>";
+    echo "<p>Transaction kaydı bulunamadı. Transaction ID: " . $transaction_id . "</p>";
+    echo "</div>";
+    echo $OUTPUT->footer();
+    die();
+}
 
 // Fetch payment link
 $paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id], '*', MUST_EXIST);
