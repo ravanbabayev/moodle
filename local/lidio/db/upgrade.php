@@ -212,11 +212,6 @@ function xmldb_local_lidio_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Lidio savepoint reached.
-        upgrade_plugin_savepoint(true, 2025061107, 'local', 'lidio');
-    }
-
-    if ($oldversion < 2025061107) {
         // Create table for link sharing history
         $table = new xmldb_table('local_lidio_link_shares');
 
@@ -244,6 +239,7 @@ function xmldb_local_lidio_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
 
         // Lidio savepoint reached.
         upgrade_plugin_savepoint(true, 2025061107, 'local', 'lidio');
