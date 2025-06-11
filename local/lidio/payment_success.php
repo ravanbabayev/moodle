@@ -33,7 +33,7 @@ use \moodle_url;
 $reference = required_param('reference', PARAM_ALPHANUM);
 
 // Fetch transaction data
-$transaction = $DB->get_record('local_lidio_transactions', ['reference' => $reference], '*', MUST_EXIST);
+$transaction = $DB->get_record('local_lidio_transactions', ['gateway_transaction_id' => $reference], '*', MUST_EXIST);
 
 // Fetch payment link
 $paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id], '*', MUST_EXIST);

@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $transaction = new \stdClass();
         $transaction->merchant_id = $paymentlink->merchantid;
         $transaction->payment_link_id = $paymentlink->id;
-        $transaction->reference = $reference_code; // Veritabanında reference alanı var
+        $transaction->gateway_transaction_id = $reference_code;
         $transaction->amount = $paymentlink->amount;
         $transaction->currency = $paymentlink->currency;
         $transaction->status = 'pending';
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
             // Bu örnekte, payment_processor.php adında bir dosya kullandığımızı varsayıyoruz
             $payment_url = new moodle_url('/local/lidio/payment_processor.php', [
                 'id' => $transactionid, 
-                'reference' => $transaction->reference
+                'reference' => $transaction->gateway_transaction_id
             ]);
             
             // Linki kullanım sayacını artır
