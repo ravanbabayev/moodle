@@ -52,18 +52,18 @@ if ($hassiteconfig) {
     // Add merchant management page
     $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_merchants',
         get_string('merchantmanagement', 'local_lidio'),
-        new moodle_url('/local/lidio/admin/merchants.php'),
+        new \moodle_url('/local/lidio/admin/merchants.php'),
         'local/lidio:managemerchants'));
     
     // Add transactions page
     $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_transactions',
         get_string('transactionmanagement', 'local_lidio'),
-        new moodle_url('/local/lidio/admin/transactions.php'),
+        new \moodle_url('/local/lidio/admin/transactions.php'),
         'local/lidio:viewtransactions'));
     
     // Add reports page
     $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_reports',
         get_string('reports', 'local_lidio'),
-        new moodle_url('/local/lidio/admin/reports.php'),
+        new \moodle_url('/local/lidio/admin/reports.php'),
         'local/lidio:viewreports'));
 } 

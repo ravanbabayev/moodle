@@ -30,19 +30,17 @@ require_once($CFG->libdir . '/formslib.php');
 use core\notification;
 use core\output\html_writer;
 use core_table\output\html_table;
-use moodle_url;
-use context_system;
 
 // Check access
 require_login();
-require_capability('local/lidio:managemerchants', context_system::instance());
+require_capability('local/lidio:managemerchants', \context_system::instance());
 
 $id = required_param('id', PARAM_INT);
 $merchant = $DB->get_record('local_lidio_merchants', array('id' => $id), '*', MUST_EXIST);
 $user = $DB->get_record('user', array('id' => $merchant->userid), '*', MUST_EXIST);
 
 // Set up the page
-$PAGE->set_url(new moodle_url('/local/lidio/admin/edit_merchant.php', array('id' => $id)));
+$PAGE->set_url(new \moodle_url('/local/lidio/admin/edit_merchant.php', array('id' => $id)));
 $PAGE->set_title(get_string('merchantedit', 'local_lidio'));
 $PAGE->set_heading(get_string('merchantedit', 'local_lidio'));
 
@@ -151,7 +149,7 @@ $form = new edit_merchant_form($PAGE->url, array('merchant' => $merchant));
 
 // Process form submission
 if ($form->is_cancelled()) {
-    redirect(new moodle_url('/local/lidio/admin/merchants.php'));
+    redirect(new \moodle_url('/local/lidio/admin/merchants.php'));
 } else if ($data = $form->get_data()) {
     // Update merchant data
     $merchant->company_name = $data->company_name;
@@ -167,7 +165,7 @@ if ($form->is_cancelled()) {
     $DB->update_record('local_lidio_merchants', $merchant);
     
     notification::success(get_string('merchantupdated', 'local_lidio'));
-    redirect(new moodle_url('/local/lidio/admin/merchants.php'));
+    redirect(new \moodle_url('/local/lidio/admin/merchants.php'));
 }
 
 // Display the page
