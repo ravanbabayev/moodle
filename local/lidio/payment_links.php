@@ -459,6 +459,16 @@ echo $OUTPUT->header();
                                     <i class="fas fa-copy"></i>
                                 </button>
                                 
+                                <a href="<?php echo new moodle_url('/local/lidio/edit_payment_link.php', array('id' => $link->id)); ?>" class="inline-flex items-center p-2 border border-blue-300 rounded-md text-sm font-medium bg-white text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" title="Edit Payment Link">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <?php if (!empty($link->merchant_contact_info)): ?>
+                                <button class="inline-flex items-center p-2 border border-green-300 rounded-md text-sm font-medium bg-white text-green-700 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 share-link" data-link-id="<?php echo $link->id; ?>" data-contact="<?php echo htmlspecialchars($link->merchant_contact_info); ?>" data-method="<?php echo $link->sharing_method; ?>" title="Share Payment Link">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                                <?php endif; ?>
+                                
                                 <?php if ($link->status === 'active'): ?>
                                 <a href="<?php echo new moodle_url('/local/lidio/payment_links.php', array('action' => 'deactivate', 'id' => $link->id)); ?>" class="inline-flex items-center p-2 border border-gray-300 rounded-md text-sm font-medium bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200" title="<?php echo get_string('deactivate', 'local_lidio'); ?>">
                                     <i class="fas fa-pause"></i>
@@ -656,6 +666,108 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.classList.remove('text-green-700', 'bg-green-50');
                     this.classList.add('text-gray-700');
                 }, 2000);
+            });
+        });
+    });
+
+    // Share payment link functionality
+    document.querySelectorAll('.share-link').forEach(button => {
+        button.addEventListener('click', function() {
+            const linkId = this.getAttribute('data-link-id');
+            const contact = this.getAttribute('data-contact');
+            const method = this.getAttribute('data-method');
+            
+            // Create modal for sharing
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
+            modal.innerHTML = `
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg font-medium text-gray-900">Share Payment Link</h3>
+                        <div class="mt-4 px-7 py-3">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Recipient</label>
+                                <input type="text" id="recipient" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter phone number or email" value="${contact}">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Method</label>
+                                <select id="shareMethod" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="">Auto-detect</option>
+                                    <option value="email" ${method === 'email' ? 'selected' : ''}>📧 Email</option>
+                                    <option value="sms" ${method === 'sms' ? 'selected' : ''}>📱 SMS</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
+                                <textarea id="shareMessage" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Add a personal message..."></textarea>
+                            </div>
+                        </div>
+                        <div class="items-center px-4 py-3">
+                            <button id="confirmShare" class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 mr-2">
+                                Share Link
+                            </button>
+                            <button id="cancelShare" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Handle modal actions
+            modal.querySelector('#cancelShare').addEventListener('click', function() {
+                document.body.removeChild(modal);
+            });
+            
+            modal.querySelector('#confirmShare').addEventListener('click', function() {
+                const recipient = modal.querySelector('#recipient').value;
+                const shareMethod = modal.querySelector('#shareMethod').value;
+                const message = modal.querySelector('#shareMessage').value;
+                
+                if (!recipient) {
+                    alert('Please enter a recipient');
+                    return;
+                }
+                
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
+                this.disabled = true;
+                
+                // Send AJAX request to share link
+                fetch('<?php echo new moodle_url('/local/lidio/share_link.php'); ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        link_id: linkId,
+                        recipient: recipient,
+                        method: shareMethod,
+                        message: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.body.removeChild(modal);
+                    if (data.success) {
+                        alert('Payment link shared successfully!');
+                    } else {
+                        alert('Error sharing link: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    document.body.removeChild(modal);
+                    alert('Error sharing link. Please try again.');
+                });
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
             });
         });
     });

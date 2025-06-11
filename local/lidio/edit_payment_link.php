@@ -5,12 +5,13 @@ require_once($CFG->dirroot . '/local/lidio/lib.php');
 // Check login
 require_login();
 
-// Get current user
+// Get parameters
+$id = required_param('id', PARAM_INT);
 $userid = $USER->id;
 
 // Set up the page
-$title = get_string('createpaymentlink', 'local_lidio');
-$url = new moodle_url('/local/lidio/create_payment_link.php');
+$title = get_string('editpaymentlink', 'local_lidio');
+$url = new moodle_url('/local/lidio/edit_payment_link.php', array('id' => $id));
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title($title);
@@ -44,11 +45,23 @@ if ($merchant->status !== 'approved') {
     );
 }
 
-// Process form submission
+// Get the payment link
+$paymentlink = $DB->get_record('local_lidio_payment_links', array('id' => $id, 'merchantid' => $merchant->id));
+
+if (!$paymentlink) {
+    redirect(
+        new moodle_url('/local/lidio/payment_links.php'),
+        'Payment link not found',
+        null,
+        \core\output\notification::NOTIFY_ERROR
+    );
+}
+
 $errors = array();
 
+// Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
-    $title = trim($_POST['title'] ?? '');
+    $title_val = trim($_POST['title'] ?? '');
     $amount = floatval($_POST['amount'] ?? 0);
     $currency = $_POST['currency'] ?? 'TRY';
     $product_name = trim($_POST['product_name'] ?? '');
@@ -64,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     $cancel_url = trim($_POST['cancel_url'] ?? '');
     
     // Validation
-    if (empty($title)) {
+    if (empty($title_val)) {
         $errors[] = 'Payment link title is required';
     }
     if ($amount <= 0) {
@@ -78,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     }
     
     // Handle file upload
-    $product_image_url = '';
+    $product_image_url = $paymentlink->product_image; // Keep existing if no new upload
     if (!empty($_FILES['product_image']['name'])) {
         $upload_dir = $CFG->dataroot . '/local_lidio/product_images/';
         if (!is_dir($upload_dir)) {
@@ -94,29 +107,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
             
             if (move_uploaded_file($_FILES['product_image']['tmp_name'], $upload_path)) {
                 $product_image_url = $CFG->wwwroot . '/local/lidio/product_images/' . $filename;
+                
+                // Delete old image if exists
+                if (!empty($paymentlink->product_image)) {
+                    $old_filename = basename($paymentlink->product_image);
+                    $old_path = $upload_dir . $old_filename;
+                    if (file_exists($old_path)) {
+                        unlink($old_path);
+                    }
+                }
             }
         } else {
             $errors[] = 'Invalid file type. Please upload JPG, JPEG or PNG files only.';
         }
     }
     
-    // If no errors, create the payment link
+    // If no errors, update the payment link
     if (empty($errors)) {
-        // Generate unique link code
-        $link_code = md5(uniqid(rand(), true));
-        
         // Prepare record
         $record = new stdClass();
-        $record->merchantid = $merchant->id;
-        $record->title = $title;
+        $record->id = $id;
+        $record->title = $title_val;
         $record->description = $description;
         $record->amount = $amount;
         $record->currency = $currency;
-        $record->link_code = $link_code;
-        $record->status = 'active';
         $record->expiry_date = $expiry_date;
         $record->max_uses = $max_uses;
-        $record->current_uses = 0;
         $record->success_url = $success_url;
         $record->cancel_url = $cancel_url;
         $record->product_name = $product_name;
@@ -126,19 +142,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $record->require_email = $require_email ? 1 : 0;
         $record->merchant_contact_info = $merchant_contact_info;
         $record->sharing_method = $sharing_method;
-        $record->timecreated = time();
         $record->timemodified = time();
         
-        // Insert record
-        $DB->insert_record('local_lidio_payment_links', $record);
+        // Update record
+        $DB->update_record('local_lidio_payment_links', $record);
         
         redirect(new moodle_url('/local/lidio/payment_links.php'), 
-                'Payment link created successfully!', null, 
+                'Payment link updated successfully!', null, 
                 \core\output\notification::NOTIFY_SUCCESS);
     }
+} else {
+    // Pre-populate form with existing data
+    $_POST['title'] = $paymentlink->title;
+    $_POST['description'] = $paymentlink->description;
+    $_POST['amount'] = $paymentlink->amount;
+    $_POST['currency'] = $paymentlink->currency;
+    $_POST['product_name'] = $paymentlink->product_name;
+    $_POST['product_description'] = $paymentlink->product_description;
+    $_POST['require_phone'] = $paymentlink->require_phone ? '1' : '';
+    $_POST['require_email'] = $paymentlink->require_email ? '1' : '';
+    $_POST['merchant_contact_info'] = $paymentlink->merchant_contact_info ?? '';
+    $_POST['sharing_method'] = $paymentlink->sharing_method ?? '';
+    $_POST['expiry_date'] = $paymentlink->expiry_date ? date('Y-m-d', $paymentlink->expiry_date) : '';
+    $_POST['max_uses'] = $paymentlink->max_uses;
+    $_POST['success_url'] = $paymentlink->success_url;
+    $_POST['cancel_url'] = $paymentlink->cancel_url;
 }
 
-// Display the page
 echo $OUTPUT->header();
 ?>
 
@@ -298,6 +328,14 @@ echo $OUTPUT->header();
     gap: 1rem;
 }
 
+.current-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
 @media (max-width: 768px) {
     .form-row {
         grid-template-columns: 1fr;
@@ -315,8 +353,8 @@ echo $OUTPUT->header();
 
 <div class="form-container">
     <div class="form-header">
-        <h1><i class="fas fa-plus-circle"></i> Create Payment Link</h1>
-        <p>Create a new payment link for your customers</p>
+        <h1><i class="fas fa-edit"></i> Edit Payment Link</h1>
+        <p>Update your payment link details</p>
     </div>
     
     <div class="form-body">
@@ -384,9 +422,15 @@ echo $OUTPUT->header();
                 
                 <div class="form-group">
                     <label for="product_image" class="form-label">Product Image</label>
+                    <?php if (!empty($paymentlink->product_image)): ?>
+                    <div style="margin-bottom: 1rem;">
+                        <p style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #374151;">Current Image:</p>
+                        <img src="<?php echo $paymentlink->product_image; ?>" alt="Current product image" class="current-image">
+                    </div>
+                    <?php endif; ?>
                     <input type="file" id="product_image" name="product_image" class="form-file" 
                            accept=".jpg,.jpeg,.png">
-                    <div class="help-text">Upload an image of your product (JPG, JPEG, PNG - Max 5MB)</div>
+                    <div class="help-text">Upload a new image to replace the current one (JPG, JPEG, PNG - Max 5MB)</div>
                 </div>
                 
                 <div class="form-group">
@@ -479,7 +523,7 @@ echo $OUTPUT->header();
             
             <div style="text-align: center; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Create Payment Link
+                    <i class="fas fa-save"></i> Update Payment Link
                 </button>
                 <a href="<?php echo new moodle_url('/local/lidio/payment_links.php'); ?>" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancel
@@ -529,10 +573,11 @@ document.getElementById('product_image').addEventListener('change', function(e) 
                 preview = document.createElement('div');
                 preview.id = 'image-preview';
                 preview.style.marginTop = '1rem';
-                e.target.parentNode.appendChild(preview);
+                document.getElementById('product_image').parentNode.appendChild(preview);
             }
             
             preview.innerHTML = `
+                <p style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #374151;">New Image Preview:</p>
                 <img src="${e.target.result}" style="max-width: 200px; max-height: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Product Preview">
                 <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">Preview: ${file.name}</p>
             `;
@@ -570,6 +615,4 @@ document.querySelector('form').addEventListener('submit', function(e) {
 });
 </script>
 
-<?php
-echo $OUTPUT->footer();
-?> 
+<?php echo $OUTPUT->footer(); ?> 

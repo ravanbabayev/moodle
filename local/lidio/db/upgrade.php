@@ -178,5 +178,76 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025061104, 'local', 'lidio');
     }
 
+    if ($oldversion < 2025061107) {
+        // Update contact requirements system to new checkbox-based approach
+        $table = new xmldb_table('local_lidio_payment_links');
+
+        // Remove old customer_contact_requirement field
+        $field = new xmldb_field('customer_contact_requirement');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Add require_phone field
+        $field = new xmldb_field('require_phone', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'product_description');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add require_email field  
+        $field = new xmldb_field('require_email', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'require_phone');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add merchant contact info fields for link sharing
+        $field = new xmldb_field('merchant_contact_info', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'require_email');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add contact method for sharing (email, sms)  
+        $field = new xmldb_field('sharing_method', XMLDB_TYPE_CHAR, '10', null, null, null, null, 'merchant_contact_info');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025061107, 'local', 'lidio');
+    }
+
+    if ($oldversion < 2025061107) {
+        // Create table for link sharing history
+        $table = new xmldb_table('local_lidio_link_shares');
+
+        // Adding fields to table local_lidio_link_shares.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('payment_link_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('merchant_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('recipient', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('method', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('status', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'sent');
+        $table->add_field('message_content', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('response_data', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table local_lidio_link_shares.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('payment_link_id', XMLDB_KEY_FOREIGN, ['payment_link_id'], 'local_lidio_payment_links', ['id']);
+        $table->add_key('merchant_id', XMLDB_KEY_FOREIGN, ['merchant_id'], 'local_lidio_merchants', ['id']);
+
+        // Adding indexes to table local_lidio_link_shares.
+        $table->add_index('method', XMLDB_INDEX_NOTUNIQUE, ['method']);
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, ['status']);
+
+        // Conditionally launch create table for local_lidio_link_shares.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025061107, 'local', 'lidio');
+    }
+
     return true;
 } 
