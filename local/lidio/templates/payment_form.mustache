@@ -305,68 +305,30 @@
 </style>
 
 <div class="payment-container">
-    <!-- Header -->
-    <div class="payment-header">
-        <h1>{{paymentlink.title}}</h1>
-        <p class="merchant-info">{{merchant.company_name}}</p>
-    </div>
-    
-    <div class="payment-content">
-        {{#paymentlink.product_name}}
-        <!-- Product Showcase -->
-        <div class="product-showcase">
-            <div class="product-layout">
-                <div class="product-image-container">
-                    {{#paymentlink.product_image}}
-                    <img src="{{paymentlink.product_image}}" alt="{{paymentlink.product_name}}" class="product-image">
-                    {{/paymentlink.product_image}}
-                    {{^paymentlink.product_image}}
-                    <div style="background: #f1f5f9; height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 3rem; border: 2px dashed #cbd5e1;">
-                        📦
-                    </div>
-                    {{/paymentlink.product_image}}
-                </div>
-                
-                <div class="product-details">
-                    <h2>{{paymentlink.product_name}}</h2>
-                    {{#paymentlink.product_description}}
-                    <p class="product-description">{{paymentlink.product_description}}</p>
-                    {{/paymentlink.product_description}}
-                    <div class="price-tag">
-                        {{amount_formatted}}
-                    </div>
-                </div>
-            </div>
+    <div class="payment-card">
+        <div class="payment-header">
+            <h2 class="payment-title">{{paymentlink.title}}</h2>
+            <p class="merchant-name">{{merchant.merchant_name}}</p>
         </div>
-        {{/paymentlink.product_name}}
         
-        {{^paymentlink.product_name}}
-        <!-- No Product Layout -->
-        <div class="no-product-layout">
-            <div class="price-tag">
-                {{amount_formatted}}
-            </div>
-        </div>
-        {{/paymentlink.product_name}}
-        
-        <!-- Payment Description -->
-        {{#paymentlink.description}}
-        <div class="payment-details">
-            <div class="payment-description">
-                <h3>📝 Ödeme Açıklaması</h3>
-                <p>{{paymentlink.description}}</p>
-            </div>
-        </div>
-        {{/paymentlink.description}}
-        
-        <!-- Payment Form -->
-        <div class="form-section">
-            <h3 class="section-title">
-                👤 Müşteri Bilgileri
-            </h3>
+        <div class="product-info">
+            <h2 class="product-price">{{amount_formatted}}</h2>
             
+            {{#paymentlink.description}}
+            <h3 class="section-title">
+                📝 Ödeme Açıklaması
+            </h3>
+            <p class="product-description">{{paymentlink.description}}</p>
+            {{/paymentlink.description}}
+        </div>
+        
+        <div class="form-section">
             <form action="{{wwwroot}}/local/lidio/pay.php?code={{paymentlink.link_code}}" method="post" id="payment-form">
                 <input type="hidden" name="sesskey" value="{{sesskey}}">
+                
+                <h3 class="section-title">
+                    👤 Müşteri Bilgileri
+                </h3>
                 
                 <div class="form-group">
                     <label for="customer_name" class="form-label">Ad Soyad</label>
@@ -411,31 +373,42 @@
                 </div>
                 {{/contact_requirements.both_required}}
                 
-                <h3 class="section-title" style="margin-top: 2rem;">
-                    💳 Ödeme Yöntemi
+                <h3 class="section-title">
+                    💳 Ödeme Bilgileri
                 </h3>
                 
-                <div class="payment-methods">
-                    <div class="payment-method">
-                        <input type="radio" id="credit_card" name="payment_method" value="credit_card" required checked>
-                        <label for="credit_card" class="method-content">
-                            <div class="method-icon">💳</div>
-                            <div>
-                                <div style="font-weight: 600;">Kredi Kartı</div>
-                                <div class="info-text">Visa, Mastercard</div>
-                            </div>
-                        </label>
+                <div class="form-group">
+                    <label for="card_holder" class="form-label">Kart Üzerindeki İsim</label>
+                    <input type="text" id="card_holder" name="card_holder" class="form-input" required placeholder="Kart üzerindeki ismi girin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="card_number" class="form-label">Kart Numarası</label>
+                    <input type="text" id="card_number" name="card_number" class="form-input" required placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label class="form-label">Son Kullanma Tarihi</label>
+                        <div class="expiry-inputs">
+                            <select name="exp_month" class="form-select" required>
+                                <option value="" disabled selected>Ay</option>
+                                {{#exp_months}}
+                                <option value="{{.}}">{{.}}</option>
+                                {{/exp_months}}
+                            </select>
+                            <select name="exp_year" class="form-select" required>
+                                <option value="" disabled selected>Yıl</option>
+                                {{#exp_years}}
+                                <option value="{{.}}">{{.}}</option>
+                                {{/exp_years}}
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="payment-method">
-                        <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer">
-                        <label for="bank_transfer" class="method-content">
-                            <div class="method-icon">🏦</div>
-                            <div>
-                                <div style="font-weight: 600;">Banka Havalesi</div>
-                                <div class="info-text">EFT / Havale</div>
-                            </div>
-                        </label>
+                    <div class="form-group half">
+                        <label for="cvv" class="form-label">Güvenlik Kodu (CVV)</label>
+                        <input type="text" id="cvv" name="cvv" class="form-input" required placeholder="123" maxlength="4">
                     </div>
                 </div>
                 
@@ -446,174 +419,84 @@
                 <div class="secure-badge">
                     🔐 256-bit SSL ile güvenli ödeme
                 </div>
+                
+                <div class="card-icons">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349221.png" alt="Visa" width="40">
+                    <img src="https://cdn-icons-png.flaticon.com/512/349/349228.png" alt="MasterCard" width="40">
+                </div>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-// Modern notification system
-function showNotification(message, type = 'error') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 400px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    `;
-    
-    if (type === 'error') {
-        notification.style.background = 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)';
-        notification.innerHTML = `🚫 ${message}`;
-    } else if (type === 'success') {
-        notification.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
-        notification.innerHTML = `✅ ${message}`;
-    }
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => document.body.removeChild(notification), 300);
-    }, 4000);
-}
-
-// Form validation
-document.getElementById('payment-form').addEventListener('submit', function(e) {
-    // Tüm doğrulama kodları kaldırıldı
-    
-    // Show loading state
-    const submitButton = this.querySelector('.submit-button');
-    const originalText = submitButton.innerHTML;
-    submitButton.innerHTML = '⏳ İşleminiz gerçekleştiriliyor...';
-    submitButton.disabled = true;
-    
-    // Re-enable button after 30 seconds (timeout)
-    setTimeout(() => {
-        submitButton.innerHTML = originalText;
-        submitButton.disabled = false;
-    }, 30000);
-});
-
-// Real-time validation feedback
-{{#contact_requirements.phone_or_email}}
-const emailField = document.getElementById('customer_email');
-const phoneField = document.getElementById('customer_phone');
-
-function updateValidationState() {
-    const hasEmail = emailField.value.trim().length > 0;
-    const hasPhone = phoneField.value.trim().length > 0;
-    
-    if (hasEmail || hasPhone) {
-        emailField.style.borderColor = hasEmail ? '#48bb78' : '#e2e8f0';
-        phoneField.style.borderColor = hasPhone ? '#48bb78' : '#e2e8f0';
-    } else {
-        emailField.style.borderColor = '#e53e3e';
-        phoneField.style.borderColor = '#e53e3e';
-    }
-}
-
-emailField.addEventListener('input', updateValidationState);
-phoneField.addEventListener('input', updateValidationState);
-{{/contact_requirements.phone_or_email}}
-
-// Payment method selection animation
-document.querySelectorAll('.payment-method').forEach(method => {
-    method.addEventListener('click', function() {
-        const radio = this.querySelector('input[type="radio"]');
-        radio.checked = true;
-        
-        // Remove selection from other methods
-        document.querySelectorAll('.payment-method').forEach(other => {
-            if (other !== this) {
-                other.style.borderColor = '#e2e8f0';
-                other.style.background = '#f8fafc';
-            }
-        });
-        
-        // Highlight selected method
-        this.style.borderColor = '#3b82f6';
-        this.style.background = 'white';
-    });
-});
-
-// Auto-format phone number
-{{#contact_requirements.phone_or_email}}
-phoneField.addEventListener('input', function() {
-    let value = this.value.replace(/\D/g, ''); // Remove non-digits
-    
-    // Turkish phone number formatting
-    if (value.startsWith('90')) {
-        value = '+' + value;
-    } else if (value.startsWith('0')) {
-        value = '+90' + value.substring(1);
-    } else if (value.length > 0 && !value.startsWith('+')) {
-        value = '+90' + value;
-    }
-    
-    this.value = value;
-});
-{{/contact_requirements.phone_or_email}}
-
-{{#contact_requirements.phone_required}}
-const requiredPhoneField = document.getElementById('customer_phone');
-requiredPhoneField.addEventListener('input', function() {
-    let value = this.value.replace(/\D/g, ''); // Remove non-digits
-    
-    // Turkish phone number formatting
-    if (value.startsWith('90')) {
-        value = '+' + value;
-    } else if (value.startsWith('0')) {
-        value = '+90' + value.substring(1);
-    } else if (value.length > 0 && !value.startsWith('+')) {
-        value = '+90' + value;
-    }
-    
-    this.value = value;
-});
-{{/contact_requirements.phone_required}}
-
-// Add smooth animations
 document.addEventListener('DOMContentLoaded', function() {
-    // Animate elements on page load
-    const container = document.querySelector('.payment-container');
-    container.style.opacity = '0';
-    container.style.transform = 'translateY(50px)';
+    // Credit card number formatting
+    const cardNumberInput = document.getElementById('card_number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function(e) {
+            // Remove all non-digits
+            let value = this.value.replace(/\D/g, '');
+            
+            // Add a space after every 4 digits
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            // Update the input value
+            this.value = formattedValue;
+        });
+    }
     
-    setTimeout(() => {
-        container.style.transition = 'all 0.6s ease';
-        container.style.opacity = '1';
-        container.style.transform = 'translateY(0)';
-    }, 100);
+    // CVV validation - only digits
+    const cvvInput = document.getElementById('cvv');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
     
-    // Animate form elements
-    const formElements = document.querySelectorAll('.form-group, .payment-method, .submit-button');
-    formElements.forEach((element, index) => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
+    // Real-time validation feedback
+    {{#contact_requirements.phone_or_email}}
+    const emailField = document.getElementById('customer_email');
+    const phoneField = document.getElementById('customer_phone');
+
+    function updateValidationState() {
+        const hasEmail = emailField.value.trim().length > 0;
+        const hasPhone = phoneField.value.trim().length > 0;
         
-        setTimeout(() => {
-            element.style.transition = 'all 0.4s ease';
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-        }, 200 + (index * 50));
-    });
-    
-    // Kredi kartı seçeneğini görsel olarak seçili göster
-    const creditCardMethod = document.querySelector('#credit_card').closest('.payment-method');
-    creditCardMethod.style.borderColor = '#3b82f6';
-    creditCardMethod.style.background = 'white';
+        if (hasEmail || hasPhone) {
+            emailField.style.borderColor = hasEmail ? '#48bb78' : '#e2e8f0';
+            phoneField.style.borderColor = hasPhone ? '#48bb78' : '#e2e8f0';
+        } else {
+            emailField.style.borderColor = '#e53e3e';
+            phoneField.style.borderColor = '#e53e3e';
+        }
+    }
+
+    emailField.addEventListener('input', updateValidationState);
+    phoneField.addEventListener('input', updateValidationState);
+    {{/contact_requirements.phone_or_email}}
+
+    // Form submission animation
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('.submit-button');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '⏳ İşleminiz gerçekleştiriliyor...';
+            submitButton.disabled = true;
+            
+            // Re-enable button after 30 seconds (timeout)
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }, 30000);
+        });
+    }
 });
 </script> 

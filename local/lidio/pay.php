@@ -82,18 +82,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $transaction = new \stdClass();
         $transaction->merchant_id = $paymentlink->merchantid;
         $transaction->payment_link_id = $paymentlink->id;
-        $transaction->gateway_transaction_id = $reference_code;
+        $transaction->reference = $reference_code; // Veritabanında reference alanı var
         $transaction->amount = $paymentlink->amount;
         $transaction->currency = $paymentlink->currency;
         $transaction->status = 'pending';
         
-        // Ödeme yöntemi için varsayılan değer
-        $transaction->payment_method = 'credit_card'; // Varsayılan değer
-        if (isset($_POST['payment_method']) && !empty($_POST['payment_method'])) {
-            $transaction->payment_method = $_POST['payment_method'];
+        // Kredi kartı bilgilerini al
+        $card_number = isset($_POST['card_number']) ? preg_replace('/\D/', '', $_POST['card_number']) : '';
+        $card_holder = isset($_POST['card_holder']) ? trim($_POST['card_holder']) : '';
+        $exp_month = isset($_POST['exp_month']) ? trim($_POST['exp_month']) : '';
+        $exp_year = isset($_POST['exp_year']) ? trim($_POST['exp_year']) : '';
+        $cvv = isset($_POST['cvv']) ? trim($_POST['cvv']) : '';
+        
+        // Kart doğrulaması (bu örnek için basit doğrulama)
+        $errors = [];
+        
+        if (strlen($card_number) < 13 || strlen($card_number) > 19) {
+            $errors[] = get_string('invalidcardnumber', 'local_lidio');
         }
         
-        // Müşteri bilgileri - direct $_POST erişimi
+        if (empty($card_holder)) {
+            $errors[] = get_string('invalidcardholder', 'local_lidio');
+        }
+        
+        if (empty($exp_month) || empty($exp_year) || !is_numeric($exp_month) || !is_numeric($exp_year)) {
+            $errors[] = get_string('invalidexpiry', 'local_lidio');
+        }
+        
+        if (strlen($cvv) < 3 || strlen($cvv) > 4 || !is_numeric($cvv)) {
+            $errors[] = get_string('invalidcvv', 'local_lidio');
+        }
+        
+        // Hata varsa, formu tekrar göster
+        if (!empty($errors)) {
+            $error_message = implode('<br>', $errors);
+            // Hata mesajlarını göster
+            echo $OUTPUT->header();
+            echo '<div class="alert alert-danger">' . $error_message . '</div>';
+            
+            // Template context
+            $templatecontext = [
+                'paymentlink' => $paymentlink,
+                'merchant' => $merchant,
+                'amount_formatted' => $amount_formatted,
+                'contact_requirements' => $contact_requirements,
+                'sesskey' => sesskey(),
+                'wwwroot' => $CFG->wwwroot,
+                'exp_months' => range(1, 12),
+                'exp_years' => range(date('Y'), date('Y') + 10),
+            ];
+            
+            echo $OUTPUT->render_from_template('local_lidio/payment_form', $templatecontext);
+            echo $OUTPUT->footer();
+            exit;
+        }
+        
+        // Müşteri bilgileri
         $transaction->customer_name = '';
         if (isset($_POST['customer_name'])) {
             $transaction->customer_name = trim($_POST['customer_name']);
@@ -109,38 +153,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
             $transaction->customer_phone = trim($_POST['customer_phone']);
         }
         
+        $transaction->payment_method = 'credit_card';
         $transaction->timecreated = time();
         $transaction->timemodified = time();
         
         // Insert transaction record
         $transactionid = $DB->insert_record('local_lidio_transactions', $transaction);
         
-        // Ödeme yöntemine göre yönlendirme yap
-        if ($transaction->payment_method === 'credit_card') {
-            // Kredi kartı ödemesi için doğrudan ödeme işlemcisine yönlendir
-            // Bu örnekte, payment_processor.php adında bir dosya kullandığımızı varsayıyoruz
-            $payment_url = new moodle_url('/local/lidio/payment_processor.php', [
-                'id' => $transactionid, 
-                'reference' => $transaction->gateway_transaction_id
-            ]);
-            
-            // Linki kullanım sayacını artır
-            $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
-            
-            // Yönlendirme öncesi çıktı verilmemeli
-            redirect($payment_url);
-        } else if ($transaction->payment_method === 'bank_transfer') {
-            // Banka havalesi için banka bilgileri sayfasına yönlendir
-            $bank_details_url = new moodle_url('/local/lidio/payment_bank_details.php', [
-                'id' => $transactionid
-            ]);
-            
-            // Linki kullanım sayacını artır
-            $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
-            
-            // Yönlendirme öncesi çıktı verilmemeli
-            redirect($bank_details_url);
-        }
+        // Ödeme işlemi simülasyonu (gerçek bir ödeme entegrasyonu burada olacak)
+        // Burada gerçek bir ödeme ağ geçidi entegrasyonu yapılacak (Iyzico, PayTR, vs)
+        
+        // Simülasyon: İşlem her zaman başarılı
+        $transaction->id = $transactionid;
+        $transaction->status = 'completed';
+        $transaction->timecompleted = time();
+        $transaction->timemodified = time();
+        
+        // Son 4 hanesi ve sahte işlem ID'si
+        $last4 = substr($card_number, -4);
+        $gateway_txn_id = 'DEMO-' . time() . '-' . rand(1000, 9999);
+        
+        // Gateway yanıtını json olarak kaydet
+        $gateway_response = [
+            'status' => 'success',
+            'transaction_id' => $gateway_txn_id,
+            'card_last4' => $last4,
+            'card_brand' => detectCardBrand($card_number),
+            'processor' => 'DEMO',
+            'time' => time()
+        ];
+        
+        $transaction->gateway_response = json_encode($gateway_response);
+        
+        // Transaction'ı güncelle
+        $DB->update_record('local_lidio_transactions', $transaction);
+        
+        // Linki kullanım sayacını artır
+        $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+        
+        // Başarılı ödeme sayfasına yönlendir
+        redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->reference]));
         
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';
@@ -148,6 +200,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         echo '<p>' . $e->getMessage() . '</p>';
         echo '</div>';
     }
+}
+
+/**
+ * Kart markasını tespit eden yardımcı fonksiyon
+ *
+ * @param string $number Kart numarası
+ * @return string Kart markası
+ */
+function detectCardBrand($number) {
+    $number = preg_replace('/\D/', '', $number);
+    
+    // Kart numarası desenleri
+    $patterns = [
+        'visa' => '/^4\d{12}(\d{3})?$/',
+        'mastercard' => '/^(5[1-5]\d{4}|222[1-9]\d{3}|22[3-9]\d{4}|2[3-6]\d{5}|27[01]\d{4}|2720\d{3})\d{10}$/',
+        'amex' => '/^3[47]\d{13}$/',
+        'discover' => '/^(6011|65\d{2}|64[4-9]\d)\d{12}|(62\d{14})$/',
+    ];
+    
+    foreach ($patterns as $brand => $pattern) {
+        if (preg_match($pattern, $number)) {
+            return ucfirst($brand);
+        }
+    }
+    
+    return 'Unknown';
 }
 
 // Render the payment form
@@ -161,6 +239,8 @@ $templatecontext = [
     'contact_requirements' => $contact_requirements,
     'sesskey' => sesskey(),
     'wwwroot' => $CFG->wwwroot,
+    'exp_months' => range(1, 12),
+    'exp_years' => range(date('Y'), date('Y') + 10),
 ];
 
 // Render the template

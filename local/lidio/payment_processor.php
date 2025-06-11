@@ -34,7 +34,7 @@ $transactionid = required_param('id', PARAM_INT);
 $reference = required_param('reference', PARAM_ALPHANUM);
 
 // Fetch transaction data
-$transaction = $DB->get_record('local_lidio_transactions', ['id' => $transactionid, 'gateway_transaction_id' => $reference], '*', MUST_EXIST);
+$transaction = $DB->get_record('local_lidio_transactions', ['id' => $transactionid, 'reference' => $reference], '*', MUST_EXIST);
 
 // Fetch payment link
 $paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id], '*', MUST_EXIST);
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $DB->update_record('local_lidio_transactions', $transaction);
         
         // Başarılı ödeme sayfasına yönlendir
-        redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->gateway_transaction_id]));
+        redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->reference]));
         
     } catch (Exception $e) {
         echo $OUTPUT->header();

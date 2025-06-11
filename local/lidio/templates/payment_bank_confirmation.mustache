@@ -51,7 +51,7 @@
             <div class="transaction-details" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px;">
                 <div style="display: flex; margin-bottom: 12px;">
                     <div style="width: 170px; font-weight: 500; color: #475569;">İşlem Numarası:</div>
-                    <div style="color: #334155; font-weight: 600;">{{transaction.gateway_transaction_id}}</div>
+                    <div style="color: #334155; font-weight: 600;">{{transaction.reference}}</div>
                 </div>
                 <div style="display: flex; margin-bottom: 12px;">
                     <div style="width: 170px; font-weight: 500; color: #475569;">Tutar:</div>
@@ -81,13 +81,13 @@
                 </div>
                 <div style="display: flex; margin-bottom: 10px;">
                     <div style="width: 120px; font-weight: 500; color: #92400e;">Açıklama:</div>
-                    <div style="color: #78350f; font-weight: 600;">{{transaction.gateway_transaction_id}}</div>
+                    <div style="color: #78350f; font-weight: 600;">{{transaction.reference}}</div>
                 </div>
             </div>
             
             <div class="alert" style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 8px; text-align: left;">
                 <p style="margin: 0; color: #b91c1c; font-weight: 500;">
-                    <strong>Önemli Not:</strong> Havale yaparken açıklama kısmına mutlaka <strong>{{transaction.gateway_transaction_id}}</strong> kodunu yazınız. Bu kod ile ödemenizi eşleştirebiliriz.
+                    <strong>Önemli Not:</strong> Havale yaparken açıklama kısmına mutlaka <strong>{{transaction.reference}}</strong> kodunu yazınız. Bu kod ile ödemenizi eşleştirebiliriz.
                 </p>
             </div>
             
