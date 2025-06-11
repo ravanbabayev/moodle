@@ -205,7 +205,8 @@ $templatecontext = [
     'transactions_url' => new moodle_url('/local/lidio/transactions.php'),
     'is_admin' => has_capability('local/lidio:manage', context_system::instance()),
     'admin_url' => new moodle_url('/local/lidio/admin.php'),
-    'create_payment_link_url' => new moodle_url('/local/lidio/create_payment_link.php')
+    'create_payment_link_url' => new moodle_url('/local/lidio/create_payment_link.php'),
+    'withdraw_url' => new moodle_url('/local/lidio/withdraw.php')
 ];
 
 // Display the page

@@ -1,0 +1,179 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_lidio/withdraw
+
+    Para çekme işlemi için şablon
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * merchant - Satıcı bilgileri
+    * withdrawals - Para çekme işlemleri listesi
+    * withdraw_submitted - Para çekme işlemi gönderildi mi
+    * error_message - Hata mesajı
+    * success_message - Başarı mesajı
+    * sesskey - Session key
+    * wwwroot - Site kök URL'si
+    * formatted_balance - Formatlanmış bakiye
+    * has_withdrawals - Para çekme işlemi var mı
+}}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Bakiye Bilgisi</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Mevcut Bakiye:</p>
+                            <h2 class="text-primary">{{formatted_balance}}</h2>
+                        </div>
+                        <div>
+                            <p class="mb-1">Hesap Durumu:</p>
+                            <span class="badge bg-success">Aktif</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#success_message}}
+    <div class="alert alert-success">
+        {{success_message}}
+    </div>
+    {{/success_message}}
+
+    {{#error_message}}
+    <div class="alert alert-danger">
+        {{error_message}}
+    </div>
+    {{/error_message}}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Para Çekme Talebi</h3>
+                    <form method="post" action="{{wwwroot}}/local/lidio/withdraw.php">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Çekilecek Tutar (TRY)</label>
+                            <input type="number" class="form-control" id="amount" name="amount" min="1" max="{{merchant.balance}}" step="0.01" required>
+                            <small class="text-muted">Maksimum çekilebilir tutar: {{formatted_balance}}</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bank_name" class="form-label">Banka Adı</label>
+                            <input type="text" class="form-control" id="bank_name" name="bank_name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="account_holder" class="form-label">Hesap Sahibi</label>
+                            <input type="text" class="form-control" id="account_holder" name="account_holder" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="iban" class="form-label">IBAN</label>
+                            <input type="text" class="form-control" id="iban" name="iban" required>
+                            <small class="text-muted">Lütfen IBAN numaranızı boşluk olmadan giriniz.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Açıklama (İsteğe bağlı)</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Para Çekme Talebi Oluştur</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Para Çekme İşlemleri</h3>
+                    
+                    {{#has_withdrawals}}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Tutar</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#withdrawals}}
+                                <tr>
+                                    <td>{{formatted_date}}</td>
+                                    <td>{{formatted_amount}}</td>
+                                    <td>
+                                        {{#is_pending}}
+                                        <span class="badge bg-warning">Beklemede</span>
+                                        {{/is_pending}}
+                                        {{#is_completed}}
+                                        <span class="badge bg-success">Tamamlandı</span>
+                                        {{/is_completed}}
+                                        {{#is_rejected}}
+                                        <span class="badge bg-danger">Reddedildi</span>
+                                        {{/is_rejected}}
+                                    </td>
+                                </tr>
+                                {{/withdrawals}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{/has_withdrawals}}
+                    
+                    {{^has_withdrawals}}
+                    <div class="alert alert-info">
+                        Henüz para çekme işlemi bulunmuyor.
+                    </div>
+                    {{/has_withdrawals}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // IBAN formatını kontrol et
+    document.getElementById('iban').addEventListener('input', function(e) {
+        // Boşlukları kaldır
+        this.value = this.value.replace(/\s+/g, '');
+    });
+    
+    // Çekilecek tutarın bakiyeden fazla olmamasını sağla
+    document.getElementById('amount').addEventListener('input', function(e) {
+        const maxBalance = {{merchant.balance}};
+        if (parseFloat(this.value) > maxBalance) {
+            this.value = maxBalance;
+        }
+    });
+});
+</script> 

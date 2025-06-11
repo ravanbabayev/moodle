@@ -281,5 +281,42 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025061112, 'local', 'lidio');
     }
 
+    if ($oldversion < 2025061114) {
+        // Create withdrawals table
+        $table = new xmldb_table('local_lidio_withdrawals');
+
+        // Adding fields to table local_lidio_withdrawals
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('merchant_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('amount', XMLDB_TYPE_NUMBER, '10, 2', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('currency', XMLDB_TYPE_CHAR, '3', null, XMLDB_NOTNULL, null, 'TRY');
+        $table->add_field('status', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'pending');
+        $table->add_field('bank_name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('account_holder', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('iban', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('admin_notes', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('processed_by', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timeprocessed', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table local_lidio_withdrawals
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('merchant_id', XMLDB_KEY_FOREIGN, ['merchant_id'], 'local_lidio_merchants', ['id']);
+        $table->add_key('processed_by', XMLDB_KEY_FOREIGN, ['processed_by'], 'user', ['id']);
+
+        // Adding indexes to table local_lidio_withdrawals
+        $table->add_index('status', XMLDB_INDEX_NOTUNIQUE, ['status']);
+
+        // Conditionally launch create table for local_lidio_withdrawals
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Lidio savepoint reached.
+        upgrade_plugin_savepoint(true, 2025061114, 'local', 'lidio');
+    }
+
     return true;
 } 
