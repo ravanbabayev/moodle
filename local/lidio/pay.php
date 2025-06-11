@@ -44,7 +44,8 @@ if (!empty($paymentlink->expires_at) && $paymentlink->expires_at < time()) {
 }
 
 // Check if the link has reached its maximum uses
-if (!empty($paymentlink->max_uses) && $paymentlink->current_uses >= $paymentlink->max_uses) {
+if (isset($paymentlink->max_uses) && isset($paymentlink->current_uses) && 
+    !empty($paymentlink->max_uses) && $paymentlink->current_uses >= $paymentlink->max_uses) {
     throw new \moodle_exception('paymentlinkmaxuses', 'local_lidio');
 }
 
@@ -166,7 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         // Simülasyon: İşlem her zaman başarılı
         $transaction->id = $transactionid;
         $transaction->status = 'completed';
-        $transaction->timecompleted = time();
         $transaction->timemodified = time();
         
         // Son 4 hanesi ve sahte işlem ID'si
@@ -187,8 +187,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         // Transaction'ı güncelle
         $DB->update_record('local_lidio_transactions', $transaction);
         
-        // Linki kullanım sayacını artır
-        $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
+        // Linki kullanım sayacını artır - önce alan var mı kontrol et
+        $fields = $DB->get_columns('local_lidio_payment_links');
+        if (isset($fields['current_uses'])) {
+            $current_uses = $paymentlink->current_uses ?? 0;
+            $DB->set_field('local_lidio_payment_links', 'current_uses', $current_uses + 1, ['id' => $paymentlink->id]);
+        }
         
         // Başarılı ödeme sayfasına yönlendir
         redirect(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]));
