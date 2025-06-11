@@ -194,8 +194,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
             $DB->set_field('local_lidio_payment_links', 'current_uses', $current_uses + 1, ['id' => $paymentlink->id]);
         }
         
-        // Başarılı ödeme sayfasına yönlendir
-        redirect(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]));
+        // Başarılı ödeme sayfasına yönlendirmeden önce animasyonlu bekleme ekranı göster
+        $success_url = new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]);
+        
+        echo $OUTPUT->header();
+        ?>
+        <div class="text-center my-5 py-5">
+            <div class="mb-4">
+                <div class="spinner-border text-success" style="width: 5rem; height: 5rem;" role="status">
+                    <span class="sr-only">Yükleniyor...</span>
+                </div>
+            </div>
+            <h3 class="text-success mt-4">Ödeme İşleniyor...</h3>
+            <p class="lead">Lütfen bekleyiniz, ödemeniz işleniyor ve doğrulanıyor.</p>
+            <p class="text-muted">Birkaç saniye içinde yönlendirileceksiniz.</p>
+        </div>
+        
+        <script>
+        // 3 saniye sonra yönlendir
+        setTimeout(function() {
+            window.location.href = "<?php echo $success_url->out(); ?>";
+        }, 3000);
+        </script>
+        <?php
+        echo $OUTPUT->footer();
+        exit;
         
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';

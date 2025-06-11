@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $DB->update_record('local_lidio_transactions', $transaction);
         
         // Başarılı ödeme sayfasına yönlendir
-        redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->reference]));
+        redirect(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $gateway_txn_id]));
         
     } catch (Exception $e) {
         echo $OUTPUT->header();

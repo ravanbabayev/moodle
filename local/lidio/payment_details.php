@@ -66,7 +66,7 @@ if ($data = data_submitted() && confirm_sesskey()) {
             if (!empty($paymentlink->success_url)) {
                 redirect($paymentlink->success_url);
             } else {
-                redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->reference]));
+                redirect(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]));
             }
         } else if ($payment_method === 'bank_transfer') {
             // Banka havalesi için
