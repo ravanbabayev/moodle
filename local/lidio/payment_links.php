@@ -689,14 +689,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Recipient</label>
                                 <input type="text" id="recipient" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter phone number or email" value="${contact}">
                             </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Method</label>
-                                <select id="shareMethod" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="">Auto-detect</option>
-                                    <option value="email" ${method === 'email' ? 'selected' : ''}>📧 Email</option>
-                                    <option value="sms" ${method === 'sms' ? 'selected' : ''}>📱 SMS</option>
-                                </select>
-                            </div>
+                                                         <div class="mb-4">
+                                 <label class="block text-sm font-medium text-gray-700 mb-2">Method</label>
+                                 <div class="text-sm text-gray-600 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
+                                     Auto-detect based on contact format
+                                 </div>
+                             </div>
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
                                 <textarea id="shareMessage" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Add a personal message..."></textarea>
@@ -721,33 +719,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.removeChild(modal);
             });
             
-            modal.querySelector('#confirmShare').addEventListener('click', function() {
-                const recipient = modal.querySelector('#recipient').value;
-                const shareMethod = modal.querySelector('#shareMethod').value;
-                const message = modal.querySelector('#shareMessage').value;
-                
-                if (!recipient) {
-                    alert('Please enter a recipient');
-                    return;
-                }
-                
-                // Show loading state
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
-                this.disabled = true;
-                
-                // Send AJAX request to share link
-                fetch('<?php echo new moodle_url('/local/lidio/share_link.php'); ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        link_id: linkId,
-                        recipient: recipient,
-                        method: shareMethod,
-                        message: message
-                    })
-                })
+                         modal.querySelector('#confirmShare').addEventListener('click', function() {
+                 const recipient = modal.querySelector('#recipient').value;
+                 const message = modal.querySelector('#shareMessage').value;
+                 
+                 if (!recipient) {
+                     alert('Please enter a recipient');
+                     return;
+                 }
+                 
+                 // Show loading state
+                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
+                 this.disabled = true;
+                 
+                 // Send AJAX request to share link (method will be auto-detected)
+                 fetch('<?php echo new moodle_url('/local/lidio/share_link.php'); ?>', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                         link_id: linkId,
+                         recipient: recipient,
+                         method: '', // Auto-detect
+                         message: message
+                     })
+                 })
                 .then(response => response.json())
                 .then(data => {
                     document.body.removeChild(modal);

@@ -66,10 +66,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     $currency = $_POST['currency'] ?? 'TRY';
     $product_name = trim($_POST['product_name'] ?? '');
     $product_description = trim($_POST['product_description'] ?? '');
-    $require_phone = !empty($_POST['require_phone']);
-    $require_email = !empty($_POST['require_email']);
+    $contact_method = trim($_POST['contact_method'] ?? '');
+    $require_phone = ($contact_method === 'phone') ? 1 : 0;
+    $require_email = ($contact_method === 'email') ? 1 : 0;
     $merchant_contact_info = trim($_POST['merchant_contact_info'] ?? '');
-    $sharing_method = trim($_POST['sharing_method'] ?? '');
+    
+    // Auto-detect sharing method based on merchant contact info
+    $sharing_method = '';
+    if (!empty($merchant_contact_info)) {
+        if (filter_var($merchant_contact_info, FILTER_VALIDATE_EMAIL)) {
+            $sharing_method = 'email';
+        } elseif (preg_match('/^[+]?[0-9\s\-\(\)]+$/', $merchant_contact_info)) {
+            $sharing_method = 'sms';
+        }
+    }
     $description = trim($_POST['description'] ?? '');
     $expiry_date = !empty($_POST['expiry_date']) ? strtotime($_POST['expiry_date']) : null;
     $max_uses = !empty($_POST['max_uses']) ? intval($_POST['max_uses']) : null;
@@ -86,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     if (!empty($max_uses) && $max_uses <= 0) {
         $errors[] = 'Maximum uses must be greater than 0';
     }
-    if (!$require_phone && !$require_email) {
-        $errors[] = 'At least one contact method must be selected';
+    if (empty($contact_method)) {
+        $errors[] = 'Please select a contact method';
     }
     
     // Handle file upload
@@ -159,10 +169,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     $_POST['currency'] = $paymentlink->currency;
     $_POST['product_name'] = $paymentlink->product_name;
     $_POST['product_description'] = $paymentlink->product_description;
-    $_POST['require_phone'] = $paymentlink->require_phone ? '1' : '';
-    $_POST['require_email'] = $paymentlink->require_email ? '1' : '';
+    
+    // Set contact method based on existing requirements
+    if ($paymentlink->require_phone) {
+        $_POST['contact_method'] = 'phone';
+    } elseif ($paymentlink->require_email) {
+        $_POST['contact_method'] = 'email';
+    } else {
+        $_POST['contact_method'] = '';
+    }
+    
     $_POST['merchant_contact_info'] = $paymentlink->merchant_contact_info ?? '';
-    $_POST['sharing_method'] = $paymentlink->sharing_method ?? '';
     $_POST['expiry_date'] = $paymentlink->expiry_date ? date('Y-m-d', $paymentlink->expiry_date) : '';
     $_POST['max_uses'] = $paymentlink->max_uses;
     $_POST['success_url'] = $paymentlink->success_url;
@@ -446,42 +463,33 @@ echo $OUTPUT->header();
                 <h3><i class="fas fa-users"></i> Customer Contact Requirements</h3>
                 
                 <div class="form-group">
-                    <label class="form-label">Customer Contact Options</label>
+                    <label class="form-label">Customer Contact Method</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
                         <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="contact-option" for="require_phone">
-                            <input type="checkbox" id="require_phone" name="require_phone" value="1" style="margin-right: 0.5rem;" <?php echo (!empty($_POST['require_phone'])) ? 'checked' : ''; ?>>
+                            <input type="radio" id="require_phone" name="contact_method" value="phone" style="margin-right: 0.5rem;" <?php echo (($_POST['contact_method'] ?? '') === 'phone') ? 'checked' : ''; ?>>
                             <span>
                                 <strong>Phone Number</strong><br>
                                 <small style="color: #6b7280;">Collect customer phone</small>
                             </span>
                         </label>
                         <label style="display: flex; align-items: center; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="contact-option" for="require_email">
-                            <input type="checkbox" id="require_email" name="require_email" value="1" style="margin-right: 0.5rem;" <?php echo (!empty($_POST['require_email'])) ? 'checked' : ''; ?>>
+                            <input type="radio" id="require_email" name="contact_method" value="email" style="margin-right: 0.5rem;" <?php echo (($_POST['contact_method'] ?? '') === 'email') ? 'checked' : ''; ?>>
                             <span>
                                 <strong>Email Address</strong><br>
                                 <small style="color: #6b7280;">Collect customer email</small>
                             </span>
                         </label>
                     </div>
-                    <div class="help-text" style="color: #dc2626; font-weight: 500;">At least one contact method must be selected</div>
+                    <div class="help-text" style="color: #dc2626; font-weight: 500;">Please select one contact method</div>
                 </div>
                 
                 <!-- Merchant Contact Info for Link Sharing -->
                 <div class="form-group">
                     <label for="merchant_contact_info" class="form-label">Your Contact Info for Sharing</label>
-                    <div style="position: relative;">
-                        <input type="text" id="merchant_contact_info" name="merchant_contact_info" class="form-input" 
-                               value="<?php echo htmlspecialchars($_POST['merchant_contact_info'] ?? ''); ?>" 
-                               placeholder="Enter your phone number or email to share this link with customers">
-                        <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-                            <select id="sharing_method" name="sharing_method" style="border: none; background: transparent; font-size: 0.875rem; color: #6b7280;">
-                                <option value="">Auto-detect</option>
-                                <option value="email" <?php echo ($_POST['sharing_method'] ?? '') === 'email' ? 'selected' : ''; ?>>📧 Email</option>
-                                <option value="sms" <?php echo ($_POST['sharing_method'] ?? '') === 'sms' ? 'selected' : ''; ?>>📱 SMS</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="help-text">Enter your phone number or email address. This will be used to send payment links to your customers.</div>
+                    <input type="text" id="merchant_contact_info" name="merchant_contact_info" class="form-input" 
+                           value="<?php echo htmlspecialchars($_POST['merchant_contact_info'] ?? ''); ?>" 
+                           placeholder="Enter your phone number or email to share this link with customers">
+                    <div class="help-text">Enter your phone number or email address. System will auto-detect the sharing method.</div>
                 </div>
             </div>
             
@@ -539,14 +547,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactOptions = document.querySelectorAll('.contact-option');
     
     contactOptions.forEach(option => {
-        const checkbox = option.querySelector('input[type="checkbox"]');
+        const radio = option.querySelector('input[type="radio"]');
         
         // Initial styling
-        updateContactOptionStyle(option, checkbox.checked);
+        updateContactOptionStyle(option, radio.checked);
         
         // Add change listener
-        checkbox.addEventListener('change', function() {
-            updateContactOptionStyle(option, this.checked);
+        radio.addEventListener('change', function() {
+            // Update all options
+            contactOptions.forEach(opt => {
+                const r = opt.querySelector('input[type="radio"]');
+                updateContactOptionStyle(opt, r.checked);
+            });
         });
     });
     
@@ -590,8 +602,7 @@ document.getElementById('product_image').addEventListener('change', function(e) 
 document.querySelector('form').addEventListener('submit', function(e) {
     const title = document.getElementById('title').value.trim();
     const amount = parseFloat(document.getElementById('amount').value);
-    const requirePhone = document.getElementById('require_phone').checked;
-    const requireEmail = document.getElementById('require_email').checked;
+    const contactMethod = document.querySelector('input[name="contact_method"]:checked');
     
     if (!title) {
         e.preventDefault();
@@ -607,9 +618,9 @@ document.querySelector('form').addEventListener('submit', function(e) {
         return;
     }
     
-    if (!requirePhone && !requireEmail) {
+    if (!contactMethod) {
         e.preventDefault();
-        alert('Please select at least one contact method');
+        alert('Please select a contact method');
         return;
     }
 });
