@@ -492,40 +492,7 @@ function showNotification(message, type = 'error') {
 
 // Form validation
 document.getElementById('payment-form').addEventListener('submit', function(e) {
-    const customerName = document.getElementById('customer_name').value.trim();
-    
-    // Check name field
-    if (!customerName || customerName.length < 3) {
-        e.preventDefault();
-        showNotification('Lütfen geçerli bir ad soyad girin (en az 3 karakter)');
-        return false;
-    }
-    
-    {{#contact_requirements.phone_or_email}}
-    const email = document.getElementById('customer_email').value.trim();
-    const phone = document.getElementById('customer_phone').value.trim();
-    
-    if (!email && !phone) {
-        e.preventDefault();
-        showNotification('Lütfen e-posta adresi veya telefon numarası girin');
-        return false;
-    }
-    
-    // Validate phone format if provided (Turkish phone number)
-    if (phone && !/^[\+]?[0-9\s\-\(\)]{10,}$/.test(phone)) {
-        e.preventDefault();
-        showNotification('Lütfen geçerli bir telefon numarası girin');
-        return false;
-    }
-    {{/contact_requirements.phone_or_email}}
-    
-    // Check payment method selection
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
-    if (!paymentMethod) {
-        e.preventDefault();
-        showNotification('Lütfen bir ödeme yöntemi seçin');
-        return false;
-    }
+    // Tüm doğrulama kodları kaldırıldı
     
     // Show loading state
     const submitButton = this.querySelector('.submit-button');

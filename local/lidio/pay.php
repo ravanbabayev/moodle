@@ -102,41 +102,13 @@ $templatecontext = [
 
 // Process payment form submission
 if ($data = data_submitted() && confirm_sesskey()) {
-    // Validate customer contact information based on requirements
+    // Doğrulamayı tamamen kaldırıyoruz
     $errors = [];
     $customer_email = !empty($data->customer_email) ? trim($data->customer_email) : '';
     $customer_phone = !empty($data->customer_phone) ? trim($data->customer_phone) : '';
     
-    switch ($requirement) {
-        case 'email_required':
-            if (empty($customer_email)) {
-                $errors[] = get_string('customeremailvalidation', 'local_lidio');
-            }
-            break;
-            
-        case 'phone_required':
-            if (empty($customer_phone)) {
-                $errors[] = get_string('customerphonevalidation', 'local_lidio');
-            }
-            break;
-            
-        case 'phone_or_email':
-        default:
-            if (empty($customer_email) && empty($customer_phone)) {
-                $errors[] = get_string('customercontactvalidation', 'local_lidio');
-            }
-            break;
-    }
+    // Doğrulama kodu tamamen kaldırıldı
     
-    // If there are validation errors, display them and show the form again
-    if (!empty($errors)) {
-        foreach ($errors as $error) {
-            echo $OUTPUT->notification($error, 'error');
-        }
-        echo $OUTPUT->render_from_template('local_lidio/payment_form', $templatecontext);
-        echo $OUTPUT->footer();
-        exit;
-    }
     // Increment the usage counter
     $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
     
