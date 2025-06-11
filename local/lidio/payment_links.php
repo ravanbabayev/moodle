@@ -693,20 +693,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Create a temporary input element to use as fallback
                 const tempInput = document.createElement('input');
                 tempInput.value = link;
+                tempInput.style.position = 'absolute';
+                tempInput.style.left = '-9999px';
                 document.body.appendChild(tempInput);
                 
-                // Try to use the clipboard API first
-                navigator.clipboard.writeText(link).then(() => {
-                    showCopySuccess(this);
-                }).catch((err) => {
-                    // Fallback for clipboard API failure
-                    tempInput.select();
-                    document.execCommand('copy');
-                    showCopySuccess(this);
-                });
+                // Use document.execCommand directly as fallback method
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); // For mobile devices
+                document.execCommand('copy');
                 
                 // Remove the temporary input
                 document.body.removeChild(tempInput);
+                
+                // Show success feedback
+                showCopySuccess(this);
             } catch (err) {
                 console.error('Copy failed:', err);
                 alert('Link kopyalanamadı. Lütfen manuel olarak seçip kopyalayın.');
