@@ -111,11 +111,6 @@ if ($data = data_submitted() && confirm_sesskey()) {
         case 'email_required':
             if (empty($customer_email)) {
                 $errors[] = get_string('customeremailvalidation', 'local_lidio');
-            } else {
-                // Daha basit ve daha permisif bir e-posta doğrulama kontrolü
-                if (!preg_match('/^[^\s@]+@[^\s@]+\.[^\s@]+$/', $customer_email)) {
-                    $errors[] = get_string('customeremailvalidation', 'local_lidio');
-                }
             }
             break;
             
@@ -128,11 +123,6 @@ if ($data = data_submitted() && confirm_sesskey()) {
         case 'both_required':
             if (empty($customer_email)) {
                 $errors[] = get_string('customeremailvalidation', 'local_lidio');
-            } else {
-                // Daha basit ve daha permisif bir e-posta doğrulama kontrolü
-                if (!preg_match('/^[^\s@]+@[^\s@]+\.[^\s@]+$/', $customer_email)) {
-                    $errors[] = get_string('customeremailvalidation', 'local_lidio');
-                }
             }
             if (empty($customer_phone)) {
                 $errors[] = get_string('customerphonevalidation', 'local_lidio');
@@ -143,11 +133,6 @@ if ($data = data_submitted() && confirm_sesskey()) {
         default:
             if (empty($customer_email) && empty($customer_phone)) {
                 $errors[] = get_string('customercontactvalidation', 'local_lidio');
-            } elseif (!empty($customer_email)) {
-                // Daha basit ve daha permisif bir e-posta doğrulama kontrolü
-                if (!preg_match('/^[^\s@]+@[^\s@]+\.[^\s@]+$/', $customer_email)) {
-                    $errors[] = get_string('customeremailvalidation', 'local_lidio');
-                }
             }
             break;
     }

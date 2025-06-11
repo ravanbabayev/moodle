@@ -511,16 +511,6 @@ document.getElementById('payment-form').addEventListener('submit', function(e) {
         return false;
     }
     
-    // Validate email format if provided
-    if (email) {
-        // Çok basit bir e-posta doğrulama kontrolü: @ işareti ve nokta içermeli
-        if (email.indexOf('@') === -1 || email.indexOf('.') === -1) {
-            e.preventDefault();
-            showNotification('Lütfen geçerli bir e-posta adresi girin');
-            return false;
-        }
-    }
-    
     // Validate phone format if provided (Turkish phone number)
     if (phone && !/^[\+]?[0-9\s\-\(\)]{10,}$/.test(phone)) {
         e.preventDefault();
