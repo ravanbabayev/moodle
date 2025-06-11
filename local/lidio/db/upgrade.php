@@ -122,6 +122,13 @@ function xmldb_local_lidio_upgrade($oldversion) {
             }
         }
 
+        // Add balance field to merchants table if it doesn't exist.
+        $field = new xmldb_field('balance', XMLDB_TYPE_NUMBER, '10, 2', null, XMLDB_NOTNULL, null, '0', 'settlement_period');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
         // Lidio savepoint reached.
         upgrade_plugin_savepoint(true, 2025052004, 'local', 'lidio');
     }

@@ -29,8 +29,8 @@ use core\output\notification;
 // Import required classes to fix linter errors
 require_once($CFG->libdir . '/accesslib.php');
 require_once($CFG->libdir . '/weblib.php');
-use context_system;
-use moodle_url;
+use \context_system;
+use \moodle_url;
 
 /**
  * Extend navigation to add Lidio links to the user menu.
@@ -263,6 +263,102 @@ function local_lidio_pluginfile($course, $cm, $context, $filearea, array $args, 
 
     // Send the file
     send_stored_file($file, 86400, 0, $forcedownload, $options);
+}
+
+/**
+ * Update merchant balance after a successful transaction
+ *
+ * @param int $merchantId The merchant ID
+ * @param float $amount The transaction amount
+ * @param string $transactionId The transaction ID (for logging)
+ * @return bool True if the balance was updated successfully, false otherwise
+ */
+function local_lidio_update_merchant_balance($merchantId, $amount, $transactionId = '') {
+    global $DB;
+    
+    // Get the merchant record
+    $merchant = $DB->get_record('local_lidio_merchants', ['id' => $merchantId], '*', MUST_EXIST);
+    
+    // Calculate commission
+    $commissionRate = isset($merchant->commission_rate) ? $merchant->commission_rate : 2.5;
+    $commission = $amount * ($commissionRate / 100);
+    
+    // Calculate net amount to add to balance (amount minus commission)
+    $netAmount = $amount - $commission;
+    
+    // Update the balance
+    $newBalance = $merchant->balance + $netAmount;
+    
+    // Update the merchant record
+    $merchant->balance = $newBalance;
+    $merchant->timemodified = time();
+    
+    // Log the transaction in the merchant_balance_history table (if we created it)
+    // This could be implemented in the future for better tracking
+    
+    // Update the merchant record
+    if ($DB->update_record('local_lidio_merchants', $merchant)) {
+        // Log the balance update
+        mtrace("Merchant balance updated for merchant ID $merchantId. Added: $netAmount. New balance: $newBalance");
+        return true;
+    } else {
+        mtrace("Failed to update merchant balance for merchant ID $merchantId");
+        return false;
+    }
+}
+
+/**
+ * Process a transaction status change
+ *
+ * @param int $transactionId The transaction ID
+ * @param string $newStatus The new status to set (completed, failed, refunded, pending)
+ * @param string $gateway_response Optional gateway response data
+ * @return bool True if the status change was processed successfully, false otherwise
+ */
+function local_lidio_process_transaction_status($transactionId, $newStatus, $gateway_response = '') {
+    global $DB;
+    
+    // Get the transaction record
+    $transaction = $DB->get_record('local_lidio_transactions', ['id' => $transactionId], '*', MUST_EXIST);
+    $oldStatus = $transaction->status;
+    
+    // No need to process if status hasn't changed
+    if ($oldStatus === $newStatus) {
+        return true;
+    }
+    
+    // Update transaction record
+    $transaction->status = $newStatus;
+    $transaction->timemodified = time();
+    
+    // Add gateway response if provided
+    if (!empty($gateway_response)) {
+        $transaction->gateway_response = $gateway_response;
+    }
+    
+    // Set time completed if status is 'completed'
+    if ($newStatus === 'completed') {
+        $transaction->timecompleted = time();
+    }
+    
+    // Update the transaction record
+    $DB->update_record('local_lidio_transactions', $transaction);
+    
+    // Process status change actions
+    if ($newStatus === 'completed' && $oldStatus !== 'completed') {
+        // Transaction was completed - update merchant balance
+        local_lidio_update_merchant_balance($transaction->merchant_id, $transaction->amount, $transactionId);
+        
+        // Could also send notification to merchant, etc.
+        
+    } else if ($newStatus === 'refunded' && $oldStatus === 'completed') {
+        // Transaction was refunded - subtract from merchant balance
+        local_lidio_update_merchant_balance($transaction->merchant_id, -$transaction->amount, $transactionId);
+        
+        // Could also create refund record, etc.
+    }
+    
+    return true;
 }
 
 /*

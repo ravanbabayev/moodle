@@ -39,17 +39,59 @@ if (!$merchant) {
 $total_transactions = $DB->count_records('local_lidio_transactions', array('merchant_id' => $merchant->id));
 $successful_transactions = $DB->count_records('local_lidio_transactions', array('merchant_id' => $merchant->id, 'status' => 'completed'));
 $failed_transactions = $DB->count_records('local_lidio_transactions', array('merchant_id' => $merchant->id, 'status' => 'failed'));
+$pending_transactions = $DB->count_records('local_lidio_transactions', array('merchant_id' => $merchant->id, 'status' => 'pending'));
 
 // Get payment links count
 $payment_links = $DB->count_records('local_lidio_payment_links', array('merchantid' => $merchant->id));
 $active_payment_links = $DB->count_records('local_lidio_payment_links', array('merchantid' => $merchant->id, 'status' => 'active'));
 
-// Calculate total earnings
+// Calculate total earnings (gross amount)
 $sql = "SELECT SUM(amount) as total FROM {local_lidio_transactions} 
         WHERE merchant_id = :merchantid AND status = 'completed'";
 $params = array('merchantid' => $merchant->id);
 $total_earnings = $DB->get_field_sql($sql, $params);
 $total_earnings = $total_earnings ? $total_earnings : 0;
+
+// Calculate commissions paid
+$commission_rate = isset($merchant->commission_rate) ? $merchant->commission_rate : 2.5;
+$commissions_paid = $total_earnings * ($commission_rate / 100);
+
+// Calculate net earnings (total minus commissions)
+$net_earnings = $total_earnings - $commissions_paid;
+
+// Get current balance
+$current_balance = isset($merchant->balance) ? $merchant->balance : 0;
+
+// Calculate growth rates
+$previous_month_sql = "SELECT SUM(amount) as total FROM {local_lidio_transactions} 
+        WHERE merchant_id = :merchantid AND status = 'completed'
+        AND timecreated BETWEEN :start_time AND :end_time";
+        
+$current_month_start = strtotime(date('Y-m-01 00:00:00'));
+$previous_month_start = strtotime('-1 month', $current_month_start);
+$previous_month_end = $current_month_start - 1;
+
+$params = array(
+    'merchantid' => $merchant->id, 
+    'start_time' => $previous_month_start, 
+    'end_time' => $previous_month_end
+);
+
+$previous_month_earnings = $DB->get_field_sql($previous_month_sql, $params) ?: 0;
+
+$params = array(
+    'merchantid' => $merchant->id, 
+    'start_time' => $current_month_start, 
+    'end_time' => time()
+);
+
+$current_month_earnings = $DB->get_field_sql($previous_month_sql, $params) ?: 0;
+
+// Calculate month-over-month growth percentage
+$monthly_growth_percentage = 0;
+if ($previous_month_earnings > 0) {
+    $monthly_growth_percentage = (($current_month_earnings - $previous_month_earnings) / $previous_month_earnings) * 100;
+}
 
 // Get last 5 transactions
 $sql = "SELECT t.*, p.title as payment_link_title 
@@ -58,6 +100,22 @@ $sql = "SELECT t.*, p.title as payment_link_title
         WHERE t.merchant_id = :merchantid 
         ORDER BY t.timecreated DESC LIMIT 5";
 $recent_transactions = $DB->get_records_sql($sql, array('merchantid' => $merchant->id));
+
+// Format recent transactions for display
+$formatted_transactions = array();
+foreach ($recent_transactions as $transaction) {
+    $formatted_transactions[] = array(
+        'id' => $transaction->id,
+        'amount' => number_format($transaction->amount, 2),
+        'currency' => $transaction->currency,
+        'customer_name' => $transaction->customer_name,
+        'status' => $transaction->status,
+        'date' => userdate($transaction->timecreated, get_string('strftimedatetime', 'langconfig')),
+        'payment_method' => $transaction->payment_method,
+        'status_class' => $transaction->status === 'completed' ? 'text-green-500' : 
+                          ($transaction->status === 'failed' ? 'text-red-500' : 'text-yellow-500')
+    );
+}
 
 // Get chart data for the last 10 days
 $days = 10;
@@ -89,24 +147,42 @@ $templatecontext = [
         'status' => $merchant->status,
         'kyc_status' => $merchant->kyc_status,
         'commission_rate' => $merchant->commission_rate,
-        'settlement_period' => $merchant->settlement_period
+        'settlement_period' => $merchant->settlement_period,
+        'balance' => number_format($current_balance, 2),
+        'balance_raw' => $current_balance
     ],
     'stats' => [
         'total_earnings' => number_format($total_earnings, 2),
+        'total_earnings_raw' => $total_earnings,
+        'commissions_paid' => number_format($commissions_paid, 2),
+        'net_earnings' => number_format($net_earnings, 2),
         'total_transactions' => $total_transactions,
         'successful_transactions' => $successful_transactions,
         'failed_transactions' => $failed_transactions,
+        'pending_transactions' => $pending_transactions,
         'payment_links' => $payment_links,
         'active_payment_links' => $active_payment_links,
-        'success_rate' => $total_transactions > 0 ? round(($successful_transactions / $total_transactions) * 100) : 0
+        'success_rate' => $total_transactions > 0 ? round(($successful_transactions / $total_transactions) * 100) : 0,
+        'monthly_growth' => round($monthly_growth_percentage, 1),
+        'monthly_growth_positive' => $monthly_growth_percentage >= 0,
+        'current_month_earnings' => number_format($current_month_earnings, 2)
     ],
+    'recent_transactions' => $formatted_transactions,
+    'has_transactions' => !empty($formatted_transactions),
     'strings' => [
         'welcome' => get_string('welcome', 'local_lidio'),
         'earnings' => get_string('totalearnings', 'local_lidio'),
         'withdraw' => get_string('withdraw', 'local_lidio'),
         'totalrevenue' => get_string('totalrevenue', 'local_lidio'),
+        'netearnings' => get_string('netearnings', 'local_lidio'),
+        'commissionspaid' => get_string('commissionspaid', 'local_lidio'),
+        'currentbalance' => get_string('currentbalance', 'local_lidio'),
         'totalproducts' => get_string('totalproducts', 'local_lidio'),
         'totalsales' => get_string('totalsales', 'local_lidio'),
+        'pendingtransactions' => get_string('pendingtransactions', 'local_lidio'),
+        'failedtransactions' => get_string('failedtransactions', 'local_lidio'),
+        'recenttransactions' => get_string('recenttransactions', 'local_lidio'),
+        'viewalltransactions' => get_string('viewalltransactions', 'local_lidio'),
         'totalcustomers' => get_string('totalcustomers', 'local_lidio'),
         'salessummary' => get_string('salessummary', 'local_lidio'),
         'customeracquisition' => get_string('customeracquisition', 'local_lidio'),
@@ -128,7 +204,8 @@ $templatecontext = [
     ],
     'transactions_url' => new moodle_url('/local/lidio/transactions.php'),
     'is_admin' => has_capability('local/lidio:manage', context_system::instance()),
-    'admin_url' => new moodle_url('/local/lidio/admin.php')
+    'admin_url' => new moodle_url('/local/lidio/admin.php'),
+    'create_payment_link_url' => new moodle_url('/local/lidio/create_payment_link.php')
 ];
 
 // Display the page
