@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/lidio/db" VERSION="20250611" COMMENT="XMLDB file for Moodle local/lidio">
+  <TABLES>
+    <TABLE NAME="local_lidio_merchants" COMMENT="Stores merchant information">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID from user table"/>
+        <FIELD NAME="company_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Company or store name"/>
+        <FIELD NAME="email" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Contact email"/>
+        <FIELD NAME="phone" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Phone number"/>
+        <FIELD NAME="address" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Business address"/>
+        <FIELD NAME="website" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Website URL"/>
+        <FIELD NAME="business_area" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Business description"/>
+        <FIELD NAME="monthly_volume" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Expected monthly sales volume"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Application status"/>
+        <FIELD NAME="kyc_status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="KYC verification status"/>
+        <FIELD NAME="commission_rate" TYPE="number" LENGTH="5" NOTNULL="true" DEFAULT="2.5" SEQUENCE="false" DECIMALS="2" COMMENT="Commission rate percentage"/>
+        <FIELD NAME="settlement_period" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="7" SEQUENCE="false" COMMENT="Settlement period in days"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creation timestamp"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Last modification timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="kyc_status" UNIQUE="false" FIELDS="kyc_status"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_lidio_documents" COMMENT="Stores KYC documents">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="merchantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="document_type" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Type of document"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Original filename"/>
+        <FIELD NAME="filepath" TYPE="char" LENGTH="500" NOTNULL="true" SEQUENCE="false" COMMENT="File path"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Document status"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Upload timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="merchantid" TYPE="foreign" FIELDS="merchantid" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="document_type" UNIQUE="false" FIELDS="document_type"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_lidio_payment_links" COMMENT="Stores payment links">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="merchantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Payment link title"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Payment description"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Payment amount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="true" DEFAULT="TRY" SEQUENCE="false" COMMENT="Currency code"/>
+        <FIELD NAME="link_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Unique link code"/>
+        <FIELD NAME="require_phone" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Require phone number"/>
+        <FIELD NAME="require_email" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Require email address"/>
+        <FIELD NAME="merchant_contact_info" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Merchant contact info for sharing"/>
+        <FIELD NAME="sharing_method" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Auto-detected sharing method"/>
+        <FIELD NAME="product_name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Product name"/>
+        <FIELD NAME="product_description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Product description"/>
+        <FIELD NAME="product_image" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" COMMENT="Product image path"/>
+        <FIELD NAME="max_uses" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of uses"/>
+        <FIELD NAME="expires_at" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Expiration timestamp"/>
+        <FIELD NAME="success_url" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" COMMENT="Success redirect URL"/>
+        <FIELD NAME="cancel_url" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false" COMMENT="Cancel redirect URL"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active" SEQUENCE="false" COMMENT="Link status"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creation timestamp"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Last modification timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="merchantid" TYPE="foreign" FIELDS="merchantid" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="link_code" UNIQUE="true" FIELDS="link_code"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_lidio_link_shares" COMMENT="Stores payment link sharing history">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="payment_link_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Payment link ID"/>
+        <FIELD NAME="merchant_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="recipient" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Recipient phone or email"/>
+        <FIELD NAME="method" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Sharing method (email/sms)"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="sent" SEQUENCE="false" COMMENT="Share status"/>
+        <FIELD NAME="message_content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Message content sent"/>
+        <FIELD NAME="response_data" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Gateway response data"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creation timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="payment_link_id" TYPE="foreign" FIELDS="payment_link_id" REFTABLE="local_lidio_payment_links" REFFIELDS="id"/>
+        <KEY NAME="merchant_id" TYPE="foreign" FIELDS="merchant_id" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="method" UNIQUE="false" FIELDS="method"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_lidio_transactions" COMMENT="Stores transaction information">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="merchant_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Merchant ID"/>
+        <FIELD NAME="payment_link_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Payment link ID"/>
+        <FIELD NAME="customer_name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Customer name"/>
+        <FIELD NAME="customer_email" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Customer email"/>
+        <FIELD NAME="customer_phone" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Customer phone"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="10" NOTNULL="true" SEQUENCE="false" DECIMALS="2" COMMENT="Transaction amount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="true" DEFAULT="TRY" SEQUENCE="false" COMMENT="Currency code"/>
+        <FIELD NAME="payment_method" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Payment method"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="Transaction status"/>
+        <FIELD NAME="gateway_transaction_id" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Gateway transaction ID"/>
+        <FIELD NAME="gateway_response" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Gateway response data"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creation timestamp"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Last modification timestamp"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="merchant_id" TYPE="foreign" FIELDS="merchant_id" REFTABLE="local_lidio_merchants" REFFIELDS="id"/>
+        <KEY NAME="payment_link_id" TYPE="foreign" FIELDS="payment_link_id" REFTABLE="local_lidio_payment_links" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="payment_method" UNIQUE="false" FIELDS="payment_method"/>
+        <INDEX NAME="gateway_transaction_id" UNIQUE="false" FIELDS="gateway_transaction_id"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

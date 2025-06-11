@@ -24,24 +24,46 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Import necessary classes
-use moodle_url;
-
 if ($hassiteconfig) {
+    // Create the main Lidio settings category
+    $ADMIN->add('localplugins', new admin_category('local_lidio_settings', 
+        get_string('pluginname', 'local_lidio')));
+
     // Create the settings page
     $settings = new admin_settingpage('local_lidio', get_string('settings', 'local_lidio'));
-    $ADMIN->add('localplugins', $settings);
-
+    
     // General settings
     $settings->add(new admin_setting_heading('local_lidio/general',
-        get_string('pluginname', 'local_lidio'), ''));
+        get_string('pluginname', 'local_lidio'), 
+        get_string('plugindesc', 'local_lidio')));
     
     $settings->add(new admin_setting_configcheckbox('local_lidio/enabled',
         get_string('enabled', 'local_lidio'),
         get_string('enabled_desc', 'local_lidio'), 1));
     
-    // Add link to manage merchants
-    $ADMIN->add('localplugins', new admin_externalpage('local_lidio_merchants',
+    // Add commission rate setting
+    $settings->add(new admin_setting_configtext('local_lidio/commission_rate',
+        get_string('commissionrate', 'local_lidio'),
+        get_string('commissionrate_desc', 'local_lidio'), '2.5', PARAM_FLOAT));
+    
+    // Add settings to the category
+    $ADMIN->add('local_lidio_settings', $settings);
+    
+    // Add merchant management page
+    $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_merchants',
         get_string('merchantmanagement', 'local_lidio'),
-        new moodle_url('/local/lidio/admin/merchants.php')));
+        new moodle_url('/local/lidio/admin/merchants.php'),
+        'local/lidio:managemerchants'));
+    
+    // Add transactions page
+    $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_transactions',
+        get_string('transactionmanagement', 'local_lidio'),
+        new moodle_url('/local/lidio/admin/transactions.php'),
+        'local/lidio:viewtransactions'));
+    
+    // Add reports page
+    $ADMIN->add('local_lidio_settings', new admin_externalpage('local_lidio_reports',
+        get_string('reports', 'local_lidio'),
+        new moodle_url('/local/lidio/admin/reports.php'),
+        'local/lidio:viewreports'));
 } 

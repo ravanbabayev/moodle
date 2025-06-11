@@ -52,10 +52,11 @@ if (!empty($paymentlink->max_uses) && $paymentlink->current_uses >= $paymentlink
 $merchant = $DB->get_record('local_lidio_merchants', ['id' => $paymentlink->merchantid], '*', MUST_EXIST);
 
 // Page setup
-$PAGE->set_context(\context_system::instance());
+$PAGE->set_context(context_system::instance());
 $PAGE->set_url('/local/lidio/pay.php', ['code' => $linkcode]);
 $PAGE->set_title(get_string('paytitle', 'local_lidio', $paymentlink->title));
 $PAGE->set_heading(get_string('paytitle', 'local_lidio', $paymentlink->title));
+$PAGE->set_pagelayout('popup');  // Use popup layout for payment pages
 
 // Add Tailwind CSS
 $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
@@ -72,8 +73,19 @@ $contact_requirements = [
 ];
 
 // Set the appropriate requirement based on payment link settings
-$requirement = !empty($paymentlink->customer_contact_requirement) ? $paymentlink->customer_contact_requirement : 'phone_or_email';
-$contact_requirements[$requirement] = true;
+if ($paymentlink->require_phone && $paymentlink->require_email) {
+    $contact_requirements['both_required'] = true;
+    $requirement = 'both_required';
+} elseif ($paymentlink->require_phone) {
+    $contact_requirements['phone_required'] = true;
+    $requirement = 'phone_required';
+} elseif ($paymentlink->require_email) {
+    $contact_requirements['email_required'] = true;
+    $requirement = 'email_required';
+} else {
+    $contact_requirements['phone_or_email'] = true;
+    $requirement = 'phone_or_email';
+}
 
 $templatecontext = [
     'paymentlink' => $paymentlink,

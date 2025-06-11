@@ -129,7 +129,41 @@ if ($action && $linkid) {
                 $cancelurl
             );
             
-            echo $OUTPUT->footer();
+            ?>
+
+<style>
+/* Modal animations */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes modalSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+}
+
+/* Additional modern styling */
+.modal-backdrop {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+</style>
+
+<?php
+echo $OUTPUT->footer();
             exit;
         }
     }
@@ -677,47 +711,93 @@ document.addEventListener('DOMContentLoaded', function() {
             const contact = this.getAttribute('data-contact');
             const method = this.getAttribute('data-method');
             
-            // Create modal for sharing
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
-            modal.innerHTML = `
-                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                    <div class="mt-3 text-center">
-                        <h3 class="text-lg font-medium text-gray-900">Share Payment Link</h3>
-                        <div class="mt-4 px-7 py-3">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Recipient</label>
-                                <input type="text" id="recipient" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter phone number or email" value="${contact}">
-                            </div>
-                                                         <div class="mb-4">
-                                 <label class="block text-sm font-medium text-gray-700 mb-2">Method</label>
-                                 <div class="text-sm text-gray-600 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md">
-                                     Auto-detect based on contact format
+                         // Create modal for sharing
+             const modal = document.createElement('div');
+             modal.className = 'fixed inset-0 z-50 overflow-y-auto';
+             modal.style.backdropFilter = 'blur(8px)';
+             modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+             modal.innerHTML = `
+                 <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+                     <div class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" style="animation: modalSlideIn 0.3s ease-out;">
+                         <!-- Header with gradient -->
+                         <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                             <div class="flex items-center justify-between">
+                                 <div class="flex items-center">
+                                     <h3 class="text-lg font-semibold text-white">Share Payment Link</h3>
+                                 </div>
+                                 <button id="closeModal" class="text-white hover:text-gray-200 focus:outline-none">
+                                     <i class="fas fa-times text-xl"></i>
+                                 </button>
+                             </div>
+                         </div>
+                         
+                         <!-- Content -->
+                         <div class="bg-white px-6 py-6">
+                             <div class="space-y-5">
+                                 <div>
+                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                         <i class="fas fa-user text-indigo-500 mr-2"></i>Recipient
+                                     </label>
+                                     <div class="relative">
+                                         <input type="text" id="recipient" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200" placeholder="${method === 'sms' ? 'Enter phone number' : 'Enter email address'}" value="${contact}">
+                                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                             <i class="fas ${method === 'sms' ? 'fa-mobile-alt' : 'fa-envelope'} text-gray-400"></i>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <div>
+                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                         <i class="fas fa-cog text-indigo-500 mr-2"></i>Method
+                                     </label>
+                                     <div class="flex items-center px-4 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-indigo-100 rounded-xl">
+                                         <i class="fas ${method === 'sms' ? 'fa-mobile-alt' : 'fa-envelope'} text-indigo-500 mr-3"></i>
+                                         <span class="text-sm text-indigo-700 font-medium">${method === 'sms' ? 'SMS' : 'E-posta'}</span>
+                                     </div>
+                                 </div>
+                                 
+                                 <div>
+                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                         <i class="fas fa-comment text-indigo-500 mr-2"></i>Message (Optional)
+                                     </label>
+                                     <textarea id="shareMessage" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 resize-none" placeholder="Add a personal message..."></textarea>
                                  </div>
                              </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
-                                <textarea id="shareMessage" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="Add a personal message..."></textarea>
-                            </div>
-                        </div>
-                        <div class="items-center px-4 py-3">
-                            <button id="confirmShare" class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 mr-2">
-                                Share Link
-                            </button>
-                            <button id="cancelShare" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
+                         </div>
+                         
+                         <!-- Actions -->
+                         <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                             <button id="cancelShare" class="px-6 py-2.5 bg-white border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200">
+                                 <i class="fas fa-times mr-2"></i>Cancel
+                             </button>
+                             <button id="confirmShare" class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg transform hover:scale-105 transition-all duration-200">
+                                 <i class="fas fa-paper-plane mr-2"></i>Share Link
+                             </button>
+                         </div>
+                     </div>
+                 </div>
+             `;
             
-            document.body.appendChild(modal);
+                         // Close modal when clicking outside
+             modal.addEventListener('click', function(e) {
+                 if (e.target === modal) {
+                     modal.style.animation = 'modalSlideOut 0.3s ease-in';
+                     setTimeout(() => document.body.removeChild(modal), 300);
+                 }
+             });
+             
+             document.body.appendChild(modal);
             
-            // Handle modal actions
-            modal.querySelector('#cancelShare').addEventListener('click', function() {
-                document.body.removeChild(modal);
-            });
+                         // Handle modal actions
+             modal.querySelector('#cancelShare').addEventListener('click', function() {
+                 modal.style.animation = 'modalSlideOut 0.3s ease-in';
+                 setTimeout(() => document.body.removeChild(modal), 300);
+             });
+             
+             modal.querySelector('#closeModal').addEventListener('click', function() {
+                 modal.style.animation = 'modalSlideOut 0.3s ease-in';
+                 setTimeout(() => document.body.removeChild(modal), 300);
+             });
             
                          modal.querySelector('#confirmShare').addEventListener('click', function() {
                  const recipient = modal.querySelector('#recipient').value;
@@ -745,19 +825,53 @@ document.addEventListener('DOMContentLoaded', function() {
                          message: message
                      })
                  })
-                .then(response => response.json())
-                .then(data => {
-                    document.body.removeChild(modal);
-                    if (data.success) {
-                        alert('Payment link shared successfully!');
-                    } else {
-                        alert('Error sharing link: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    document.body.removeChild(modal);
-                    alert('Error sharing link. Please try again.');
-                });
+                                 .then(response => response.json())
+                 .then(data => {
+                     modal.style.animation = 'modalSlideOut 0.3s ease-in';
+                     setTimeout(() => document.body.removeChild(modal), 300);
+                     
+                     if (data.success) {
+                         // Show success notification
+                         const notification = document.createElement('div');
+                         notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                         notification.innerHTML = '<i class="fas fa-check mr-2"></i>Payment link shared successfully!';
+                         document.body.appendChild(notification);
+                         
+                         setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+                         setTimeout(() => {
+                             notification.classList.add('translate-x-full');
+                             setTimeout(() => document.body.removeChild(notification), 300);
+                         }, 3000);
+                     } else {
+                         // Show error notification
+                         const notification = document.createElement('div');
+                         notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                         notification.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Error: ' + data.message;
+                         document.body.appendChild(notification);
+                         
+                         setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+                         setTimeout(() => {
+                             notification.classList.add('translate-x-full');
+                             setTimeout(() => document.body.removeChild(notification), 300);
+                         }, 4000);
+                     }
+                 })
+                 .catch(error => {
+                     modal.style.animation = 'modalSlideOut 0.3s ease-in';
+                     setTimeout(() => document.body.removeChild(modal), 300);
+                     
+                     // Show error notification
+                     const notification = document.createElement('div');
+                     notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                     notification.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Error sharing link. Please try again.';
+                     document.body.appendChild(notification);
+                     
+                     setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+                     setTimeout(() => {
+                         notification.classList.add('translate-x-full');
+                         setTimeout(() => document.body.removeChild(notification), 300);
+                     }, 4000);
+                 });
             });
             
             // Close modal when clicking outside

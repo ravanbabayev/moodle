@@ -23,6 +23,7 @@
  */
 
 $string['pluginname'] = 'Lidio Payment System';
+$string['plugindesc'] = 'A comprehensive payment system for Moodle with merchant management, payment links, and transaction processing.';
 $string['plugindisabled'] = 'The Lidio payment system plugin is currently disabled.';
 
 // Capabilities
@@ -35,6 +36,10 @@ $string['lidio:viewmerchants'] = 'View Lidio merchants';
 $string['settings'] = 'Lidio settings';
 $string['enabled'] = 'Enable Lidio';
 $string['enabled_desc'] = 'Enable the Lidio payment system';
+$string['commissionrate'] = 'Commission Rate (%)';
+$string['commissionrate_desc'] = 'Default commission rate for merchants (percentage)';
+$string['transactionmanagement'] = 'Transaction Management';
+$string['reports'] = 'Reports and Analytics';
 
 // Merchant application
 $string['merchantapplication'] = 'Merchant Application';
@@ -154,6 +159,9 @@ $string['navigation'] = 'Navigation';
 $string['dashboard'] = 'Dashboard';
 $string['transactions'] = 'Transactions';
 $string['help'] = 'Help';
+$string['merchant'] = 'Merchant';
+$string['paymentlink'] = 'Payment Link';
+$string['notransactions'] = 'No transactions found.';
 
 // Dashboard
 $string['transactionhistory'] = 'Transaction History';

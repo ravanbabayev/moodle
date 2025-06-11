@@ -59,7 +59,7 @@ if ($action === 'delete') {
 }
 
 // Set up the page
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context(\context_system::instance());
 $PAGE->set_url($CFG->wwwroot . '/local/lidio/kyc.php');
 $PAGE->set_title(get_string('kycverification', 'local_lidio'));
 $PAGE->set_heading(get_string('kycverification', 'local_lidio'));
@@ -72,7 +72,7 @@ $PAGE->requires->css('/local/lidio/styles.css');
 $PAGE->requires->js('/local/lidio/scripts.js');
 
 // Add Tailwind CSS CDN
-$tailwind_url = new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+$tailwind_url = new \moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
 $PAGE->requires->css($tailwind_url);
 
 // Check if user is a merchant
@@ -176,12 +176,12 @@ if ($data = data_submitted() && confirm_sesskey()) {
             // Move the uploaded file
             if (move_uploaded_file($file['tmp_name'], $filepath)) {
                 // Check if document already exists
-                $existing = $DB->get_record('local_lidio_documents', ['merchantid' => $merchant->id, 'type' => $type]);
+                $existing = $DB->get_record('local_lidio_documents', ['merchantid' => $merchant->id, 'document_type' => $type]);
                 
                 // Prepare document data
                 $document = new stdClass();
                 $document->merchantid = $merchant->id;
-                $document->type = $type;
+                $document->document_type = $type;
                 $document->filepath = $filepath;
                 $document->filename = $filename;
                 $document->status = 'pending';
@@ -235,9 +235,9 @@ if ($merchant->kyc_status === 'pending') {
 $existing_documents = [];
 $documents = $DB->get_records('local_lidio_documents', ['merchantid' => $merchant->id]);
 foreach ($documents as $document) {
-    $existing_documents[$document->type] = [
+    $existing_documents[$document->document_type] = [
         'id' => $document->id,
-        'type' => $document->type,
+        'type' => $document->document_type,
         'filename' => $document->filename,
         'status' => $document->status,
         'status_text' => get_string($document->status, 'local_lidio'),
