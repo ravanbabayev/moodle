@@ -120,15 +120,6 @@ if ($data = data_submitted() && confirm_sesskey()) {
             }
             break;
             
-        case 'both_required':
-            if (empty($customer_email)) {
-                $errors[] = get_string('customeremailvalidation', 'local_lidio');
-            }
-            if (empty($customer_phone)) {
-                $errors[] = get_string('customerphonevalidation', 'local_lidio');
-            }
-            break;
-            
         case 'phone_or_email':
         default:
             if (empty($customer_email) && empty($customer_phone)) {
