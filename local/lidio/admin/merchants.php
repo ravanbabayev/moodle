@@ -30,9 +30,17 @@ require_once($CFG->libdir . '/weblib.php');
 // Import necessary classes
 use moodle_url;
 use core\notification;
+use context_system;
 
 // Check access
-admin_externalpage_setup('local_lidio_merchants');
+require_login();
+require_capability('local/lidio:managemerchants', context_system::instance());
+
+// Set up the page
+$PAGE->set_url(new moodle_url('/local/lidio/admin/merchants.php'));
+$PAGE->set_context(context_system::instance());
+$PAGE->set_title(get_string('merchantmanagement', 'local_lidio'));
+$PAGE->set_heading(get_string('merchantmanagement', 'local_lidio'));
 
 // Get action parameters
 $action = optional_param('action', '', PARAM_ALPHA);

@@ -31,9 +31,11 @@ use core\notification;
 use core\output\html_writer;
 use core_table\output\html_table;
 use moodle_url;
+use context_system;
 
 // Check access
-admin_externalpage_setup('local_lidio_merchants');
+require_login();
+require_capability('local/lidio:managemerchants', context_system::instance());
 
 $id = required_param('id', PARAM_INT);
 $merchant = $DB->get_record('local_lidio_merchants', array('id' => $id), '*', MUST_EXIST);
