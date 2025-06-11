@@ -32,18 +32,6 @@ use \moodle_url;
 // Get transaction ID from URL
 $transaction_id = required_param('id', PARAM_INT);
 
-// Debug bilgisi ekle
-$transactions = $DB->get_records_sql("SELECT id, gateway_transaction_id FROM {local_lidio_transactions} ORDER BY id DESC LIMIT 10");
-echo "<div style='background-color: #f0f0f0; padding: 15px; margin: 15px; border-radius: 5px;'>";
-echo "<h3>Debug Bilgisi:</h3>";
-echo "<p>Aranan transaction ID: " . $transaction_id . "</p>";
-echo "<p>Son 10 transaction kaydı:</p><ul>";
-foreach ($transactions as $t) {
-    echo "<li>ID: " . $t->id . ", gateway_transaction_id: " . $t->gateway_transaction_id . 
-         ($t->id == $transaction_id ? " <strong>(EŞLEŞME VAR)</strong>" : "") . "</li>";
-}
-echo "</ul></div>";
-
 // Fetch transaction data
 $transaction = $DB->get_record('local_lidio_transactions', ['id' => $transaction_id]);
 
@@ -74,6 +62,9 @@ $PAGE->set_pagelayout('standard');
 // Format the amount with currency
 $amount_formatted = number_format($transaction->amount, 2) . ' ' . $transaction->currency;
 
+// Tarihleri formatlama
+$transaction_date = userdate($transaction->timecreated, get_string('strftimedatetimeshort', 'core_langconfig'));
+
 // Render the success page
 echo $OUTPUT->header();
 
@@ -86,6 +77,7 @@ $templatecontext = [
     'wwwroot' => $CFG->wwwroot,
     'is_credit_card' => ($transaction->payment_method === 'credit_card'),
     'is_bank_transfer' => ($transaction->payment_method === 'bank_transfer'),
+    'transaction_date' => $transaction_date,
 ];
 
 // Get card last 4 digits from gateway response if available
