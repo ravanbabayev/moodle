@@ -687,22 +687,47 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.copy-link').forEach(button => {
         button.addEventListener('click', function() {
             const link = this.getAttribute('data-link');
-            navigator.clipboard.writeText(link).then(() => {
-                // Show success feedback
-                const originalHTML = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-check"></i>';
-                this.classList.remove('text-gray-700');
-                this.classList.add('text-green-700', 'bg-green-50');
+            
+            // Use try-catch to handle potential clipboard API issues
+            try {
+                // Create a temporary input element to use as fallback
+                const tempInput = document.createElement('input');
+                tempInput.value = link;
+                document.body.appendChild(tempInput);
                 
-                // Reset after 2 seconds
-                setTimeout(() => {
-                    this.innerHTML = originalHTML;
-                    this.classList.remove('text-green-700', 'bg-green-50');
-                    this.classList.add('text-gray-700');
-                }, 2000);
-            });
+                // Try to use the clipboard API first
+                navigator.clipboard.writeText(link).then(() => {
+                    showCopySuccess(this);
+                }).catch((err) => {
+                    // Fallback for clipboard API failure
+                    tempInput.select();
+                    document.execCommand('copy');
+                    showCopySuccess(this);
+                });
+                
+                // Remove the temporary input
+                document.body.removeChild(tempInput);
+            } catch (err) {
+                console.error('Copy failed:', err);
+                alert('Link kopyalanamadı. Lütfen manuel olarak seçip kopyalayın.');
+            }
         });
     });
+
+    function showCopySuccess(button) {
+        // Show success feedback
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check"></i>';
+        button.classList.remove('text-gray-700');
+        button.classList.add('text-green-700', 'bg-green-50');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('text-green-700', 'bg-green-50');
+            button.classList.add('text-gray-700');
+        }, 2000);
+    }
 
     // Share payment link functionality
     document.querySelectorAll('.share-link').forEach(button => {

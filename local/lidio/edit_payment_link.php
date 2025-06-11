@@ -2,6 +2,10 @@
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
 
+// Import required classes
+use \context_system;
+use \moodle_url;
+
 // Check login
 require_login();
 
@@ -103,30 +107,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
     // Handle file upload
     $product_image_url = $paymentlink->product_image; // Keep existing if no new upload
     if (!empty($_FILES['product_image']['name'])) {
-        $upload_dir = $CFG->dataroot . '/local_lidio/product_images/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
+        $context = context_system::instance();
+        $fs = get_file_storage();
+        
+        // Check if there are existing files to delete them
+        $existing_files = $fs->get_area_files(
+            $context->id,
+            'local_lidio',
+            'product_image',
+            $id,
+            'filename',
+            false
+        );
+        
+        if (!empty($existing_files)) {
+            foreach ($existing_files as $file) {
+                $file->delete();
+            }
         }
         
+        // Save uploaded file
+        $fileinfo = array(
+            'contextid' => $context->id,
+            'component' => 'local_lidio',
+            'filearea' => 'product_image',
+            'itemid' => $id,
+            'filepath' => '/',
+            'filename' => $_FILES['product_image']['name'],
+            'source' => $_FILES['product_image']['name']
+        );
+        
+        // Check file type
         $file_extension = strtolower(pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION));
         $allowed_extensions = ['jpg', 'jpeg', 'png'];
         
         if (in_array($file_extension, $allowed_extensions)) {
-            $filename = uniqid('product_') . '.' . $file_extension;
-            $upload_path = $upload_dir . $filename;
+            // Create temp file
+            $tempfile = $_FILES['product_image']['tmp_name'];
             
-            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $upload_path)) {
-                $product_image_url = $CFG->wwwroot . '/local/lidio/product_images/' . $filename;
-                
-                // Delete old image if exists
-                if (!empty($paymentlink->product_image)) {
-                    $old_filename = basename($paymentlink->product_image);
-                    $old_path = $upload_dir . $old_filename;
-                    if (file_exists($old_path)) {
-                        unlink($old_path);
-                    }
-                }
-            }
+            // Create the file record
+            $fs->create_file_from_pathname($fileinfo, $tempfile);
+            
+            // Generate URL to access file via pluginfile.php
+            $product_image_url = moodle_url::make_pluginfile_url(
+                $context->id,
+                'local_lidio',
+                'product_image',
+                $id,
+                '/',
+                $_FILES['product_image']['name']
+            )->out();
         } else {
             $errors[] = 'Invalid file type. Please upload JPG, JPEG or PNG files only.';
         }

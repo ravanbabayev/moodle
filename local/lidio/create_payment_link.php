@@ -2,6 +2,10 @@
 require_once('../../config.php');
 require_once($CFG->dirroot . '/local/lidio/lib.php');
 
+// Import required classes
+use \context_system;
+use \moodle_url;
+
 // Check login
 require_login();
 
@@ -87,29 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $errors[] = 'Please select a contact method';
     }
     
-    // Handle file upload
-    $product_image_url = '';
-    if (!empty($_FILES['product_image']['name'])) {
-        $upload_dir = $CFG->dataroot . '/local_lidio/product_images/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
-        
-        $file_extension = strtolower(pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION));
-        $allowed_extensions = ['jpg', 'jpeg', 'png'];
-        
-        if (in_array($file_extension, $allowed_extensions)) {
-            $filename = uniqid('product_') . '.' . $file_extension;
-            $upload_path = $upload_dir . $filename;
-            
-            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $upload_path)) {
-                $product_image_url = $CFG->wwwroot . '/local/lidio/product_images/' . $filename;
-            }
-        } else {
-            $errors[] = 'Invalid file type. Please upload JPG, JPEG or PNG files only.';
-        }
-    }
-    
     // If no errors, create the payment link
     if (empty($errors)) {
         // Generate unique link code
@@ -130,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $record->success_url = $success_url;
         $record->cancel_url = $cancel_url;
         $record->product_name = $product_name;
-        $record->product_image = $product_image_url;
         $record->product_description = $product_description;
         $record->require_phone = $require_phone ? 1 : 0;
         $record->require_email = $require_email ? 1 : 0;
@@ -140,7 +120,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $record->timemodified = time();
         
         // Insert record
-        $DB->insert_record('local_lidio_payment_links', $record);
+        $recordid = $DB->insert_record('local_lidio_payment_links', $record);
+        
+        // Handle file upload for product image
+        if (!empty($_FILES['product_image']['name'])) {
+            $context = context_system::instance();
+            $fs = get_file_storage();
+            
+            // Save uploaded file
+            $fileinfo = array(
+                'contextid' => $context->id,
+                'component' => 'local_lidio',
+                'filearea' => 'product_image',
+                'itemid' => $recordid,
+                'filepath' => '/',
+                'filename' => $_FILES['product_image']['name'],
+                'source' => $_FILES['product_image']['name']
+            );
+            
+            // Check file type
+            $file_extension = strtolower(pathinfo($_FILES['product_image']['name'], PATHINFO_EXTENSION));
+            $allowed_extensions = ['jpg', 'jpeg', 'png'];
+            
+            if (in_array($file_extension, $allowed_extensions)) {
+                // Create temp file
+                $tempfile = $_FILES['product_image']['tmp_name'];
+                
+                // Create the file record
+                $fs->create_file_from_pathname($fileinfo, $tempfile);
+                
+                // Generate URL to access file via pluginfile.php
+                $product_image_url = moodle_url::make_pluginfile_url(
+                    $context->id,
+                    'local_lidio',
+                    'product_image',
+                    $recordid,
+                    '/',
+                    $_FILES['product_image']['name']
+                )->out();
+                
+                // Update the product image URL in the database
+                $DB->set_field('local_lidio_payment_links', 'product_image', $product_image_url, ['id' => $recordid]);
+            } else {
+                $errors[] = 'Invalid file type. Please upload JPG, JPEG or PNG files only.';
+            }
+        }
         
         redirect(new moodle_url('/local/lidio/payment_links.php'), 
                 'Payment link created successfully!', null, 

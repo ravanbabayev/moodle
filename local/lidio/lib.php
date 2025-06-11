@@ -233,15 +233,18 @@ function local_lidio_require_kyc($merchant) {
 function local_lidio_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array()) {
     global $DB, $CFG;
 
+    // Make sure context is SYSTEM for this plugin
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
 
+    // Check if filearea is valid
     if ($filearea !== 'product_image') {
         return false;
     }
 
-    require_login();
+    // No need to require login for publicly viewable payment links
+    // require_login();
 
     $itemid = array_shift($args);
     $filename = array_pop($args);
@@ -255,7 +258,7 @@ function local_lidio_pluginfile($course, $cm, $context, $filearea, array $args, 
         return false;
     }
 
-    // Security: check if the payment link exists
+    // Check if the file is accessible (e.g., payment link exists and is active)
     $paymentlink = $DB->get_record('local_lidio_payment_links', array('id' => $itemid));
     if (!$paymentlink) {
         return false;
