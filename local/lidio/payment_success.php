@@ -29,23 +29,23 @@ require_once($CFG->dirroot . '/local/lidio/lib.php');
 use \context_system;
 use \moodle_url;
 
-// Get transaction reference from URL
-$transaction_id = required_param('transaction_id', PARAM_ALPHANUM);
+// Get transaction ID from URL
+$transaction_id = required_param('id', PARAM_INT);
 
 // Debug bilgisi ekle
 $transactions = $DB->get_records_sql("SELECT id, gateway_transaction_id FROM {local_lidio_transactions} ORDER BY id DESC LIMIT 10");
 echo "<div style='background-color: #f0f0f0; padding: 15px; margin: 15px; border-radius: 5px;'>";
 echo "<h3>Debug Bilgisi:</h3>";
-echo "<p>Aranan transaction_id: " . $transaction_id . "</p>";
+echo "<p>Aranan transaction ID: " . $transaction_id . "</p>";
 echo "<p>Son 10 transaction kaydı:</p><ul>";
 foreach ($transactions as $t) {
     echo "<li>ID: " . $t->id . ", gateway_transaction_id: " . $t->gateway_transaction_id . 
-         ($t->gateway_transaction_id == $transaction_id ? " <strong>(EŞLEŞME VAR)</strong>" : "") . "</li>";
+         ($t->id == $transaction_id ? " <strong>(EŞLEŞME VAR)</strong>" : "") . "</li>";
 }
 echo "</ul></div>";
 
 // Fetch transaction data
-$transaction = $DB->get_record('local_lidio_transactions', ['gateway_transaction_id' => $transaction_id]);
+$transaction = $DB->get_record('local_lidio_transactions', ['id' => $transaction_id]);
 
 // Eğer transaction bulunamadıysa, hata mesajı göster
 if (!$transaction) {
@@ -66,7 +66,7 @@ $merchant = $DB->get_record('local_lidio_merchants', ['id' => $transaction->merc
 
 // Set up the page
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction_id]));
+$PAGE->set_url(new moodle_url('/local/lidio/payment_success.php', ['id' => $transaction_id]));
 $PAGE->set_title(get_string('paymentsuccess', 'local_lidio'));
 $PAGE->set_heading(get_string('paymentsuccess', 'local_lidio'));
 $PAGE->set_pagelayout('standard');

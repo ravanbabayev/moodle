@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         }
         
         // Başarılı ödeme sayfasına yönlendirmeden önce animasyonlu bekleme ekranı göster
-        $success_url = new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]);
+        $success_url = new moodle_url('/local/lidio/payment_success.php', ['id' => $transaction->id]);
         
         echo $OUTPUT->header();
         ?>
@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
             <h3 class="text-success mt-4">Ödeme İşleniyor...</h3>
             <p class="lead">Lütfen bekleyiniz, ödemeniz işleniyor ve doğrulanıyor.</p>
             <p class="text-muted">Birkaç saniye içinde yönlendirileceksiniz.</p>
-            <p class="text-muted">Transaction ID: <?php echo $transaction->gateway_transaction_id; ?></p>
+            <p class="text-muted">Transaction ID: <?php echo $transaction->id; ?></p>
         </div>
         
         <script>
