@@ -215,7 +215,7 @@ if ($merchants) {
         $row[] = $merchant->email;
         
         // Business name
-        $row[] = $merchant->business_name;
+        $row[] = $merchant->company_name;
         
         // Status
         $statusstring = get_string('status_' . $merchant->status, 'local_lidio');

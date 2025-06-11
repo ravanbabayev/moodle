@@ -119,8 +119,8 @@ $string['approved'] = 'Approved';
 $string['rejected'] = 'Rejected';
 $string['approve'] = 'Approve';
 $string['reject'] = 'Reject';
-$string['kycapprove'] = 'Approve KYC';
-$string['kycreject'] = 'Reject KYC';
+$string['kyc_approve'] = 'Approve KYC';
+$string['kyc_reject'] = 'Reject KYC';
 $string['view'] = 'View';
 $string['back'] = 'Back';
 $string['actions'] = 'Actions';
@@ -128,6 +128,12 @@ $string['confirmapprovemerchant'] = 'Are you sure you want to approve the mercha
 $string['confirmrejectmerchant'] = 'Are you sure you want to reject the merchant application for {$a}?';
 $string['confirmkycapprove'] = 'Are you sure you want to approve the KYC verification for {$a}?';
 $string['confirmkycreject'] = 'Are you sure you want to reject the KYC verification for {$a}?';
+$string['merchantname'] = 'Merchant Name';
+$string['businessname'] = 'Business Name';
+$string['timecreated'] = 'Registration Date';
+$string['status_pending'] = 'Pending';
+$string['status_approved'] = 'Approved';
+$string['status_rejected'] = 'Rejected';
 
 // Document management
 $string['documents'] = 'Documents';
@@ -151,6 +157,7 @@ $string['requiredfield'] = 'This field is required.';
 $string['fileuploaderror'] = 'Error uploading file.';
 $string['errorprocessingform'] = 'There was an error processing your form submission. Please try again.';
 $string['notauthorized'] = 'You are not authorized to perform this action.';
+$string['merchantupdated'] = 'Merchant information has been updated successfully.';
 
 // Navigation
 $string['merchantdashboard'] = 'Merchant Dashboard';
@@ -198,118 +205,22 @@ $string['phonenumber'] = 'Phone Number';
 $string['businessinformation'] = 'Business Information';
 $string['website'] = 'Website (optional)';
 $string['socialmedialinks'] = 'Social Media Links (optional)';
-$string['businessarea'] = 'Business Area / Products';
-$string['monthlysalesvolume'] = 'Monthly Sales Volume';
-$string['paymentmethods'] = 'Preferred Payment Methods';
-$string['creditcard'] = 'Credit Card';
-$string['banktransfer'] = 'Bank Transfer';
-$string['paymentlink'] = 'Payment Link';
-$string['mobilepayment'] = 'Mobile Payment';
-$string['otherpayment'] = 'Other';
-$string['bankinformation'] = 'Bank Information';
-$string['iban'] = 'IBAN';
-$string['accountholder'] = 'Account Holder Name';
-$string['bankname'] = 'Bank Name';
-$string['agreements'] = 'Agreements';
-$string['kvkkapproval'] = 'KVKK Approval';
-$string['kvkkapprovaltext'] = 'I consent to the processing of my personal data in accordance with KVKK.';
-$string['termsapproval'] = 'Terms and Conditions';
-$string['termsapprovaltext'] = 'I agree to the terms and conditions of the Lidio merchant service.';
-$string['merchantcreated'] = 'Merchant application has been submitted successfully!';
-$string['merchantupdated'] = 'Merchant application has been updated successfully!';
-$string['becomemerchantintro'] = 'Thank you for your interest in becoming a merchant! Please fill in the form below.';
 
-// Validation errors
-$string['invalidiban'] = 'Invalid IBAN format.';
-$string['kvkkapprovalrequired'] = 'You must agree to the KVKK terms.';
-$string['termsapprovalrequired'] = 'You must agree to the terms and conditions.';
+// Admin - Merchant details 
+$string['companydetails'] = 'Company Details';
+$string['statussettings'] = 'Status Settings';
+$string['financialsettings'] = 'Financial Settings';
+$string['commissionrateerror'] = 'Commission rate must be between 0 and 100.';
+$string['settlementperiod'] = 'Settlement Period';
+$string['settlementperioderror'] = 'Settlement period must be greater than 0.';
+$string['adminnotes'] = 'Admin Notes';
+$string['days'] = 'Days';
 
-// Merchant dashboard
-$string['merchantinfo'] = 'Merchant Information';
-$string['dashboardstats'] = 'Dashboard Statistics';
-$string['nodatayet'] = 'No data available yet.';
+// Edit form fields
+$string['company_name'] = 'Company Name';
+$string['admin_notes'] = 'Admin Notes';
 
-// KYC
-$string['completekycverification'] = 'Please complete your KYC verification';
-$string['kycstatus_pending'] = 'Your KYC verification is pending.';
-$string['invalidphone'] = 'Invalid phone number format.';
-
-// Merchant status
-$string['notamerchant'] = 'You are not registered as a merchant.';
-
-// Transaction page strings
-$string['transactionsintro'] = 'View and manage all your payment transactions.';
-$string['filtertransactions'] = 'Filter Transactions';
-$string['transactionid'] = 'Transaction ID';
-$string['paymentmethod'] = 'Payment Method';
-$string['completed'] = 'Completed';
-$string['failed'] = 'Failed';
-$string['refunded'] = 'Refunded';
-$string['details'] = 'Details';
-$string['refund'] = 'Refund';
-$string['notransactions'] = 'No transactions found';
-$string['notransactionsdesc'] = 'You don\'t have any transactions yet. They will appear here once you start receiving payments.';
-$string['refresh'] = 'Refresh';
-$string['datefrom'] = 'Date From';
-$string['dateto'] = 'Date To';
-$string['allstatuses'] = 'All Statuses';
-$string['filter'] = 'Filter';
-$string['showing'] = 'Showing';
-$string['to'] = 'to';
-$string['of'] = 'of';
-$string['results'] = 'results';
-$string['previous'] = 'Previous';
-$string['next'] = 'Next';
-$string['merchantnotapproved'] = 'Your merchant account is not yet approved.';
-
-// Modern Dashboard
-$string['earnings'] = 'Earnings';
-$string['totalrevenue'] = 'Total Revenue';
-$string['totalproducts'] = 'Total Products';
-$string['totalsales'] = 'Total Sales';
-$string['totalcustomers'] = 'Total Customers';
-$string['salessummary'] = 'Sales Summary';
-$string['salesfunnel'] = 'Sales Funnel';
-$string['topproduct'] = 'Top Product';
-$string['showall'] = 'Show All';
-$string['totalsold'] = 'Total sold';
-$string['viewsandclick'] = 'Views & Click';
-$string['averageviews'] = 'Average views';
-$string['averageclick'] = 'Average click';
-$string['agerange'] = 'Age Range';
-$string['visit'] = 'Visit';
-$string['click'] = 'Click';
-$string['purchased'] = 'Purchased';
-$string['newcustomerthisyear'] = 'New customer this year';
-$string['customeracquisition'] = 'Your customer acquisition grows by about';
-$string['eachmonth'] = 'each month';
-$string['youngadults'] = 'Young adults make up your biggest shoppers, with';
-$string['ofcustomers'] = 'of customers aged';
-
-// Admin interface
-$string['merchantmanagementdesc'] = 'Manage Lidio payment system merchants';
-$string['merchant'] = 'Merchant';
-$string['contact'] = 'Contact Information';
-$string['uploaddate'] = 'Upload Date';
-$string['nomerchantsdesc'] = 'No merchant applications have been submitted yet.';
-$string['merchantdetailsdesc'] = 'View detailed information about this merchant';
-$string['individual'] = 'Individual';
-$string['company'] = 'Company';
-$string['view_kyc'] = 'View KYC';
-// KYC Document management
-$string['kyc_documents'] = 'KYC Documents';
-$string['merchant_kyc'] = 'Merchant KYC Documents';
-$string['document_approved'] = 'Document approved successfully.';
-$string['document_approved_all'] = 'All documents approved and merchant KYC status verified.';
-$string['document_rejected'] = 'Document rejected.';
-$string['confirm_approve_document'] = 'Are you sure you want to approve this document?';
-$string['confirm_reject_document'] = 'Are you sure you want to reject this document?';
-$string['preview'] = 'Preview';
-$string['no_documents'] = 'No documents uploaded.';
-$string['processing'] = 'Processing...';
-$string['documents_under_review'] = 'Your documents are under review. We will notify you once they are verified.';
-
-// New strings for merchant management
+// Additional strings for merchant management
 $string['id'] = 'ID';
 $string['actions'] = 'Actions';
 $string['edit'] = 'Edit';

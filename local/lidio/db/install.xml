@@ -16,6 +16,7 @@
         <FIELD NAME="kyc_status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="KYC verification status"/>
         <FIELD NAME="commission_rate" TYPE="number" LENGTH="5" NOTNULL="true" DEFAULT="2.5" SEQUENCE="false" DECIMALS="2" COMMENT="Commission rate percentage"/>
         <FIELD NAME="settlement_period" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="7" SEQUENCE="false" COMMENT="Settlement period in days"/>
+        <FIELD NAME="admin_notes" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Administrator notes about the merchant"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creation timestamp"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Last modification timestamp"/>
       </FIELDS>

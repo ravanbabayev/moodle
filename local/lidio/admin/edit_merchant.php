@@ -25,11 +25,15 @@
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/weblib.php');
+require_once($CFG->libdir . '/accesslib.php');
 
 // Import necessary classes
 use core\notification;
 use core\output\html_writer;
 use core_table\output\html_table;
+use context_system;
+use moodle_url;
 
 // Check access
 require_login();
@@ -40,6 +44,8 @@ $merchant = $DB->get_record('local_lidio_merchants', array('id' => $id), '*', MU
 $user = $DB->get_record('user', array('id' => $merchant->userid), '*', MUST_EXIST);
 
 // Set up the page
+$context = \context_system::instance();
+$PAGE->set_context($context);
 $PAGE->set_url(new \moodle_url('/local/lidio/admin/edit_merchant.php', array('id' => $id)));
 $PAGE->set_title(get_string('merchantedit', 'local_lidio'));
 $PAGE->set_heading(get_string('merchantedit', 'local_lidio'));
