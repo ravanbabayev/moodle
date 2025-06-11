@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $transaction = new \stdClass();
         $transaction->merchant_id = $paymentlink->merchantid;
         $transaction->payment_link_id = $paymentlink->id;
-        $transaction->reference = $reference_code; // Veritabanında reference alanı var
+        $transaction->gateway_transaction_id = $reference_code; // Veritabanında gateway_transaction_id alanı var, reference alanı yok
         $transaction->amount = $paymentlink->amount;
         $transaction->currency = $paymentlink->currency;
         $transaction->status = 'pending';
@@ -171,12 +171,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         
         // Son 4 hanesi ve sahte işlem ID'si
         $last4 = substr($card_number, -4);
-        $gateway_txn_id = 'DEMO-' . time() . '-' . rand(1000, 9999);
         
         // Gateway yanıtını json olarak kaydet
         $gateway_response = [
             'status' => 'success',
-            'transaction_id' => $gateway_txn_id,
+            'transaction_id' => $reference_code,
             'card_last4' => $last4,
             'card_brand' => detectCardBrand($card_number),
             'processor' => 'DEMO',
@@ -192,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && confirm_sesskey()) {
         $DB->set_field('local_lidio_payment_links', 'current_uses', $paymentlink->current_uses + 1, ['id' => $paymentlink->id]);
         
         // Başarılı ödeme sayfasına yönlendir
-        redirect(new moodle_url('/local/lidio/payment_success.php', ['reference' => $transaction->reference]));
+        redirect(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction->gateway_transaction_id]));
         
     } catch (Exception $e) {
         echo '<div style="background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 15px; border-radius: 5px;">';

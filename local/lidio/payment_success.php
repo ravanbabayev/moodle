@@ -30,10 +30,10 @@ use \context_system;
 use \moodle_url;
 
 // Get transaction reference from URL
-$reference = required_param('reference', PARAM_ALPHANUM);
+$transaction_id = required_param('transaction_id', PARAM_ALPHANUM);
 
 // Fetch transaction data
-$transaction = $DB->get_record('local_lidio_transactions', ['reference' => $reference], '*', MUST_EXIST);
+$transaction = $DB->get_record('local_lidio_transactions', ['gateway_transaction_id' => $transaction_id], '*', MUST_EXIST);
 
 // Fetch payment link
 $paymentlink = $DB->get_record('local_lidio_payment_links', ['id' => $transaction->payment_link_id], '*', MUST_EXIST);
@@ -43,7 +43,7 @@ $merchant = $DB->get_record('local_lidio_merchants', ['id' => $transaction->merc
 
 // Set up the page
 $PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/local/lidio/payment_success.php', ['reference' => $reference]));
+$PAGE->set_url(new moodle_url('/local/lidio/payment_success.php', ['transaction_id' => $transaction_id]));
 $PAGE->set_title(get_string('paymentsuccess', 'local_lidio'));
 $PAGE->set_heading(get_string('paymentsuccess', 'local_lidio'));
 $PAGE->set_pagelayout('standard');
