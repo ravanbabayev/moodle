@@ -178,7 +178,7 @@ function xmldb_local_lidio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025061104, 'local', 'lidio');
     }
 
-    if ($oldversion < 2025061108) {
+    if ($oldversion < 2025061109) {
         // Update contact requirements system to new checkbox-based approach
         $table = new xmldb_table('local_lidio_payment_links');
 
@@ -242,7 +242,7 @@ function xmldb_local_lidio_upgrade($oldversion) {
 
 
         // Lidio savepoint reached.
-        upgrade_plugin_savepoint(true, 2025061108, 'local', 'lidio');
+        upgrade_plugin_savepoint(true, 2025061109, 'local', 'lidio');
     }
 
     return true;
