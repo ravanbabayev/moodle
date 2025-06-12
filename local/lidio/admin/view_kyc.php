@@ -29,7 +29,7 @@ require_once($CFG->libdir . '/weblib.php');
 
 // Import necessary classes
 use core\notification;
-use moodle_url;
+use \moodle_url;
 
 global $PAGE, $DB, $USER, $OUTPUT;
 
@@ -126,8 +126,8 @@ if (!empty($documents)) {
     foreach ($documents as $document) {
         $document_data = [
             'id' => $document->id,
-            'type' => $document->type,
-            'type_text' => get_string($document->type, 'local_lidio'),
+            'type' => $document->document_type,
+            'type_text' => get_string($document->document_type, 'local_lidio'),
             'filename' => $document->filename,
             'status' => $document->status,
             'status_text' => get_string($document->status, 'local_lidio'),
